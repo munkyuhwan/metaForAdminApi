@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">우리오더</string>
+    <string name="appCenterCrashes_whenToSendCrashes" moduleConfig="true" translatable="false">DO_NOT_ASK_JAVASCRIPT</string>
+    <string name="appCenterAnalytics_whenToEnableAnalytics" moduleConfig="true" translatable="false">ALWAYS_SEND</string>
+    <string name="reactNativeCodePush_androidDeploymentKey">fd7f67b7-013a-4721-97ed-6f9477b584cc</string>
+
+    <!-- 결제관련 string 테스트 -->
+    <string name="TID">0710000900</string>
+    <string name="BusinessID">2148631917</string>
+    <string name="SN">1000000007</string>
+
+</resources>

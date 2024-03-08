@@ -1,0 +1,198 @@
+[
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable_rn_edit_text_material.xml.flat",
+        "source": "com.metacity.app-main-45:/drawable/rn_edit_text_material.xml"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-hdpi_node_modules_reactnavigation_elements_src_assets_backicon.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-hdpi/node_modules_reactnavigation_elements_src_assets_backicon.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_logo.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_logo.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/mipmap-xxhdpi_ic_launcher.png.flat",
+        "source": "com.metacity.app-main-45:/mipmap-xxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/mipmap-xxhdpi_ic_launcher_round.png.flat",
+        "source": "com.metacity.app-main-45:/mipmap-xxhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_cart_select.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_cart_select.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_spicy_4.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_spicy_4.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_korean.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_korean.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_add.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_add.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_new_menu.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_new_menu.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_cart_grey.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_cart_grey.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_orderlist_trans.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_orderlist_trans.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-xxhdpi_node_modules_reactnavigation_elements_src_assets_backicon.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-xxhdpi/node_modules_reactnavigation_elements_src_assets_backicon.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_spicy_5.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_spicy_5.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/mipmap-xhdpi_ic_launcher_round.png.flat",
+        "source": "com.metacity.app-main-45:/mipmap-xhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_english.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_english.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_hot_menu.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_hot_menu.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/mipmap-mdpi_ic_launcher.png.flat",
+        "source": "com.metacity.app-main-45:/mipmap-mdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/xml_network_security_config.xml.flat",
+        "source": "com.metacity.app-main-45:/xml/network_security_config.xml"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_close_red.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_close_red.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_node_modules_reactnavigation_elements_src_assets_backiconmask.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/node_modules_reactnavigation_elements_src_assets_backiconmask.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_spicy_1.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_spicy_1.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_cancel.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_cancel.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_folk_nife.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_folk_nife.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_japanese.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_japanese.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/mipmap-xhdpi_ic_launcher.png.flat",
+        "source": "com.metacity.app-main-45:/mipmap-xhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_cart_trans.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_cart_trans.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_close_arrow.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_close_arrow.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_lock.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_lock.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/mipmap-hdpi_ic_launcher_round.png.flat",
+        "source": "com.metacity.app-main-45:/mipmap-hdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_check_black.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_check_black.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-xxxhdpi_node_modules_reactnavigation_elements_src_assets_backicon.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-xxxhdpi/node_modules_reactnavigation_elements_src_assets_backicon.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_ico_restaurant.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_ico_restaurant.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_order.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_order.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/mipmap-xxxhdpi_ic_launcher_round.png.flat",
+        "source": "com.metacity.app-main-45:/mipmap-xxxhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_orderlist_grey.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_orderlist_grey.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_bell_trans.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_bell_trans.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/mipmap-hdpi_ic_launcher.png.flat",
+        "source": "com.metacity.app-main-45:/mipmap-hdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/mipmap-mdpi_ic_launcher_round.png.flat",
+        "source": "com.metacity.app-main-45:/mipmap-mdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_spicy_2.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_spicy_2.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_best_menu.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_best_menu.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/mipmap-xxxhdpi_ic_launcher.png.flat",
+        "source": "com.metacity.app-main-45:/mipmap-xxxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_close_grey.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_close_grey.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_check_red.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_check_red.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_chinese.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_chinese.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_node_modules_reactnavigation_elements_src_assets_backicon.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/node_modules_reactnavigation_elements_src_assets_backicon.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-xhdpi_node_modules_reactnavigation_elements_src_assets_backicon.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-xhdpi/node_modules_reactnavigation_elements_src_assets_backicon.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable-mdpi_src_assets_icons_spicy_3.png.flat",
+        "source": "com.metacity.app-res-38:/drawable-mdpi/src_assets_icons_spicy_3.png"
+    },
+    {
+        "merged": "com.metacity.app-merged_res-44:/drawable_icon.png.flat",
+        "source": "com.metacity.app-main-45:/drawable/icon.png"
+    }
+]
