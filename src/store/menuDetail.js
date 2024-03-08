@@ -12,13 +12,7 @@ export const initMenuDetail = createAsyncThunk("menuDetail/initMenuDetail", asyn
 export const setMenuDetail = createAsyncThunk("menuDetail/setMenuDetail", async(_,{dispatch,getState}) =>{
     const {allItems, allSets} = getState().menu;
     const index = _.itemID;
-
-    // 아이템 상세
-    const allItemsFiltered = allItems.filter(el=>el.PROD_CD == index);
-    let menuDetail = {}
-    if(allItemsFiltered?.length>0) {
-        menuDetail = allItemsFiltered[0];
-    }
+    const item = _.item;
 
     // 아이템 옵션
     const setFiltered = allSets.filter(el=>el.PROD_CD == index);
@@ -27,8 +21,10 @@ export const setMenuDetail = createAsyncThunk("menuDetail/setMenuDetail", async(
         filterdSetList = setFiltered[0];
     }
 
-    return {menuDetailID:index,menuDetail:menuDetail, menuOptionList:filterdSetList.SET_GROUP};
+    return {menuDetailID:index,menuDetail:item, menuOptionList:{}};
 })
+
+/*** 이하 삭제 */
 export const getSingleMenu = createAsyncThunk("menuDetail/getSingleMenu", async(itemID,{getState}) =>{
     const {displayMenu} = getState().menu;
     const selectedMenuDetail = displayMenu.filter(el=>el.ITEM_ID == itemID);

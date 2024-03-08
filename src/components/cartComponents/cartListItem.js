@@ -26,9 +26,10 @@ const CartListItem = (props) => {
     const index = props?.index;
     const order = props?.item;
     const additiveItemList = order?.SETITEM_INFO;
-    const itemDetail = allItems?.filter(el=>el.PROD_CD == order?.ITEM_CD);
+    const itemDetail = allItems?.filter(el=>el.prod_cd == order?.ITEM_CD);
     const prodGb = itemDetail[0]?.PROD_GB; // 세트하부금액 구분용
     // 이미지 찾기
+    console.log('itemdetail: ',itemDetail[0]);
     const itemExtra = menuExtra.filter(el=>el.pos_code == order?.ITEM_CD);
     const ItemTitle = () => {
         let selTitleLanguage = "";
@@ -107,7 +108,7 @@ const CartListItem = (props) => {
         <>
             <CartItemWrapper>
                 <CartItemImageTogoWrapper>
-                    <CartItemImage source={ {uri:(`${images.filter(el=>el.name==order?.ITEM_CD)[0]?.imgData}`),priority: FastImage.priority.high } } />
+                    <CartItemImage source={ {uri:(`http:${itemDetail[0].gimg_chg}`),priority: FastImage.priority.high } } />
                 </CartItemImageTogoWrapper>
                 
                 <CartItemTitlePriceWrapper>

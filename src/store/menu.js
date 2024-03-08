@@ -44,11 +44,9 @@ export const getAdminItems = createAsyncThunk("menu/getAdminItems", async(_,{dis
 })
 // 카테고리 선택 후 메뉴 보여주기
 export const setSelectedItems = createAsyncThunk("menu/setSelectedItems", async(_,{dispatch, getState, rejectWithValue})=>{
-    console.log("setSelectedItems======================================================");
     const {allItems} = getState().menu;
     const {selectedMainCategory, selectedSubCategory} = getState().categories;
     const displayItems = allItems.filter(item => item.prod_l1_cd == selectedMainCategory);
-    console.log("displayItems: ",displayItems.length);
     return displayItems;
 })
 

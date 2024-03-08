@@ -210,6 +210,7 @@ const CartView = () =>{
     },[isOn])
 
     useEffect(()=>{
+        console.log("orderlist: ",orderList)
         let totalAmt = 0;
         let totalCnt = 0
         if(orderList) {

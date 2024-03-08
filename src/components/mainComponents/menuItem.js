@@ -17,7 +17,6 @@ const height = Dimensions.get('window').height;
 /* 메인메뉴 메뉴 아이템 */
 const MenuItem = ({item,index,setDetailShow}) => {
     //<MenuItemImage />    
-    console.log("item: ",item);
     // 포스 api ITEM_ID 는 관리자 api에서 pos_code임
     const dispatch = useDispatch();
     const {language} =  useSelector(state=>state.languages);
@@ -130,7 +129,7 @@ const MenuItem = ({item,index,setDetailShow}) => {
                             </TouchableWithoutFeedback>
                         </MenuItemButtonWrapper>
                     </MenuItemImageWrapper>
-                    {item?.prod_gb=='1'&&
+                    {item?.soldout=='Y'&&
                         <SoldOutLayer style={{ width:'100%',height:height*0.28, borderRadius:RADIUS_DOUBLE}}>
                             <SoldOutText>SOLD OUT</SoldOutText>    
                             <SoldOutDimLayer style={{ width:'100%',height:height*0.28, borderRadius:RADIUS_DOUBLE}}/>

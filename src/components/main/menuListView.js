@@ -85,7 +85,6 @@ const MenuListView = () => {
 
 
     useEffect(()=>{
-        console.log("displayItems: ",displayMenu);
         if(displayMenu.length>0) {
             //dispatch(getDisplayMenu());
             //listRef?.current?.scrollTo({x:0,animated: false});

@@ -150,7 +150,7 @@ export const addToOrderList =  createAsyncThunk("order/addToOrderList", async(_,
     let currentOrderList = Object.assign([],orderList);
     let orderData = setOrderData(item, orderList);
 
-    if(META_SET_MENU_SEPARATE_CODE_LIST.indexOf(menuDetail?.PROD_GB) >= 0) {
+    if(META_SET_MENU_SEPARATE_CODE_LIST.indexOf(menuDetail?.prod_gb) >= 0) {
         // 메뉴 선택하부금액 
         // 선택한 옵션의 가격이 들어감
         // 세트 메인 품목의 가격은 그대로 하위 품목들의 가격이 들어가고 그에따라 수량이 늘아날떄 가격과 수량이 같이 올라가야함
@@ -166,7 +166,7 @@ export const addToOrderList =  createAsyncThunk("order/addToOrderList", async(_,
         // 세트 메뉴 추가
         orderData["SETITEM_INFO"] = optionTrim;
         orderData["SETITEM_CNT"] = optionTrim.length;
-        orderData["ITEM_AMT"] = orderData["ITEM_AMT"];
+        orderData["ITEM_AMT"] = Number(orderData["ITEM_AMT"]);
         // 중복 체크 후 수량 변경
         let newOrderList = orderListDuplicateCheck(currentOrderList, orderData);
         //newOrderList.reverse();
@@ -201,7 +201,7 @@ export const addToOrderList =  createAsyncThunk("order/addToOrderList", async(_,
         // 세트 메뉴 추가
         orderData["SETITEM_INFO"] = optionTrim;
         orderData["SETITEM_CNT"] = optionTrim.length;
-        orderData["ITEM_AMT"] = orderData["ITEM_AMT"]+optionPrice;
+        orderData["ITEM_AMT"] = Number(orderData["ITEM_AMT"])+Number(optionPrice);
         // 중복 체크 후 수량 변경
         let newOrderList = orderListDuplicateCheck(currentOrderList, orderData);
         //newOrderList.reverse();
@@ -222,7 +222,8 @@ export const addToOrderList =  createAsyncThunk("order/addToOrderList", async(_,
         //newOrderList.reverse();
   
         return {orderList:newOrderList,vatTotal:totalResult?.vatTotal, grandTotal:totalResult.grandTotal,totalItemCnt:totalResult.itemCnt, orderPayData:[] };
-    }  
+    }
+      
 })
 // 주문로그 
 export const postLog =  createAsyncThunk("order/postLog", async(_,{dispatch, getState,extra}) =>{

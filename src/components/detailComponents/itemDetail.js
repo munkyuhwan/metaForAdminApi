@@ -26,9 +26,7 @@ const ItemDetail = (props) => {
     const {allItems} = useSelector((state)=>state.menu);
     const {menuDetailID, menuDetail, menuOptionSelected, menuOptionList, setGroupItem} = useSelector((state)=>state.menuDetail);
     const [detailZIndex, setDetailZIndex] = useState(0);
-    // 메뉴 추가정보 찾기
-    const {menuExtra} = useSelector(state=>state.menuExtra);
-    const itemExtra = menuExtra?.filter(el=>el.pos_code == menuDetailID);
+
     const {images} = useSelector(state=>state.imageStorage);
 
     // animation set
@@ -102,6 +100,9 @@ const ItemDetail = (props) => {
         dispatch(setMenuOptionSelected({data:setItem,isAdd:optionGroupQty>itemCheckCnt||optionGroupQty==0, isAmt:false  }));
     }
     const addToCart = () => {
+        dispatch(addToOrderList({item:menuDetail,menuOptionSelected:{}}));
+
+        /*
         let booleanArr = true;
         for(var i=0;i<menuOptionList.length;i++) {
             let optItems = menuOptionList[i].OPT_ITEMS;
@@ -127,6 +128,8 @@ const ItemDetail = (props) => {
             dispatch(addToOrderList({item:menuDetail,menuOptionSelected:menuOptionSelected}));
             closeDetail();
         }
+        */
+
 
     }
 
@@ -157,69 +160,57 @@ const ItemDetail = (props) => {
 //console.log("menu: ",menu[0].ITEM_LIST);
     const ItemTitle = () =>{
         let selTitleLanguage = "";
-        if(itemExtra) {
-            const selExtra = itemExtra?.filter(el=>el.pos_code==menuDetailID);
             if(language=="korean") {
-                selTitleLanguage = menuDetail?.ITEM_NAME;
+                selTitleLanguage = menuDetail?.gname_kr;
             }
             else if(language=="japanese") {
-                selTitleLanguage = selExtra[0]?.gname_jp;
+                selTitleLanguage = menuDetail?.gname_jp;
             }
             else if(language=="chinese") {
-                selTitleLanguage = selExtra[0]?.gname_cn;
+                selTitleLanguage = menuDetail?.gname_cn;
             }
             else if(language=="english") {
-                selTitleLanguage = selExtra[0]?.gname_en;
+                selTitleLanguage = menuDetail?.gname_en;
             }
-        }else {
-            selTitleLanguage = menuDetail?.ITEM_NAME;
-        }
+       
         return selTitleLanguage;
     }
     const ItemInfo = () =>{
         let selInfoLanguage = "";
-        if(itemExtra) {
-            const selExtra = itemExtra.filter(el=>el.pos_code==menuDetailID);
+        
             if(language=="korean") {
-                selInfoLanguage = selExtra[0]?.gmemo;
+                selInfoLanguage = menuDetail?.gmemo;
             }
             else if(language=="japanese") {
-                selInfoLanguage = selExtra[0]?.gmemo_jp||selExtra[0]?.gmemo;
+                selInfoLanguage = menuDetail?.gmemo_jp||menuDetail?.gmemo;
             }
             else if(language=="chinese") {
-                selInfoLanguage = selExtra[0]?.gmemo_cn||selExtra[0]?.gmemo;
+                selInfoLanguage = menuDetail?.gmemo_cn||menuDetail?.gmemo;
             }
             else if(language=="english") {
-                selInfoLanguage = selExtra[0]?.gmemo_en||selExtra[0]?.gmemo;
+                selInfoLanguage = menuDetail?.gmemo_en||menuDetail?.gmemo;
             }
-        }else {
-            selInfoLanguage = "";
-        }
+       
         return selInfoLanguage;
     }
     const ItemWonsanji = () => {
         let selWonsanjiLanguage = "";
-        if(itemExtra){
-            const selExtra = itemExtra.filter(el=>el.pos_code==menuDetailID);
+        
             if(language=="korean") {
-                selWonsanjiLanguage = selExtra[0]?.wonsanji;
+                selWonsanjiLanguage = menuDetail?.wonsanji;
             }
             else if(language=="japanese") {
-                selWonsanjiLanguage = selExtra[0]?.wonsanji_jp||selExtra[0]?.wonsanji;
+                selWonsanjiLanguage = menuDetail?.wonsanji_jp||menuDetail?.wonsanji;
             }
             else if(language=="chinese") {
-                selWonsanjiLanguage = selExtra[0]?.wonsanji_cn||selExtra[0]?.wonsanji;
+                selWonsanjiLanguage = menuDetail?.wonsanji_cn||menuDetail?.wonsanji;
             }
             else if(language=="english") {
-                selWonsanjiLanguage = selExtra[0]?.wonsanji_en||selExtra[0]?.wonsanji;
+                selWonsanjiLanguage = menuDetail?.wonsanji_en||menuDetail?.wonsanji;
             }
-        }else {
-            selWonsanjiLanguage = "";
-        }
+       
         return selWonsanjiLanguage;
     }
-    {/*  <DetailItemInfoFastImage source={{uri:"https:"+itemExtra[0]?.gimg_chg,headers: { Authorization: 'AuthToken' },priority: FastImage.priority.normal}} />
-  */}
     return(
         <>
             <Animated.View  style={[{...PopStyle.animatedPop, ...boxWidthStyle,...{zIndex:detailZIndex} } ]} >
@@ -233,56 +224,56 @@ const ItemDetail = (props) => {
                             {menuDetailID!=null &&
                                 <DetailInfoWrapper>
                                     <DetailItemInfoImageWrapper>
-                                        {itemExtra&& 
-                                        itemExtra[0]?.gimg_chg &&
-                                            <DetailItemInfoFastImage source={ {uri:(`${images.filter(el=>el.name==menuDetailID)[0]?.imgData}`),priority: FastImage.priority.high } } />
+                                        {menuDetail&& 
+                                        menuDetail?.gimg_chg &&
+                                            <DetailItemInfoFastImage source={ {uri:(`https:${menuDetail?.gimg_chg}`),priority: FastImage.priority.high } } />
                                         }
-                                        {itemExtra&&
-                                        !itemExtra[0]?.gimg_chg &&
+                                        {menuDetail&&
+                                        !menuDetail?.gimg_chg &&
                                             <MenuImageDefault source={require("../../assets/icons/logo.png")} />
                                         }   
                                     </DetailItemInfoImageWrapper>
                                     <DetailItemInfoWrapper>
                                         <DetailItemInfoTitleWrapper>
                                             <DetailItemInfoTitle>{ItemTitle()||menuDetail?.PROD_NM}</DetailItemInfoTitle>
-                                            {itemExtra&&
-                                        itemExtra[0]?.is_new=='Y'&&
+                                            {menuDetail&&
+                                                menuDetail?.is_new=='Y'&&
                                                  <DetailItemInfoTitleEtc source={require("../../assets/icons/new_menu.png")}/>
                                             }
-                                            {itemExtra&&
-                                        itemExtra[0]?.is_best=='Y'&&
+                                            {menuDetail&&
+                                        menuDetail?.is_best=='Y'&&
                                                 <DetailItemInfoTitleEtc source={require("../../assets/icons/best_menu.png")}/>
                                             }
-                                            {itemExtra&&
-                                        itemExtra[0]?.is_on=='Y'&&
+                                            {menuDetail&&
+                                        menuDetail?.is_on=='Y'&&
                                                 <DetailItemInfoTitleEtc source={require("../../assets/icons/hot_menu.png")}/>
                                             }
                                             {
-                                                itemExtra[0].spicy == "1" &&
+                                                menuDetail.spicy == "1" &&
                                                 <MenuItemButtonInnerWrapperRight>
                                                     <MenuItemSpiciness source={require('../../assets/icons/spicy_1.png')}/>
                                                 </MenuItemButtonInnerWrapperRight>
                                             }
                                             {
-                                                itemExtra[0].spicy == "1.5" &&
+                                                menuDetail.spicy == "1.5" &&
                                                 <MenuItemDetailSpicenessWrapper>
                                                     <MenuItemSpiciness source={require('../../assets/icons/spicy_2.png')}/>
                                                 </MenuItemDetailSpicenessWrapper>
                                             }
                                             {
-                                                itemExtra[0].spicy == "2" &&
+                                                menuDetail.spicy == "2" &&
                                                 <MenuItemDetailSpicenessWrapper>
                                                     <MenuItemSpiciness source={require('../../assets/icons/spicy_3.png')}/>
                                                 </MenuItemDetailSpicenessWrapper>
                                             }
                                             {
-                                                itemExtra[0].spicy == "2.5" &&
+                                                menuDetail.spicy == "2.5" &&
                                                 <MenuItemDetailSpicenessWrapper>
                                                     <MenuItemSpiciness source={require('../../assets/icons/spicy_4.png')}/>
                                                 </MenuItemDetailSpicenessWrapper>
                                             }
                                             {
-                                                itemExtra[0].spicy == "3" &&
+                                                menuDetail.spicy == "3" &&
                                                 <MenuItemDetailSpicenessWrapper>
                                                     <MenuItemSpiciness source={require('../../assets/icons/spicy_5.png')}/>
                                                 </MenuItemDetailSpicenessWrapper>
@@ -291,7 +282,7 @@ const ItemDetail = (props) => {
                                         <DetailItemInfoSource>{ItemWonsanji()}</DetailItemInfoSource>
                                         <DetailPriceMoreWrapper>
                                             <DetailItemInfoPriceWrapper>
-                                                <DetailItemInfoPrice isBold={true} >{ menuDetail?.SAL_TOT_AMT?numberWithCommas(menuDetail?.SAL_TOT_AMT):""}</DetailItemInfoPrice><DetailItemInfoPrice isBold={false}> 원</DetailItemInfoPrice>
+                                                <DetailItemInfoPrice isBold={true} >{ menuDetail?.sal_amt?numberWithCommas(menuDetail?.sal_amt):""}</DetailItemInfoPrice><DetailItemInfoPrice isBold={false}> 원</DetailItemInfoPrice>
                                             </DetailItemInfoPriceWrapper>
                                             <DetailItemInfoMore>{ItemInfo()}</DetailItemInfoMore>
                                         </DetailPriceMoreWrapper>
@@ -328,16 +319,16 @@ const ItemDetail = (props) => {
                                         }
                                         
                                     </OptListWrapper>
-                                    {itemExtra&&
-                                            itemExtra[0]?.related &&
-                                            itemExtra[0]?.related.length > 0 &&
-                                            itemExtra[0]?.related[0]!="" &&
+                                    {menuDetail&&
+                                            menuDetail?.related &&
+                                            menuDetail?.related.length > 0 &&
+                                            menuDetail?.related[0]!="" &&
                                             <>
                                                 <OptListWrapper>
                                                     <OptTitleText>{LANGUAGE[language]?.detailView.recommendMenu}</OptTitleText>
                                                     <OptList horizontal showsHorizontalScrollIndicator={false} >
                                                         {
-                                                            itemExtra[0]?.related.map((el,index)=>{
+                                                            menuDetail?.related.map((el,index)=>{
                                                                /*  if(isEmpty(el)) {
                                                                     return (<></>)
                                                                 }else { */

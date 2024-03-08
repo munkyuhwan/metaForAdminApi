@@ -133,20 +133,19 @@ export function setOrderData (data, orderList) {
             "SETITEM_INFO" : 
             [
             ] 
-          }
-    
-          setMenuData.ITEM_SEQ=orderList.length+1;
-          setMenuData.ITEM_CD = data?.PROD_CD;
-          setMenuData.ITEM_NM= data?.PROD_NM;
-          setMenuData.ITEM_QTY=  1;
-          setMenuData.ITEM_AMT=  data?.SAL_TOT_AMT;
-          setMenuData.ITEM_VAT=  data?.SAL_VAT;
-          setMenuData.ITEM_DC = 0;
-          setMenuData.ITEM_CANCEL_YN= "N";
-          setMenuData.ITEM_GB =  "N"; //포장 여부 포장"T"
-          setMenuData.ITEM_MSG = "";
-          setMenuData.SETITEM_CNT = 0;
-          setMenuData.SETITEM_INFO=[];
+        }
+        setMenuData.ITEM_SEQ=orderList.length+1;
+        setMenuData.ITEM_CD = data?.prod_cd;
+        setMenuData.ITEM_NM= data?.gname_kr;
+        setMenuData.ITEM_QTY=  1;
+        setMenuData.ITEM_AMT=  data?.sal_amt;
+        setMenuData.ITEM_VAT=  data?.sal_vat;
+        setMenuData.ITEM_DC = 0;
+        setMenuData.ITEM_CANCEL_YN= "N";
+        setMenuData.ITEM_GB =  "N"; //포장 여부 포장"T"
+        setMenuData.ITEM_MSG = "";
+        setMenuData.SETITEM_CNT = 0;
+        setMenuData.SETITEM_INFO=[];
       
     return setMenuData;
 }
