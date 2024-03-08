@@ -6,20 +6,17 @@ import { getAdminMainCategory } from '../utils/api/adminApi';
 import { setMenuCategories } from './menuExtra';
 import { getCategories } from '../utils/api/newApi';
 import { callApiWithExceptionHandling } from '../utils/api/apiRequest';
-import { ADMIN_API_BASE_URL, ADMIN_API_CATEGORY } from '../resources/newApiResource';
+import { ADMIN_API_BASE_URL, ADMIN_API_CATEGORY, TMP_STORE_DATA } from '../resources/newApiResource';
+import {isEmpty} from 'lodash';
 
 export const setCategories = createAsyncThunk("categories/setCategories", async(data) =>{
     return data;
 })
-// 어드민 카테고리
+// 어드민 카테고리 받기
 export const getAdminCategories = createAsyncThunk("categories/getAdminCategories", async(_,{dispatch,rejectWithValue}) =>{
     console.log("get categoreis======================================================");
-    //getCategories();
     try {
-        const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_CATEGORY}`, {
-          method: 'GET',
-          // 필요한 경우 추가 옵션 설정
-        });
+        const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_CATEGORY}`,TMP_STORE_DATA, {});
         //console.log('카테고리 데이터:', data);
         return data;
       } catch (error) {
@@ -27,10 +24,18 @@ export const getAdminCategories = createAsyncThunk("categories/getAdminCategorie
         console.error(error.message);
         return rejectWithValue(error.message);
     }
-    
-    return []; 
+})
+// 메인 카테고리 선택
+export const setSelectedMainCategory = createAsyncThunk("categories/setSelectedMainCategory", async(index,{getState,dispatc, rejectWithValue}) =>{
+    if(isEmpty(index)) {
+        return rejectWithValue()
+    }else {
+        return index;
+    }
 })
 
+
+/***** 이하 삭제 */
 // delete 어드민 카테고리 추가 정보 받아오기
 export const getAdminCategoryData = createAsyncThunk("categories/getAdminCategoryData", async(_,{dispatch}) =>{
     const adminResult = await getAdminMainCategory(dispatch);
@@ -56,9 +61,6 @@ export const setMainCategories = createAsyncThunk("categories/setMainCategories"
     return _;
 });
 
-export const setSelectedMainCategory = createAsyncThunk("categories/setSelectedMainCategory", async(index,{getState,dispatch}) =>{
-    return index;
-})
 export const setSelectedSubCategory = createAsyncThunk("categories/setSelectedSubCategory", async(index) =>{
     return index
 })
@@ -76,10 +78,9 @@ export const cagegoriesSlice = createSlice({
     extraReducers:(builder)=>{
         // 카테고리 받아오기
         builder.addCase(getAdminCategories.fulfilled, (state, action)=>{
-            console.log("admin category set state fulfilled=================");
-            const payload = action?.payload;
-            console.log(payload);
-            state.allCategories = payload?.goods_category;
+            const payload = action?.payload.goods_category;
+            const result = payload?.filter(item => (item?.is_del=='N' && item?.is_use=="Y")  );
+            state.allCategories = result;
         })
         builder.addCase(getAdminCategories.pending, (state, action)=>{
             console.log("admin category set state pending=================");
@@ -87,6 +88,20 @@ export const cagegoriesSlice = createSlice({
         builder.addCase(getAdminCategories.rejected, (state, action)=>{
             console.log("admin category set state rejected=================");
         })
+
+        // 메인 카테고리 선택
+        builder.addCase(setSelectedMainCategory.fulfilled,(state, action)=>{
+            //state.subCategories = MENU_DATA.categories[action.payload].subCategories||[]
+            const payload = action.payload;
+            state.selectedMainCategory = payload;
+            state.selectedSubCategory = "0000";
+        })
+        builder.addCase(setSelectedMainCategory.pending,(state, action)=>{
+        })
+        builder.addCase(setSelectedMainCategory.rejected,(state, action)=>{
+        })
+
+        /** 이하 삭제 */
 
 
 
@@ -120,12 +135,7 @@ export const cagegoriesSlice = createSlice({
         builder.addCase(setMainCategories.fulfilled,(state, action)=>{
             state.mainCategories = action.payload;
         })
-        // 메인 카테고리 선택
-        builder.addCase(setSelectedMainCategory.fulfilled,(state, action)=>{
-            //state.subCategories = MENU_DATA.categories[action.payload].subCategories||[]
-            state.selectedMainCategory = action.payload;
-            state.selectedSubCategory = "0000";
-        })
+       
         // 서브 카테고리 선택
         builder.addCase(setSelectedSubCategory.fulfilled,(state, action)=>{
             state.selectedSubCategory = action.payload;

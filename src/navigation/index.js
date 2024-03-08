@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getAdminCategories, getAdminCategoryData, getMainCategories, getSubCategories, setSelectedSubCategory } from '../store/categories'
 import FullSizePopup from '../components/common/fullsizePopup'
 import ErrorPopup from '../components/common/errorPopup'
-import { getAdminItems, getAllItems, getDisplayMenu, getMenuState, initMenu } from '../store/menu'
+import { getAdminItems, getAllItems, getDisplayMenu, getMenuState, initMenu, setSelectedItems } from '../store/menu'
 import _ from 'lodash';
 import { getTableList, getTableStatus, initTableInfo } from '../store/tableInfo'
 import { EventRegister } from 'react-native-event-listeners'
@@ -44,6 +44,7 @@ export default function Navigation() {
 
     const {tableStatus} = useSelector(state=>state.tableInfo);
     const {allItems} = useSelector(state=>state.menu);
+    const {selectedMainCategory, selectedSubCategory} = useSelector(state=>state.categories);
     const {isShow} = useSelector(state=>state.ads);
     const {isMonthSelectShow} = useSelector(state=>state.monthSelect);
 
@@ -83,6 +84,9 @@ export default function Navigation() {
         dispatch(getAdminCategories());
         dispatch(getAdminItems())
     },[])
+    useEffect(()=>{
+        dispatch(setSelectedItems());
+    },[selectedMainCategory, selectedSubCategory])
 
     return (
         <>  

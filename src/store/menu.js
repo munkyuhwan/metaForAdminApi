@@ -21,15 +21,40 @@ import 'moment/locale/ko';
 import { setCartView } from './cart';
 import { initOrderList } from './order';
 import { getItems } from '../utils/api/newApi';
+import {isEmpty} from 'lodash';
+import { callApiWithExceptionHandling } from '../utils/api/apiRequest';
+import { ADMIN_API_BASE_URL, ADMIN_API_GOODS, TMP_STORE_DATA } from '../resources/newApiResource';
+
 export const clearAllItems = createAsyncThunk("menu/clearAllItems", async(_,{dispatch,getState}) =>{ 
     return [];
 })
 
-export const getAdminItems = createAsyncThunk("menu/getAdminItems", async(_,{dispatch,getstate})=>{
+// 전체 메뉴 받기
+export const getAdminItems = createAsyncThunk("menu/getAdminItems", async(_,{dispatch,getstate, rejectWithValue})=>{
     console.log("get menu======================================================");
-    getItems();
-    return[];
+    try {
+        const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_GOODS}`,TMP_STORE_DATA, {}); 
+        return data;
+      } catch (error) {
+        // 예외 처리
+        console.error(error.message);
+        return rejectWithValue(error.message)
+
+    }
 })
+// 카테고리 선택 후 메뉴 보여주기
+export const setSelectedItems = createAsyncThunk("menu/setSelectedItems", async(_,{dispatch, getState, rejectWithValue})=>{
+    console.log("setSelectedItems======================================================");
+    const {allItems} = getState().menu;
+    const {selectedMainCategory, selectedSubCategory} = getState().categories;
+    const displayItems = allItems.filter(item => item.prod_l1_cd == selectedMainCategory);
+    console.log("displayItems: ",displayItems.length);
+    return displayItems;
+})
+
+
+
+/** 이하 삭제 */
 
 
 export const initMenu = createAsyncThunk("menu/initMenu", async(_,{dispatch,getState}) =>{
@@ -203,6 +228,37 @@ export const menuSlice = createSlice({
         isProcessPaying:false,
     },
     extraReducers:(builder)=>{
+
+        // 전체 아이템셋
+        builder.addCase(getAdminItems.fulfilled,(state, action)=>{
+            if(!isEmpty(action.payload)) { 
+                state.allItems = action?.payload.order;
+            }
+        }) 
+        builder.addCase(getAdminItems.rejected,(state, action)=>{
+            
+        }) 
+        builder.addCase(getAdminItems.pending,(state, action)=>{
+            
+        }) 
+
+        // 보여줄 아이템셋
+        builder.addCase(setSelectedItems.fulfilled,(state, action)=>{
+            if(!isEmpty(action.payload)) {
+                state.displayMenu = action?.payload;
+            }
+        }) 
+        builder.addCase(setSelectedItems.rejected,(state, action)=>{
+            
+        }) 
+        builder.addCase(setSelectedItems.pending,(state, action)=>{
+            
+        }) 
+        
+
+        /*** 이하 삭제 */
+        
+
         // 메인 카테고리 받기
         builder.addCase(getDisplayMenu.fulfilled,(state, action)=>{
             if(action.payload) {

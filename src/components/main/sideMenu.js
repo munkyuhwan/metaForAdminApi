@@ -110,14 +110,7 @@ const SideMenu = () =>{
                                 <SideBottomIcon source={require("../../assets/icons/korean.png")} />
                             </SideBottomButton>
                         </TouchableWithoutFeedback>
-                    </TouchableWithoutFeedback>{/* 
-                    <TouchableWithoutFeedback onPress={()=>{openFullSizePopup(dispatch, {innerFullView:"CallServer", isFullPopupVisible:true});}} >
-                        <SideBottomButton bg={"red"} borderColor={colorRed} >
-                            <SideBottomText>{LANGUAGE[language]?.sideMenu.callServer}</SideBottomText>
-                            <SideBottomIcon source={require("../../assets/icons/bell_trans.png")}  />
-                        </SideBottomButton>
-                    </TouchableWithoutFeedback> */}
-
+                    </TouchableWithoutFeedback>
                 </SideBottomWrapper>
             </SideMenuWrapper>
         </>

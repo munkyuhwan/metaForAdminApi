@@ -22,7 +22,8 @@ export const getCategories = async() =>{
 export const getItems = async () =>{
     try {
         const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_GOODS}`, {
-          method: 'GET',
+            
+            method: 'GET',
           // 필요한 경우 추가 옵션 설정
         });
         //console.log('데이터:', data);

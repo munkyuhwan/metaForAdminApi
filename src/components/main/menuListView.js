@@ -83,14 +83,9 @@ const MenuListView = () => {
         }
     },[isOn])
 
-    useEffect(()=>{
-        if(isDetailShow)setDetailShow(false);
-        //if((selectedMainCategory!=0 || selectedSubCategory!=0)) {
-            dispatch(getDisplayMenu())
-        //}
-    },[selectedMainCategory,selectedSubCategory])
 
     useEffect(()=>{
+        console.log("displayItems: ",displayMenu);
         if(displayMenu.length>0) {
             //dispatch(getDisplayMenu());
             //listRef?.current?.scrollTo({x:0,animated: false});
