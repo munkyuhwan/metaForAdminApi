@@ -85,13 +85,9 @@ const CartView = () =>{
 
     },[isMonthSelectShow,monthSelected])
     const makePayment = async () =>{
-        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"주문 중 입니다."})
-        const tableAvail = await getTableAvailability(dispatch).catch(()=>{EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); return [];});
-        if(!tableAvail) {
-            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
-        }else {
+        dispatch(postToMetaPos({payData:{}}));
+        /* 
             //console.log("storeInfo result: ", storeInfo);
-            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
             if( tableStatus?.now_later == "선불") {
                 const bsnNo = await AsyncStorage.getItem("BSN_NO");
                 const tidNo = await AsyncStorage.getItem("TID_NO");
@@ -118,41 +114,15 @@ const CartView = () =>{
             }else {
                 dispatch(postToMetaPos({payData:{}}));
             }
-        }
+         */
     }
 
     const doPayment = async () =>{
-        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"주문 중 입니다."})
+        makePayment();
 
-        const isPostable = await isNetworkAvailable().catch(()=>{EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); return false;});
-        if(!isPostable) {
-            displayErrorNonClosePopup(dispatch, "XXXX", "인터넷에 연결할 수 없습니다.");
-            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
-            return;
-        }
-
-        const storeInfo = await getStoreInfo()
-        .catch((err)=>{
-            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); 
-            return [];
-        })
-        // 개점정보 확인
-        if(!storeInfo?.SAL_YMD) {
-            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
-            displayErrorPopup(dispatch, "XXXX", "개점이 되지않아 주문을 할 수 없습니다.");
-        }else {
             //테이블 주문 가능한지 체크
-            const tableAvail = await getTableAvailability(dispatch).catch(()=>{EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); return [];});
-            if(!tableAvail) {
-                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
-            }else {
-                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"주문 중 입니다."})
-    
-                const resultData = await getMenuUpdateState(dispatch).catch(err=>{EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); return [];});
-                if(!resultData) {
-                    EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
-                }else {
-                    EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
+          /* 
+                
                     const isUpdated = resultData?.ERROR_CD == "E0000" ;
                     const updateDateTime = resultData?.UPD_DT;
                     const msg = resultData?.ERROR_MSG;
@@ -198,11 +168,10 @@ const CartView = () =>{
                         }else {
                             makePayment();
                         }
-                        //dispatch(postToMetaPos());
                     }
-                } 
-            }
-        }
+                 */
+            
+        
         
     }
     useEffect(()=>{
