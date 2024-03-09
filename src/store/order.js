@@ -14,6 +14,8 @@ import moment from 'moment';
 import { postPayLog } from '../utils/api/adminApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { EventRegister } from 'react-native-event-listeners';
+import { ADMIN_API_POST_ORDER, TMP_STORE_DATA } from '../resources/newApiResource';
+import { callApiWithExceptionHandling } from '../utils/api/apiRequest';
 
 export const initOrderList = createAsyncThunk("order/initOrderList", async() =>{
     return  {
@@ -24,6 +26,96 @@ export const initOrderList = createAsyncThunk("order/initOrderList", async() =>{
         orderPayData:{},
     };
 })
+/// 어드민에 주문 데이터 보내기 
+export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{dispatch, rejectWithValue, getState})=>{
+    const {metaOrderData} = getState().order;
+    var data = Object.assign({},metaOrderData);
+    data = {...data, ...TMP_STORE_DATA};
+    console.log("data: ",data);
+
+    try {
+        const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_POST_ORDER}`,data, {}); 
+        return data;
+      } catch (error) {
+        // 예외 처리
+        console.error(error.message);
+        return rejectWithValue(error.message)
+
+    }
+     
+    return;
+})
+// 주문 데이터 세팅
+export const presetOrderData = createAsyncThunk("order/presetOrderData", async(_,{dispatch, getState,rejectWithValue}) =>{
+    console.log("preset order data====================================================");
+    const {orderList} = getState().order;
+    console.log("orderList:",orderList);
+    const { tableStatus } = getState().tableInfo;
+    console.log("tableStatus: ",tableStatus);
+    const {payData} = _;
+    console.log("payData: ",payData);
+    const date = new Date();
+
+    const tableNo = await getTableInfo().catch(err=>{posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:"테이블 설정",MSG2:"테이블 번호를 설정 해 주세요."});});
+    if(isEmpty(tableNo)) {
+        posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:"테이블 설정",MSG2:"테이블 번호를 설정 해 주세요."});
+        return 
+    }
+
+    console.log("preset order data111111====================================================");
+
+     
+    //const orderNo = `${date.getFullYear().toString().substring(2,4)}${numberPad(date.getMonth()+1,2)}${numberPad(date.getDate(),2)}${moment().format("HHMMSSs")}`;
+    const orderNo = `${date.getFullYear().toString().substring(2,4)}${numberPad(date.getMonth()+1,2)}${numberPad(date.getDate(),2)}${moment().valueOf()}`;
+     
+    let orderData = {
+        "VERSION" : POS_VERSION_CODE,
+        "WORK_CD" : !isEmpty(payData)?POS_WORK_CD_PREPAY_ORDER_REQUEST:POS_WORK_CD_POSTPAY_ORDER, //선불 후불에 따라 코드 다름
+        "ORDER_NO" : orderNo,
+        "TBL_NO" : `${tableNo.TABLE_INFO}`, 
+        "PRINT_YN" : "Y",
+        "USER_PRINT_YN" : "Y",
+        "PRINT_ORDER_NO" : orderNo, 
+        "TOT_INWON" : 4,
+        "ITEM_CNT" : orderList.length,
+        "ITEM_INFO" :orderList
+    }    
+    console.log("preset order data222222222====================================================");
+    // 결제시 추가 결제 결과 데이터
+    let addOrderData = {};
+    if(!isEmpty(payData)) {
+        addOrderData = {
+            TOTAL_AMT:Number(payData?.TrdAmt)+Number(payData?.TaxAmt),
+            TOTAL_VAT:Number(payData?.TaxAmt),
+            TOTAL_DC:Number(payData?.SvcAmt),
+            ORDER_STATUS:"3",
+            CANCEL_YN:"N",
+            PREPAYMENT_YN:"N",
+            CUST_CARD_NO:`${payData?.CardNo}`,
+            CUST_NM:``,
+            PAYMENT_CNT:1,
+            PAYMENT_INFO:[{
+                PAY_SEQ:1,
+                PAY_KIND:"2",
+                PAY_AMT:Number(payData?.TrdAmt)+Number(payData?.TaxAmt),
+                PAY_VAT:Number(payData?.TaxAmt),
+                PAY_APV_NO:`${payData?.AuNo}`,
+                PAY_APV_DATE:`20${payData?.TrdDate?.substr(0,6)}`,
+                PAY_CARD_NO:`${payData?.CardNo}********`,
+                PAY_UPD_DT:`20${payData?.TrdDate}`,
+                PAY_CANCEL_YN:"N",
+                PAY_CARD_TYPE:`${payData?.InpNm}`,
+                PAY_CARD_MONTH:`${payData?.Month}`
+            }]
+        };
+        orderData = {...orderData,...addOrderData};
+    }
+    console.log("orderData: ",orderData);
+
+    return orderData;
+})
+
+/*** 이하 삭제   */
 
 export const setOrderList = createAsyncThunk("order/setOrderList", async(data) =>{
     return data;
@@ -325,9 +417,10 @@ export const postToMetaPos =  createAsyncThunk("order/postToPos", async(_,{dispa
 
     //let orderData = {"VERSION":"0010","WORK_CD":"8020","ORDER_NO":"2312271703684313782","TBL_NO":"001","PRINT_YN":"Y","USER_PRINT_YN":"Y","PRINT_ORDER_NO":"2312271703684313782","TOT_INWON":4,"ITEM_CNT":1,"ITEM_INFO":[{"ITEM_SEQ":1,"ITEM_CD":"900022","ITEM_NM":"치즈 추가","ITEM_QTY":1,"ITEM_AMT":1004,"ITEM_VAT":91,"ITEM_DC":0,"ITEM_CANCEL_YN":"N","ITEM_GB":"N","ITEM_MSG":"","SETITEM_CNT":0,"SETITEM_INFO":[]}],"TOTAL_AMT":"50004","TOTAL_VAT":"0","TOTAL_DC":"0","ORDER_STATUS":"3","CANCEL_YN":"N","PREPAYMENT_YN":"Y","CUST_CARD_NO":"94119400","CUST_NM":"","PAYMENT_CNT":1,"PAYMENT_INFO":{"PAY_SEQ":1,"PAY_KIND":"2","PAY_AMT":"50004","PAY_VAT":"0","PAY_APV_NO":"02761105","PAY_APV_DATE":"231227113649","PAY_CART_NO":"94119400","PAY_UPD_DT":"231227113649","PAY_CANCEL_YN":"N","PAY_CART_TYPE":"신한카드","PAY_CARD_MONTH":"00"}}
     //console.log(JSON.stringify(orderData));
+
+
     const result = await postMetaPosOrder(dispatch, orderData).catch(err=>{posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:"주문오류",MSG2:"주문을 진행할 수 없습니다."}); return {result:ERROR_STRING,code:ERROR_CODE}; });
     // 첫시도 실패시 재요청
-    
     if(result?.result == ERROR_STRING) {
         EventRegister.emit("showSpinner",{isSpinnerShow:false, msg:""})
         if( tableStatus?.now_later == "선불") {
@@ -567,8 +660,30 @@ export const orderSlice = createSlice({
         orderStatus:[],
         orgOrderNo:"",
         orderNo:"",
+        metaOrderData:null,
     },
     extraReducers:(builder)=>{
+        // 어드민 데이터 보내기
+        builder.addCase(adminDataPost.fulfilled, (state,action)=>{
+
+        })
+        builder.addCase(adminDataPost.rejected, (state,action)=>{
+
+        })
+        builder.addCase(adminDataPost.pending, (state,action)=>{
+
+        })
+        // 주문할 데이터 세팅
+        builder.addCase(presetOrderData.fulfilled,(state,action)=>{
+            state.metaOrderData = action.payload;
+        })
+        builder.addCase(presetOrderData.rejected, (state,action)=>{
+            state.metaOrderData = null;
+        })
+        builder.addCase(presetOrderData.pending, (state,action)=>{
+            state.metaOrderData = null;
+        })
+
         // 주문 셋
         builder.addCase(setOrderList.fulfilled,(state, action)=>{
             state.orderList = action.payload;

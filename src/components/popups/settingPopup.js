@@ -234,7 +234,6 @@ const SettingPopup = () =>{
                     mode='dialog'
                     onValueChange = {(itemValue, itemIndex) => {
                         //selectedFunctionTest.value = (itemValue);
-                        console.log("itemValue: ",itemValue);
                         setSelectedFunctionTest(itemValue);
                     }}
                     selectedValue={selectedFunctionTest}

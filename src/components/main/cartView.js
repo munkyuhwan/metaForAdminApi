@@ -15,7 +15,7 @@ import { setCartView, setIconClick } from '../../store/cart';
 import { IconWrapper } from '../../styles/main/topMenuStyle';
 import TopButton from '../menuComponents/topButton';
 import {  isNetworkAvailable, numberWithCommas, openTransperentPopup } from '../../utils/common';
-import { getOrderStatus, initOrderList, postLog, postToMetaPos, postToPos } from '../../store/order';
+import { adminDataPost, getOrderStatus, initOrderList, postLog, postToMetaPos, postToPos, presetOrderData } from '../../store/order';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {isEmpty} from 'lodash';
 import LogWriter from '../../utils/logWriter';
@@ -118,7 +118,10 @@ const CartView = () =>{
     }
 
     const doPayment = async () =>{
-        makePayment();
+        await dispatch(presetOrderData({paydata:{}}));
+        dispatch(adminDataPost());
+        
+        //makePayment();
 
             //테이블 주문 가능한지 체크
           /* 
@@ -179,7 +182,6 @@ const CartView = () =>{
     },[isOn])
 
     useEffect(()=>{
-        console.log("orderlist: ",orderList)
         let totalAmt = 0;
         let totalCnt = 0
         if(orderList) {

@@ -5,7 +5,6 @@ import { numberWithCommas } from '../../utils/common';
 
 const OrderListItem = (props) => {
     const item = props?.order.item;
-    console.log("item:",item)
     const {language} = useSelector(state=>state.languages);
     const {menuExtra} = useSelector(state=>state.menuExtra);
     // 이미지 찾기

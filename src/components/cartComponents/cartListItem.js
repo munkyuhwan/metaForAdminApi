@@ -29,7 +29,6 @@ const CartListItem = (props) => {
     const itemDetail = allItems?.filter(el=>el.prod_cd == order?.ITEM_CD);
     const prodGb = itemDetail[0]?.PROD_GB; // 세트하부금액 구분용
     // 이미지 찾기
-    console.log('itemdetail: ',itemDetail[0]);
     const itemExtra = menuExtra.filter(el=>el.pos_code == order?.ITEM_CD);
     const ItemTitle = () => {
         let selTitleLanguage = "";
