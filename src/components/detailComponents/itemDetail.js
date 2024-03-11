@@ -100,7 +100,8 @@ const ItemDetail = (props) => {
         dispatch(setMenuOptionSelected({data:setItem,isAdd:optionGroupQty>itemCheckCnt||optionGroupQty==0, isAmt:false  }));
     }
     const addToCart = () => {
-        dispatch(addToOrderList({item:menuDetail,menuOptionSelected:{}}));
+        dispatch(addToOrderList({item:menuDetail,menuOptionSelected:[]}));
+        closeDetail();
 
         /*
         let booleanArr = true;
