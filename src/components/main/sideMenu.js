@@ -96,7 +96,7 @@ const SideMenu = () =>{
                         {allCategories &&
                             <LeftMenuList
                                 data={allCategories}
-                                onSelectItem={(index)=>{onItemPress(index);}}
+                                onSelectItem={(index)=>{}}
                                 initSelect={allCategories[0]?.PROD_L1_CD}
                             />
                         }

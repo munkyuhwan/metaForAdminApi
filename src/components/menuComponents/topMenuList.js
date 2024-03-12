@@ -22,20 +22,20 @@ const TopMenuList = (props) => {
     const [selectedSubList, setSelectedSubList] = useState();
     
     const ItemTitle = (cateCode) => {
-        const selectedData = selectedSubList.filter(el=>el.PROD_L2_CD == cateCode);
+        const selectedData = selectedSubList.filter(el=>el.cate_code2 == cateCode);
         const adminSelectedSubCatData = menuCategories.filter(el=>el.cate_code1==selectedMainCategory);
         const adminSubCat = adminSelectedSubCatData[0]?.level2;
         const selectedAdminSub = adminSubCat?.filter(el=>el.cate_code2 == cateCode);
         if(language=="korean") {
-            return selectedData[0].PROD_L2_NM;
+            return selectedData[0].cate_name2;
         }else if(language=="japanese") {
-            return selectedAdminSub[0]?.cate_name2_jp||selectedData[0].PROD_L2_NM
+            return selectedAdminSub[0]?.cate_name2_jp||selectedData[0].cate_name2
         }
         else if(language=="chinese") {
-            return selectedAdminSub[0]?.cate_name2_cn||selectedData[0].PROD_L2_NM
+            return selectedAdminSub[0]?.cate_name2_cn||selectedData[0].cate_name2
         }
         else if(language=="english") {
-            return selectedAdminSub[0]?.cate_name2_en||selectedData[0].PROD_L2_NM
+            return selectedAdminSub[0]?.cate_name2_en||selectedData[0].cate_name2
         }
         return "";
     }
@@ -55,7 +55,7 @@ const TopMenuList = (props) => {
         }
         return selTitleLanguage; 
     }
-
+/* 
     useEffect(()=>{
         if(selectedMainCategory) {
             const changedSelectedMainCat = allCategories.filter(el=>el.PROD_L1_CD==selectedMainCategory);
@@ -65,44 +65,34 @@ const TopMenuList = (props) => {
                 }
             }
         }
-    },[selectedMainCategory])
+    },[selectedMainCategory]) */
+
+    useEffect(()=>{
+        setSelectedSubList(subCategories);
+    },[subCategories])
 
     const onPressAction = (itemCD) =>{
         dispatch(setSelectedSubCategory(itemCD)); 
     }
     return (
         <>
-        {/*selectedSubCategory == DEFAULT_CATEGORY_ALL_CODE &&
-            <TouchableWithoutFeedback key={"subcat_"} onPress={()=>{}}>
-                <CategorySelected>
-                    <TopMenuText key={"subcatText_"} >{ItemWhole()}</TopMenuText>
-                </CategorySelected>
-            </TouchableWithoutFeedback>
-        }
-        {selectedSubCategory != DEFAULT_CATEGORY_ALL_CODE &&
-            <TouchableWithoutFeedback key={"subcat_"} onPress={()=>{onPressAction(DEFAULT_CATEGORY_ALL_CODE);}}>
-                <CategoryDefault>
-                <TopMenuText key={"subcatText_"} >{ItemWhole()}</TopMenuText>
-                </CategoryDefault>
-            </TouchableWithoutFeedback>
-        */}
         {selectedSubList &&
         selectedSubList.map((el, index)=>{
             return(
                 <>            
                         {
-                        (el?.PROD_L2_CD==selectedSubCategory) &&
-                            <TouchableWithoutFeedback key={"subcat_"+el?.PROD_L2_CD} onPress={()=>{ onPressAction(el?.PROD_L2_CD); }}>
+                        (el?.cate_code2==selectedSubCategory) &&
+                            <TouchableWithoutFeedback key={"subcat_"+el?.cate_code2} onPress={()=>{ onPressAction(el?.cate_code2); }}>
                                 <CategorySelected>
-                                    <TopMenuText key={"subcatText_"+el?.PROD_L2_CD} >{ItemTitle(el?.PROD_L2_CD)}</TopMenuText>
+                                    <TopMenuText key={"subcatText_"+el?.cate_code2} >{ItemTitle(el?.cate_code2)}</TopMenuText>
                                 </CategorySelected>
                             </TouchableWithoutFeedback>
                         }
                         {
-                        (el?.PROD_L2_CD!=selectedSubCategory) &&
-                            <TouchableWithoutFeedback key={"subcat_"+el?.PROD_L2_CD} onPress={()=>{ onPressAction(el?.PROD_L2_CD); }}>
+                        (el?.cate_code2!=selectedSubCategory) &&
+                            <TouchableWithoutFeedback key={"subcat_"+el?.cate_code2} onPress={()=>{ onPressAction(el?.cate_code2); }}>
                                 <CategoryDefault>
-                                    <TopMenuText key={"subcatText_"+el?.PROD_L2_CD} >{ItemTitle(el?.PROD_L2_CD)}</TopMenuText>
+                                    <TopMenuText key={"subcatText_"+el?.cate_code2} >{ItemTitle(el?.cate_code2)}</TopMenuText>
                                 </CategoryDefault>
                             </TouchableWithoutFeedback>
                         }
@@ -114,23 +104,6 @@ const TopMenuList = (props) => {
         </>
     )
 
-/* 
-    return (
-        <>
-        {data.map((el, index)=>{
-            return(
-                <>
-                    <TouchableWithoutFeedback key={"subcat_"+index} onPress={()=>{onPressAction(index); }}>
-                        <Animated.View key={"subcatAni_"+index}  style={[{   ...animatedColorArray[index]},{...boxStyleArray[index]}]} >
-                            <TopMenuText key={"subcatText_"+index} >{el.title}</TopMenuText>
-                        </Animated.View>
-                    </TouchableWithoutFeedback>
-                </>
-            )
-        })}
-        </>
-    )
-     */
 }
 
 export default TopMenuList

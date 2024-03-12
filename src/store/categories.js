@@ -14,10 +14,8 @@ export const setCategories = createAsyncThunk("categories/setCategories", async(
 })
 // 어드민 카테고리 받기
 export const getAdminCategories = createAsyncThunk("categories/getAdminCategories", async(_,{dispatch,rejectWithValue}) =>{
-    console.log("get categoreis======================================================");
     try {
         const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_CATEGORY}`,TMP_STORE_DATA, {});
-        //console.log('카테고리 데이터:', data);
         return data;
       } catch (error) {
         // 예외 처리
@@ -31,6 +29,17 @@ export const setSelectedMainCategory = createAsyncThunk("categories/setSelectedM
         return rejectWithValue()
     }else {
         return index;
+    }
+})
+// 서브 카테고리
+export const setSubCategories = createAsyncThunk("categories/setSubCategories", async(index,{getState,dispatc, rejectWithValue}) =>{
+    const {selectedMainCategory, selectedSubCategory, allCategories} = getState().categories;
+    const subCategoreis = allCategories.filter(item => item.cate_code1 == selectedMainCategory);
+    if(subCategoreis.length>0) {
+        const subLevel = subCategoreis[0]?.level2;
+        return subLevel;
+    }else {
+        return[]
     }
 })
 
@@ -78,27 +87,41 @@ export const cagegoriesSlice = createSlice({
     extraReducers:(builder)=>{
         // 카테고리 받아오기
         builder.addCase(getAdminCategories.fulfilled, (state, action)=>{
-            const payload = action?.payload.goods_category;
-            const result = payload?.filter(item => (item?.is_del=='N' && item?.is_use=="Y")  );
-            state.allCategories = result;
+            const payload = action?.payload
+            const result = payload?.result
+            if(result == true) {
+                state.allCategories =  payload?.goods_category;
+            }
         })
         builder.addCase(getAdminCategories.pending, (state, action)=>{
-            console.log("admin category set state pending=================");
+
         })
         builder.addCase(getAdminCategories.rejected, (state, action)=>{
-            console.log("admin category set state rejected=================");
+
         })
 
         // 메인 카테고리 선택
         builder.addCase(setSelectedMainCategory.fulfilled,(state, action)=>{
             //state.subCategories = MENU_DATA.categories[action.payload].subCategories||[]
-            const payload = action.payload;
-            state.selectedMainCategory = payload;
-            state.selectedSubCategory = "0000";
+            if(!isEmpty(action.payload)){
+                state.selectedMainCategory = action.payload;
+                state.selectedSubCategory = "0000";
+            }
         })
         builder.addCase(setSelectedMainCategory.pending,(state, action)=>{
         })
         builder.addCase(setSelectedMainCategory.rejected,(state, action)=>{
+        })
+
+        // 서브카테고리
+        builder.addCase(setSubCategories.fulfilled,(state, action)=>{
+            state.subCategories = action.payload;
+        })
+        builder.addCase(setSubCategories.rejected,(state, action)=>{
+            
+        })
+        builder.addCase(setSubCategories.pending,(state, action)=>{
+            
         })
 
         /** 이하 삭제 */

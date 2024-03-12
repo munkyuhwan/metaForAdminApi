@@ -97,34 +97,6 @@ const TopMenu = () =>{
     const onPressItem = (index) => {
         dispatch(setSelectedSubCategory(index)); 
     }
-
-    //<BulletinWrapper ref={bulletinScroll} horizontal >
-    //</BulletinWrapper>
-          
-                       /*  <Animated.ScrollView
-                            style={styles.container}
-                            onScroll={Animated.event(
-                            [{nativeEvent: {contentOffset: {y: scrollA}}}],
-                            {useNativeDriver: true},
-                        )}>
-                            <Animated.Text
-                                style={styles.img(scrollA)}
-                            >
-                                {bulletinText}
-                            </Animated.Text>
-                        </Animated.ScrollView> */
-                        /* 
-    let currentScroll = 0;
-    const tt = setInterval(() => {
-        bulletinScroll?.current?.scrollTo({x:currentScroll, animated:true})
-        currentScroll+=10;
-        console.log("scoll");
-    }, 700);
-
-
-                           // <BulletinWrapper ref={bulletinScroll} horizontal >
-                           // </BulletinWrapper>
- */
     return(
         <>
             <TopMenuWrapper>
@@ -146,18 +118,6 @@ const TopMenu = () =>{
                         </AutoScroll>
                     }
                 </SafeAreaView>
-
-                {/*
-                <TouchableWithoutFeedback onPress={()=>{openFullSizePopup(dispatch,{innerFullView:"Setting", isFullPopupVisible:true}); }} >
-                    <Text style={{color:colorWhite }} >설정 {currentVersion}</Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback onPress={()=>{dispatch(getMenuState()); }} >
-                    <Text style={{color:colorWhite }} >업데이트 첵</Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback onPress={()=>{ console.log("upload file"); dispatch(uploadFile()) }} >
-                    <Text style={{color:colorWhite, fontSize:20}} >파일올리기 </Text>
-                </TouchableWithoutFeedback>
-                        */}
                 <TableName>
                     <TableNameSmall>테이블</TableNameSmall>
                     <TableNameBig>{tableNoText}</TableNameBig>

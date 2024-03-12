@@ -12,7 +12,7 @@ import WaitIndicator from '../components/common/waitIndicator'
 import { DeviceEventEmitter, PermissionsAndroid, Text, View } from 'react-native'
 import PopupIndicator from '../components/common/popupIndicator'
 import { useDispatch, useSelector } from 'react-redux'
-import { getAdminCategories, getAdminCategoryData, getMainCategories, getSubCategories, setSelectedSubCategory } from '../store/categories'
+import { getAdminCategories, getAdminCategoryData, getMainCategories, getSubCategories, setSelectedSubCategory, setSubCategories } from '../store/categories'
 import FullSizePopup from '../components/common/fullsizePopup'
 import ErrorPopup from '../components/common/errorPopup'
 import { getAdminItems, getAllItems, getDisplayMenu, getMenuState, initMenu, setSelectedItems } from '../store/menu'
@@ -86,6 +86,7 @@ export default function Navigation() {
     },[])
     useEffect(()=>{
         dispatch(setSelectedItems());
+        dispatch(setSubCategories());
     },[selectedMainCategory, selectedSubCategory])
 
     return (

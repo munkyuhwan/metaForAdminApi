@@ -4,7 +4,7 @@ export async function callApiWithExceptionHandling(url,postData={}, options = {}
     try {
       // Axios를 사용하여 API 호출
       const response = await axios.post(url,postData, options);
-  
+
       // 응답 상태 코드가 2xx 범위가 아니라면 예외 발생
       if (response?.status < 200 || response?.status >= 300) {
         throw new Error(`API 호출 실패: 상태 코드 ${response?.status}`);
@@ -14,7 +14,6 @@ export async function callApiWithExceptionHandling(url,postData={}, options = {}
       if(response?.result == false ) {
         throw new Error(`API 호출 실패: 상태 코드 ${response?.resultMsg}`);
       }
-  
       // 성공적인 응답 데이터 반환
       return response?.data;
     } catch (error) {

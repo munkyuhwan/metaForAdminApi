@@ -30,20 +30,6 @@ const MainScreen = () =>{
         dispatch(setLanguage("korean"));  
     },[])
 
-   
-/* 
-    var path = RNFS.DownloadDirectoryPath + '/test.txt';
-    RNFS.writeFile(path, 'Lorem ipsum dolor sit amet', 'utf8')
-    .then((success) => {
-      console.log('FILE WRITTEN!');
-    })
-    .catch((err) => {
-      console.log(err.message);
-    }); 
-   */
-
-     
-
     function screenTimeOut(){
         clearInterval(timeoutSet);
         timeoutSet=null;

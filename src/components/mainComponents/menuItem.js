@@ -13,6 +13,7 @@ import RNFetchBlob from 'rn-fetch-blob';
 import RNFS from 'react-native-fs';
 import { numberWithCommas } from '../../utils/common';
 import { styled } from 'styled-components';
+import { ADMIN_API_BASE_URL } from '../../resources/newApiResource';
 const height = Dimensions.get('window').height;
 /* 메인메뉴 메뉴 아이템 */
 const MenuItem = ({item,index,setDetailShow}) => {
@@ -29,7 +30,8 @@ const MenuItem = ({item,index,setDetailShow}) => {
   
     const itemID = item.prod_cd;
     //console.log("item extra: ",itemExtra[0]);
-    const imgUrl = "https:"+item?.gimg_chg;
+    const imgUrl = "http:"+item?.gimg_chg;
+    console.log("img url: ",imgUrl)
     //const itemTitle=>{} item.ITEM_NAME;
     const itemTitle = () => {
         let selTitleLanguage = "";
@@ -48,7 +50,7 @@ const MenuItem = ({item,index,setDetailShow}) => {
         
         return selTitleLanguage;
     }
-    const itemPrice= item.sal_amt;
+    const itemPrice= Number(item.sal_tot_amt);
     return(
         <>
             <MenuItemWrapper>

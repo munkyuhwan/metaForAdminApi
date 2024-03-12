@@ -31,7 +31,6 @@ export const clearAllItems = createAsyncThunk("menu/clearAllItems", async(_,{dis
 
 // 전체 메뉴 받기
 export const getAdminItems = createAsyncThunk("menu/getAdminItems", async(_,{dispatch,getstate, rejectWithValue})=>{
-    console.log("get menu======================================================");
     try {
         const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_GOODS}`,TMP_STORE_DATA, {}); 
         return data;
@@ -46,7 +45,12 @@ export const getAdminItems = createAsyncThunk("menu/getAdminItems", async(_,{dis
 export const setSelectedItems = createAsyncThunk("menu/setSelectedItems", async(_,{dispatch, getState, rejectWithValue})=>{
     const {allItems} = getState().menu;
     const {selectedMainCategory, selectedSubCategory} = getState().categories;
-    const displayItems = allItems.filter(item => item.prod_l1_cd == selectedMainCategory);
+    var displayItems = [];
+    if(selectedSubCategory=="0000") {
+        displayItems = allItems.filter(item => item.prod_l1_cd == selectedMainCategory);
+    }else {
+        displayItems = allItems.filter(item => item.prod_l1_cd == selectedMainCategory && item.prod_l2_cd == selectedSubCategory );
+    }
     return displayItems;
 })
 
@@ -242,9 +246,7 @@ export const menuSlice = createSlice({
 
         // 보여줄 아이템셋
         builder.addCase(setSelectedItems.fulfilled,(state, action)=>{
-            if(!isEmpty(action.payload)) {
-                state.displayMenu = action?.payload;
-            }
+            state.displayMenu = action?.payload;
         }) 
         builder.addCase(setSelectedItems.rejected,(state, action)=>{
             

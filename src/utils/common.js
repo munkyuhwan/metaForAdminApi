@@ -60,9 +60,9 @@ export function grandTotalCalculate(data) {
     let vatTotal = 0;
     if(data) {
         data?.map(el=>{
-            vatTotal += el?.ITEM_VAT;
-            amt += el.ITEM_AMT;
-            itemCnt += el.ITEM_QTY;
+            vatTotal += Number(el?.ITEM_VAT)*Number(el.ITEM_QTY);
+            amt += Number(el.ITEM_AMT);
+            itemCnt += Number(el.ITEM_QTY);
         })
     }
     return {grandTotal:amt, itemCnt:itemCnt, vatTotal:vatTotal};
@@ -138,7 +138,7 @@ export function setOrderData (data, orderList) {
         setMenuData.ITEM_CD = data?.prod_cd;
         setMenuData.ITEM_NM= data?.gname_kr;
         setMenuData.ITEM_QTY=  1;
-        setMenuData.ITEM_AMT=  data?.sal_amt;
+        setMenuData.ITEM_AMT=  data?.sal_tot_amt;
         setMenuData.ITEM_VAT=  data?.sal_vat;
         setMenuData.ITEM_DC = 0;
         setMenuData.ITEM_CANCEL_YN= "N";

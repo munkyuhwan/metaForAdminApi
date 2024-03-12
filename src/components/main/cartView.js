@@ -119,7 +119,7 @@ const CartView = () =>{
 
     const doPayment = async () =>{
         await dispatch(presetOrderData({paydata:{}}));
-        dispatch(adminDataPost());
+        dispatch(adminDataPost({payData:null}));
         dispatch(postOrderToPos({payData:null}));
 
         
