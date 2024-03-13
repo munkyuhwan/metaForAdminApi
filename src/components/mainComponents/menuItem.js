@@ -4,7 +4,7 @@ import { Animated,Dimensions,FlatList,Image,Text,TouchableWithoutFeedback } from
 import { MenuImageDefault, MenuImageDefaultWrapper, MenuItemBottomWRapper, MenuItemButton, MenuItemButtonInnerWrapper, MenuItemButtonInnerWrapperLeft, MenuItemButtonInnerWrapperRight, MenuItemButtonWrapper, MenuItemHotness, MenuItemHotnessWrapper, MenuItemImage, MenuItemImageWrapper, MenuItemInfoWRapper, MenuItemName, MenuItemPrice, MenuItemSpiciness, MenuItemTopWrapper, MenuItemWrapper, SoldOutDimLayer, SoldOutDimLayerAbs, SoldOutLayer, SoldOutText } from '../../styles/main/menuListStyle';
 import FastImage from 'react-native-fast-image';
 import { RADIUS, RADIUS_DOUBLE } from '../../styles/values';
-import { setMenuDetail } from '../../store/menuDetail';
+import { setItemDetail } from '../../store/menuDetail';
 import { addToOrderList } from '../../store/order';
 import { MENU_DATA } from '../../resources/menuData';
 import { colorWhite } from '../../assets/colors/color';
@@ -31,7 +31,6 @@ const MenuItem = ({item,index,setDetailShow}) => {
     const itemID = item.prod_cd;
     //console.log("item extra: ",itemExtra[0]);
     const imgUrl = "http:"+item?.gimg_chg;
-    console.log("img url: ",imgUrl)
     //const itemTitle=>{} item.ITEM_NAME;
     const itemTitle = () => {
         let selTitleLanguage = "";
@@ -57,7 +56,7 @@ const MenuItem = ({item,index,setDetailShow}) => {
                 <MenuItemTopWrapper>
                     {imgUrl &&
                         <>
-                            <TouchableWithoutFeedback onPress={()=>{setDetailShow(true); dispatch(setMenuDetail({itemID,item})); }} >
+                            <TouchableWithoutFeedback onPress={()=>{setDetailShow(true); dispatch(setItemDetail({itemID})); }} >
                                 {/* <FastImage style={{ width:'100%',height:183,resizeMode:"background",borderRadius:RADIUS_DOUBLE}} source={{uri:imgUrl,headers: { Authorization: 'AuthToken' },priority: FastImage.priority.normal}}/> */}
                                 {/*<FastImage style={{ width:'100%',height:183,resizeMode:"background",borderRadius:RADIUS_DOUBLE}} source={{uri:(`file://${RNFetchBlob.fs.dirs.DownloadDir}/wooriorder/${itemID}.${ext[ext.length-1]}`)}}/>*/}
                                 <FastImage style={{ width:'100%',height:height*0.28, borderRadius:RADIUS_DOUBLE}} source={{uri:(`${imgUrl}`)}} resizeMode={FastImage.resizeMode.cover} />
@@ -67,7 +66,7 @@ const MenuItem = ({item,index,setDetailShow}) => {
                         </>
                     }
                     {!imgUrl &&
-                        <TouchableWithoutFeedback onPress={()=>{setDetailShow(true); dispatch(setMenuDetail({itemID,item})); }} >
+                        <TouchableWithoutFeedback onPress={()=>{setDetailShow(true); dispatch(setItemDetail({itemID})); }} >
                             <MenuImageDefaultWrapper>
                                 <MenuImageDefault source={require("../../assets/icons/logo.png")}/>
                             </MenuImageDefaultWrapper>
@@ -117,14 +116,7 @@ const MenuItem = ({item,index,setDetailShow}) => {
                                     <MenuItemSpiciness source={require('../../assets/icons/spicy_5.png')}/>
                                 </MenuItemButtonInnerWrapperRight>
                             }
-                            {/* 
-                            <TouchableWithoutFeedback onPress={()=>{setDetailShow(true);  dispatch(setMenuDetail({itemID,item})); }} >
-                                <MenuItemButtonInnerWrapperRight>
-                                    <MenuItemButton source={require('../../assets/icons/more.png')}/>
-                                </MenuItemButtonInnerWrapperRight>
-                            </TouchableWithoutFeedback>
-                             */}
-                            <TouchableWithoutFeedback onPress={()=>{ if(item?.prod_gb!="00"){setDetailShow(true);  dispatch(setMenuDetail({itemID,item}));} else { dispatch(addToOrderList({item:item,menuOptionSelected:[]}));} }} >
+                            <TouchableWithoutFeedback onPress={()=>{ if(item?.prod_gb!="00"){setDetailShow(true);  dispatch(setItemDetail({itemID}));} else { dispatch(addToOrderList({item:item,menuOptionSelected:[]}));} }} >
                                 <MenuItemButtonInnerWrapperLeft>
                                     <MenuItemButton source={require('../../assets/icons/add.png')}/>
                                 </MenuItemButtonInnerWrapperLeft>

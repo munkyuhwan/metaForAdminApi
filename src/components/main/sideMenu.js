@@ -82,7 +82,6 @@ const SideMenu = () =>{
             </SideMenuWrapper>    
         )
     }
-
     return(
         <>
             <SideMenuWrapper>
@@ -97,7 +96,7 @@ const SideMenu = () =>{
                             <LeftMenuList
                                 data={allCategories}
                                 onSelectItem={(index)=>{}}
-                                initSelect={allCategories[0]?.PROD_L1_CD}
+                                initSelect={allCategories[0]?.cate_code1}
                             />
                         }
                     </SideMenuItemWrapper>

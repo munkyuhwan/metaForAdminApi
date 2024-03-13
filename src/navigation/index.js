@@ -12,7 +12,7 @@ import WaitIndicator from '../components/common/waitIndicator'
 import { DeviceEventEmitter, PermissionsAndroid, Text, View } from 'react-native'
 import PopupIndicator from '../components/common/popupIndicator'
 import { useDispatch, useSelector } from 'react-redux'
-import { getAdminCategories, getAdminCategoryData, getMainCategories, getSubCategories, setSelectedSubCategory, setSubCategories } from '../store/categories'
+import { getAdminCategories, getAdminCategoryData, getMainCategories, getSubCategories, setSelectedMainCategory, setSelectedSubCategory, setSubCategories } from '../store/categories'
 import FullSizePopup from '../components/common/fullsizePopup'
 import ErrorPopup from '../components/common/errorPopup'
 import { getAdminItems, getAllItems, getDisplayMenu, getMenuState, initMenu, setSelectedItems } from '../store/menu'
@@ -44,7 +44,7 @@ export default function Navigation() {
 
     const {tableStatus} = useSelector(state=>state.tableInfo);
     const {allItems} = useSelector(state=>state.menu);
-    const {selectedMainCategory, selectedSubCategory} = useSelector(state=>state.categories);
+    const {selectedMainCategory, selectedSubCategory, allCategories} = useSelector(state=>state.categories);
     const {isShow} = useSelector(state=>state.ads);
     const {isMonthSelectShow} = useSelector(state=>state.monthSelect);
 
@@ -88,6 +88,11 @@ export default function Navigation() {
         dispatch(setSelectedItems());
         dispatch(setSubCategories());
     },[selectedMainCategory, selectedSubCategory])
+    useEffect(()=>{
+        if(allItems?.length > 0) {
+            dispatch(setSelectedMainCategory(allCategories[0]?.cate_code1));
+        }
+    },[allItems])
 
     return (
         <>  

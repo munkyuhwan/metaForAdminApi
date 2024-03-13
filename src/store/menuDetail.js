@@ -9,19 +9,8 @@ export const initMenuDetail = createAsyncThunk("menuDetail/initMenuDetail", asyn
     return { menuDetailID: null,menuDetail:{},menuOptionGroupCode:"",menuOptionList:[],menuOptionSelected:[],setGroupItem:[],menuRecommendItems:[],}
 })
 
-export const setMenuDetail = createAsyncThunk("menuDetail/setMenuDetail", async(_,{dispatch,getState}) =>{
-    const {allItems, allSets} = getState().menu;
-    const index = _.itemID;
-    const item = _.item;
-
-    // 아이템 옵션
-    const setFiltered = allSets.filter(el=>el.PROD_CD == index);
-    let filterdSetList = []
-    if(setFiltered?.length>0) {
-        filterdSetList = setFiltered[0];
-    }
-
-    return {menuDetailID:index,menuDetail:item, menuOptionList:{}};
+export const setItemDetail = createAsyncThunk("menuDetail/setItemDetail", async({itemID},{dispatch,getState}) =>{
+    return itemID;
 })
 
 /*** 이하 삭제 */
@@ -155,7 +144,18 @@ export const menuDetailSlice = createSlice({
         menuRecommendItems:[],
     },
     extraReducers:(builder)=>{
-        initMenuDetail
+        // 메뉴 상세 
+        builder.addCase(setItemDetail.fulfilled, (state, action)=>{
+            state.menuDetailID = action.payload
+        } )
+        builder.addCase(setItemDetail.rejected, (state, action)=>{
+
+        } )
+        builder.addCase(setItemDetail.pending, (state, action)=>{
+
+        } )
+
+        /*** 이하 삭제 */
         // 메뉴 상세 초기화
         builder.addCase(initMenuDetail.fulfilled,(state, action)=>{
             state.menuDetailID = action.payload.menuDetailID;
@@ -165,12 +165,6 @@ export const menuDetailSlice = createSlice({
             state.menuOptionSelected = action.payload.menuOptionSelected;
             state.setGroupItem = [];
             state.menuRecommendItems = [];
-        })
-        // 메인 카테고리 받기
-        builder.addCase(setMenuDetail.fulfilled,(state, action)=>{
-            state.menuDetailID = action.payload.menuDetailID;
-            state.menuDetail = action.payload.menuDetail;
-            state.menuOptionList = action.payload.menuOptionList;
         })
         // 메뉴 상세 받기
         builder.addCase(getSingleMenu.fulfilled,(state, action)=>{

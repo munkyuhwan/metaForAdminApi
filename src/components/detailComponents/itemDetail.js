@@ -8,7 +8,7 @@ import OptItem from './optItem';
 import CommonIndicator from '../common/waitIndicator';
 import WaitIndicator from '../common/waitIndicator';
 import RecommendItem from './recommendItem';
-import { setMenuDetail, initMenuDetail, getSingleMenuFromAllItems, getItemSetGroup, getSingleMenuForRecommend, getSetItems, setMenuOptionSelected } from '../../store/menuDetail';
+import { initMenuDetail, getSingleMenuFromAllItems, getItemSetGroup, getSingleMenuForRecommend, getSetItems, setMenuOptionSelected } from '../../store/menuDetail';
 import { numberWithCommas, openPopup } from '../../utils/common';
 import { MENU_DATA } from '../../resources/menuData';
 import { addToOrderList } from '../../store/order';
@@ -24,10 +24,10 @@ const ItemDetail = (props) => {
     const isDetailShow = props.isDetailShow;
     const dispatch = useDispatch();
     const {allItems} = useSelector((state)=>state.menu);
-    const {menuDetailID, menuDetail, menuOptionSelected, menuOptionList, setGroupItem} = useSelector((state)=>state.menuDetail);
+    const {menuDetailID, menuOptionSelected, menuOptionList, setGroupItem} = useSelector((state)=>state.menuDetail);
     const [detailZIndex, setDetailZIndex] = useState(0);
+    const [menuDetail, setMenuDetail] = useState(null);
 
-    const {images} = useSelector(state=>state.imageStorage);
 
     // animation set
     const [widthAnimation, setWidthAnimation] = useState(new Animated.Value(0));
@@ -71,6 +71,14 @@ const ItemDetail = (props) => {
         }) 
     }
     
+    useEffect(()=>{
+        const filteredItem = allItems.filter(data => data.prod_cd == menuDetailID);
+        if(filteredItem.length > 0) {
+            setMenuDetail(filteredItem[0]);
+        }
+    },[menuDetailID])
+
+
     const onOptionSelect = (groupNo, itemData) =>{
         let setItem =  {
             "ITEM_SEQ" : 0,
@@ -136,11 +144,12 @@ const ItemDetail = (props) => {
 
     const closeDetail = () =>{
         //props.setDetailShow(false); 
-        dispatch(setMenuDetail(null)); 
+        //dispatch(setMenuDetail(null)); 
         init();
     }
 
     const init = () => {
+        setMenuDetail(null)
         dispatch(initMenuDetail());
     }
 
@@ -157,7 +166,7 @@ const ItemDetail = (props) => {
             setAdditiveGroupList(tmpAdditiveList);
              */
         }
-    },[isDetailShow, menuDetail])
+    },[isDetailShow])
 //console.log("menu: ",menu[0].ITEM_LIST);
     const ItemTitle = () =>{
         let selTitleLanguage = "";
@@ -212,6 +221,11 @@ const ItemDetail = (props) => {
        
         return selWonsanjiLanguage;
     }
+
+    if(isEmpty(menuDetail)) {
+        return(<></>)
+    }
+
     return(
         <>
             <Animated.View  style={[{...PopStyle.animatedPop, ...boxWidthStyle,...{zIndex:detailZIndex} } ]} >
@@ -236,7 +250,7 @@ const ItemDetail = (props) => {
                                     </DetailItemInfoImageWrapper>
                                     <DetailItemInfoWrapper>
                                         <DetailItemInfoTitleWrapper>
-                                            <DetailItemInfoTitle>{ItemTitle()||menuDetail?.PROD_NM}</DetailItemInfoTitle>
+                                            <DetailItemInfoTitle>{ItemTitle()||menuDetail?.gname_kr}</DetailItemInfoTitle>
                                             {menuDetail&&
                                                 menuDetail?.is_new=='Y'&&
                                                  <DetailItemInfoTitleEtc source={require("../../assets/icons/new_menu.png")}/>
@@ -250,31 +264,31 @@ const ItemDetail = (props) => {
                                                 <DetailItemInfoTitleEtc source={require("../../assets/icons/hot_menu.png")}/>
                                             }
                                             {
-                                                menuDetail.spicy == "1" &&
+                                                menuDetail?.spicy == "1" &&
                                                 <MenuItemButtonInnerWrapperRight>
                                                     <MenuItemSpiciness source={require('../../assets/icons/spicy_1.png')}/>
                                                 </MenuItemButtonInnerWrapperRight>
                                             }
                                             {
-                                                menuDetail.spicy == "1.5" &&
+                                                menuDetail?.spicy == "1.5" &&
                                                 <MenuItemDetailSpicenessWrapper>
                                                     <MenuItemSpiciness source={require('../../assets/icons/spicy_2.png')}/>
                                                 </MenuItemDetailSpicenessWrapper>
                                             }
                                             {
-                                                menuDetail.spicy == "2" &&
+                                                menuDetail?.spicy == "2" &&
                                                 <MenuItemDetailSpicenessWrapper>
                                                     <MenuItemSpiciness source={require('../../assets/icons/spicy_3.png')}/>
                                                 </MenuItemDetailSpicenessWrapper>
                                             }
                                             {
-                                                menuDetail.spicy == "2.5" &&
+                                                menuDetail?.spicy == "2.5" &&
                                                 <MenuItemDetailSpicenessWrapper>
                                                     <MenuItemSpiciness source={require('../../assets/icons/spicy_4.png')}/>
                                                 </MenuItemDetailSpicenessWrapper>
                                             }
                                             {
-                                                menuDetail.spicy == "3" &&
+                                                menuDetail?.spicy == "3" &&
                                                 <MenuItemDetailSpicenessWrapper>
                                                     <MenuItemSpiciness source={require('../../assets/icons/spicy_5.png')}/>
                                                 </MenuItemDetailSpicenessWrapper>
@@ -295,7 +309,29 @@ const ItemDetail = (props) => {
 
                                 <OptRecommendWrapper>
                                     <OptListWrapper>
-                                        {menuDetail?.PROD_GB != "00" &&
+                                        {
+                                        menuDetail?.option &&
+                                        menuDetail?.option.map((el,index)=>{
+                                            console.log("option ",index,": ",el);
+                                            return (
+                                                <>
+                                                    <OptTitleText>{el.op_name} {el.limit_count>0?`(필수 수량 ${el.limit_count}개 선택)`:''}</OptTitleText>
+                                                    <OptList horizontal showsHorizontalScrollIndicator={false} >
+                                                    {/*
+                                                        el?.OPT_ITEMS &&
+                                                        el?.OPT_ITEMS?.map((itemEl,index)=>{
+                                                            
+                                                            return(
+                                                                <OptItem key={"optItem_"+index} maxQty={el.QTY} isSelected={menuOptionSelected.filter(menuEl=>menuEl.PROD_I_CD ==itemEl.PROD_I_CD).length>0 } optionData={itemEl} menuData={menuDetail} onPress={(itemSel)=>{onOptionSelect(el.GROUP_NO, itemSel);} } />    
+                                                            );
+                                                            
+                                                        })
+                                                    */}
+                                                    </OptList> 
+                                                </>
+                                            )
+                                        })
+                                        /*menuDetail?.PROD_GB != "00" &&
                                             (menuOptionList && menuOptionList?.length>0) &&
                                             menuOptionList.map((el,groupIdx)=>{
                                                     return(
@@ -317,7 +353,7 @@ const ItemDetail = (props) => {
                                                     )
                                                 
                                             })
-                                        }
+                                        */}
                                         
                                     </OptListWrapper>
                                     {menuDetail&&
