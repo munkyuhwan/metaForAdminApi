@@ -79,33 +79,31 @@ const ItemDetail = (props) => {
     },[menuDetailID])
 
 
-    const onOptionSelect = (groupNo, itemData) =>{
+    const onOptionSelect = (limitCnt, itemData) =>{        
         let setItem =  {
             "ITEM_SEQ" : 0,
             "SET_SEQ" : menuOptionSelected.length+1,
-            "PROD_I_CD" : itemData?.PROD_CD,
-            "PROD_I_NM" : itemData?.PROD_NM,
+            "PROD_I_CD" : itemData?.prod_cd,
+            "PROD_I_NM" : itemData?.gname_kr,
             "QTY" : 1,
-            "AMT" : itemData?.SAL_AMT,
-            "VAT" : itemData?.SAL_VAT,
+            "AMT" : itemData?.sal_tot_amt,
+            "VAT" : itemData?.sal_vat,
         }; 
         // 옵션 구룹의 수량 초과 하지 않도록 체크
         let tmpOptionSelected = Object.assign([],menuOptionSelected);
-        const filteredOptList = menuOptionList.filter(el=>el.GROUP_NO==groupNo);
-        const optionGroupQty = filteredOptList[0]?.QTY;
+        const filteredOptList = menuDetail?.option;
         let itemCheckCnt = 0;
         if(filteredOptList?.length>0) {
             for(var i=0;i<tmpOptionSelected?.length;i++) {
                 //console.log("tmpOptionSelected; ",tmpOptionSelected[i]);
-                const checkItems = filteredOptList[0]?.OPT_ITEMS?.filter(el=>el.PROD_I_CD == tmpOptionSelected[i]?.PROD_I_CD);
+                const checkItems = filteredOptList?.filter(el=>el.prod_i_cd == tmpOptionSelected[i]?.prod_i_cd);
                 if(checkItems?.length > 0) {
                     itemCheckCnt = itemCheckCnt+1;
                 }
             }
         }
-        //GroupNO
-        //console.log("setItem: ",setItem)
-        dispatch(setMenuOptionSelected({data:setItem,isAdd:optionGroupQty>itemCheckCnt||optionGroupQty==0, isAmt:false  }));
+        dispatch(setMenuOptionSelected({data:setItem,isAdd:limitCnt>itemCheckCnt||limitCnt==0, isAmt:false  }));
+        
     }
     const addToCart = () => {
         dispatch(addToOrderList({item:menuDetail,menuOptionSelected:[]}));
@@ -241,7 +239,7 @@ const ItemDetail = (props) => {
                                     <DetailItemInfoImageWrapper>
                                         {menuDetail&& 
                                         menuDetail?.gimg_chg &&
-                                            <DetailItemInfoFastImage source={ {uri:(`https:${menuDetail?.gimg_chg}`),priority: FastImage.priority.high } } />
+                                            <DetailItemInfoFastImage source={ {uri:(`${menuDetail?.gimg_chg}`),priority: FastImage.priority.high } } />
                                         }
                                         {menuDetail&&
                                         !menuDetail?.gimg_chg &&
@@ -312,48 +310,24 @@ const ItemDetail = (props) => {
                                         {
                                         menuDetail?.option &&
                                         menuDetail?.option.map((el,index)=>{
-                                            console.log("option ",index,": ",el);
                                             return (
                                                 <>
                                                     <OptTitleText>{el.op_name} {el.limit_count>0?`(필수 수량 ${el.limit_count}개 선택)`:''}</OptTitleText>
                                                     <OptList horizontal showsHorizontalScrollIndicator={false} >
-                                                    {/*
-                                                        el?.OPT_ITEMS &&
-                                                        el?.OPT_ITEMS?.map((itemEl,index)=>{
-                                                            
+                                                    {
+                                                        el?.prod_i_cd &&
+                                                        el?.prod_i_cd?.map((itemEl,index)=>{
                                                             return(
-                                                                <OptItem key={"optItem_"+index} maxQty={el.QTY} isSelected={menuOptionSelected.filter(menuEl=>menuEl.PROD_I_CD ==itemEl.PROD_I_CD).length>0 } optionData={itemEl} menuData={menuDetail} onPress={(itemSel)=>{onOptionSelect(el.GROUP_NO, itemSel);} } />    
+                                                                <OptItem key={"optItem_"+index} maxQty={el.limit_count} isSelected={menuOptionSelected.filter(menuEl=>menuEl.PROD_I_CD ==itemEl).length>0 } optionProdCD={itemEl} menuData={menuDetail} onPress={(itemSel)=>{ onOptionSelect(el?.limit_count, itemSel); } } />    
                                                             );
                                                             
                                                         })
-                                                    */}
+                                                    }
                                                     </OptList> 
                                                 </>
                                             )
                                         })
-                                        /*menuDetail?.PROD_GB != "00" &&
-                                            (menuOptionList && menuOptionList?.length>0) &&
-                                            menuOptionList.map((el,groupIdx)=>{
-                                                    return(
-                                                        <>
-                                                            <OptTitleText>{el.GROUP_NM} {el.QTY>0?`(필수 수량 ${el.QTY}개 선택)`:''}</OptTitleText>
-                                                            <OptList horizontal showsHorizontalScrollIndicator={false} >
-                                                            {
-                                                                el?.OPT_ITEMS &&
-                                                                el?.OPT_ITEMS?.map((itemEl,index)=>{
-                                                                    
-                                                                    return(
-                                                                        <OptItem key={"optItem_"+index} maxQty={el.QTY} isSelected={menuOptionSelected.filter(menuEl=>menuEl.PROD_I_CD ==itemEl.PROD_I_CD).length>0 } optionData={itemEl} menuData={menuDetail} onPress={(itemSel)=>{onOptionSelect(el.GROUP_NO, itemSel);} } />    
-                                                                    );
-                                                                    
-                                                                })
-                                                            }
-                                                            </OptList> 
-                                                        </>
-                                                    )
-                                                
-                                            })
-                                        */}
+                                        }
                                         
                                     </OptListWrapper>
                                     {menuDetail&&

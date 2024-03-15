@@ -13,7 +13,8 @@ const OptItem = (props)=>{
     const {language} = useSelector(state=>state.languages);
     const dispatch = useDispatch();
 
-    const optionData = props.optionData;
+    const optionProdCD = props.optionProdCD;
+    //console.log("optionData: ",optionProdCD);
     const maxQty = props.maxQty;
     
     const {allItems} = useSelector((state)=>state.menu);
@@ -25,22 +26,23 @@ const OptItem = (props)=>{
 
     // 메뉴 옵션 추가 정보
     const {optionCategoryExtra,menuExtra} = useSelector(state=>state.menuExtra);
-    const itemDetail = allItems.filter(el=>el.PROD_CD==optionData?.PROD_I_CD);
-    const itemMenuExtra = menuExtra.filter(el=>el.pos_code==optionData?.PROD_I_CD);
+    const itemDetail = allItems.filter(el=>el.prod_cd==optionProdCD);
+    //console.log("option item detail:",itemDetail[0])
+    const itemMenuExtra = menuExtra.filter(el=>el.pos_code==optionProdCD);
     const ItemTitle = () =>{
-        let selTitleLanguage = "";
-        const selExtra = itemMenuExtra.filter(el=>el.pos_code==optionData.PROD_I_CD);
+        let selTitleLanguage = ""; 
+        //const selExtra = itemMenuExtra.filter(el=>el.pos_code==optionProdCD);
         if(language=="korean") {
-            selTitleLanguage = optionData?.GROUP_NM;
+            selTitleLanguage = itemDetail[0]?.gname_kr;
         }
         else if(language=="japanese") {
-            selTitleLanguage = selExtra[0]?.cate_name_jp||optionData?.PROD_I_CD;
+            selTitleLanguage = itemDetail[0]?.gname_jp||itemDetail[0]?.gname_kr;
         }
         else if(language=="chinese") {
-            selTitleLanguage = selExtra[0]?.cate_name_cn||optionData?.PROD_I_CD;
+            selTitleLanguage = itemDetail[0]?.gname_cn||itemDetail[0]?.gname_kr;
         }
         else if(language=="english") {
-            selTitleLanguage = selExtra[0]?.cate_name_en||optionData?.PROD_I_CD;
+            selTitleLanguage = itemDetail[0]?.gname_en||itemDetail[0]?.gname_kr;
         }
         return selTitleLanguage;
     }
@@ -49,7 +51,9 @@ const OptItem = (props)=>{
             return true;
         }else {
             let booleanArr = true;
+            console.log("menuOptionList: ",menuOptionList);
             for(var i=0;i<menuOptionList.length;i++) {
+                console.log("OPT_ITEMS:",menuOptionList[i].OPT_ITEMS);
                 let optItems = menuOptionList[i].OPT_ITEMS;
                 if(menuOptionList[i].QTY == 0) {
                     booleanArr = booleanArr && true;
@@ -72,7 +76,7 @@ const OptItem = (props)=>{
     const plusCnt = () =>{
         if(maxQty == 0) {
             let tmpOptions = Object.assign([],menuOptionSelected);
-            let filteredTmpOptions = tmpOptions.filter(el=>el.PROD_I_CD ==optionData?.PROD_I_CD )
+            let filteredTmpOptions = tmpOptions.filter(el=>el.prod_i_cd ==optionProdCD )
     
             let tmpOptionPut = filteredTmpOptions[0];
             let qty = 1;
@@ -86,7 +90,7 @@ const OptItem = (props)=>{
             
             if(!isOptionAdd()){
                 let tmpOptions = Object.assign([],menuOptionSelected);
-                let filteredTmpOptions = tmpOptions.filter(el=>el.PROD_I_CD ==optionData?.PROD_I_CD )
+                let filteredTmpOptions = tmpOptions.filter(el=>el.prod_i_cd ==optionProdCD )
         
                 let tmpOptionPut = filteredTmpOptions[0];
                 let qty = 1;
@@ -100,21 +104,10 @@ const OptItem = (props)=>{
 
         }
 
-        
-        
-        //if(maxQty==0) {
-        /* }else {
-            if(qty>maxQty) {
-                posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:`${maxQty}개 이상 추가하실 수 없습니다.`,MSG2:""})
-            }else {
-                tmpOptionPut = {...tmpOptionPut,...{QTY:qty}}
-                dispatch(setMenuOptionSelected({data:tmpOptionPut,isAdd:true, isAmt:true}));
-            }
-        } */
     }
     const minusCnt = () => {
         let tmpOptions = Object.assign([],menuOptionSelected);
-        let filteredTmpOptions = tmpOptions.filter(el=>el.PROD_I_CD ==optionData?.PROD_I_CD )
+        let filteredTmpOptions = tmpOptions.filter(el=>el.prod_i_cd ==optionProdCD )
         let tmpOptionPut = filteredTmpOptions[0];
         let qty = 1;
         if(filteredTmpOptions.length > 0) {
@@ -126,7 +119,7 @@ const OptItem = (props)=>{
 
     
     useEffect(()=>{
-        let filteredTmpOptions = menuOptionSelected.filter(el=>el.PROD_I_CD ==optionData?.PROD_I_CD )
+        let filteredTmpOptions = menuOptionSelected.filter(el=>el.PROD_I_CD ==optionProdCD )
         if(filteredTmpOptions.length > 0) {
             setQty(filteredTmpOptions[0].QTY);
         }
@@ -137,19 +130,19 @@ const OptItem = (props)=>{
     return(
         <>
             { 
-            <TouchableWithoutFeedback onPress={()=>{ if(maxQty==0){ props.onPress(itemDetail[0]); }else{ if(!isOptionAdd()){ props.onPress(itemDetail[0]) } }}} >
+            <TouchableWithoutFeedback onPress={()=>{ if(maxQty==0){ props.onPress(itemDetail[0]); }else{  props.onPress(itemDetail[0]) }}} >
                 <View>
 
                     <OptItemWrapper>
-                        {itemMenuExtra[0]?.gimg_chg &&
-                            <OptItemFastImage  source={{uri:(`${images.filter(el=>el.name==optionData?.PROD_I_CD)[0]?.imgData}`),priority: FastImage.priority.high }}/>}
-                        {!itemMenuExtra[0]?.gimg_chg &&
+                        {itemDetail[0]?.gimg_chg &&
+                            <OptItemFastImage  source={{uri:(`${images.filter(el=>el.name==optionProdCD)[0]?.imgData}`),priority: FastImage.priority.high }}/>}
+                        {!itemDetail[0]?.gimg_chg &&
                             <OptItemFastImage resizeMode='contain'  source={require('../../assets/icons/logo.png')}/>
                         }
                         <OptItemDim isSelected={props.isSelected}/>
                         <OptItemInfoWrapper>
-                            <OptItemInfoTitle>{ItemTitle()||itemDetail[0]?.PROD_NM }</OptItemInfoTitle>
-                            <OptItemInfoPrice>{itemDetail[0]?.SAL_TOT_AMT?"+"+Number(itemDetail[0]?.SAL_TOT_AMT*qty).toLocaleString(undefined,{maximumFractionDigits:0})+"원":""}</OptItemInfoPrice>
+                            <OptItemInfoTitle>{ItemTitle()||itemDetail[0]?.gname_kr }</OptItemInfoTitle>
+                            <OptItemInfoPrice>{itemDetail[0]?.sal_tot_amt?"+"+Number(itemDetail[0]?.sal_tot_amt*qty).toLocaleString(undefined,{maximumFractionDigits:0})+"원":""}</OptItemInfoPrice>
                             {/* <OptItemInfoChecked isSelected={props.isSelected} source={require("../../assets/icons/check_red.png")}/> */}
                         </OptItemInfoWrapper>
                     </OptItemWrapper>
