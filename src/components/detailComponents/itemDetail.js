@@ -159,7 +159,7 @@ const ItemDetail = (props) => {
             onSelectHandleAnimation(1);
             //dispatch(getItemSetGroup());
             /* 
-            var tmpAdditiveList = [];
+            var tmpAdditiveList = [];ㄴ
             if(menuDetail?.ADDITIVE_GROUP_LIST) {
                 tmpAdditiveList = menuDetail?.ADDITIVE_GROUP_LIST.filter(el=>el.ADDITIVE_GROUP_USE_FLAG=="N");
             }

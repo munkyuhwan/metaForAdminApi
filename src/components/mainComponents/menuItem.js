@@ -30,7 +30,7 @@ const MenuItem = ({item,index,setDetailShow}) => {
   
     const itemID = item.prod_cd;
     //console.log("item extra: ",itemExtra[0]);
-    const imgUrl = "http:"+item?.gimg_chg;
+    const imgUrl = item?.gimg_chg;
     //const itemTitle=>{} item.ITEM_NAME;
     const itemTitle = () => {
         let selTitleLanguage = "";
