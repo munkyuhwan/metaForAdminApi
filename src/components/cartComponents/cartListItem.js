@@ -107,7 +107,7 @@ const CartListItem = (props) => {
         <>
             <CartItemWrapper>
                 <CartItemImageTogoWrapper>
-                    <CartItemImage source={ {uri:(`http:${itemDetail[0].gimg_chg}`),priority: FastImage.priority.high } } />
+                    <CartItemImage source={ {uri:(`${itemDetail[0].gimg_chg}`),priority: FastImage.priority.high } } />
                 </CartItemImageTogoWrapper>
                 
                 <CartItemTitlePriceWrapper>
