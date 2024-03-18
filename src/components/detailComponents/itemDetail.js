@@ -108,8 +108,6 @@ const ItemDetail = (props) => {
     const addToCart = () => {
         //dispatch(addToOrderList({item:menuDetail,menuOptionSelected:[]}));
         //closeDetail();
-
-        
         let booleanArr = true;
         for(var i=0;i<menuOptionList.length;i++) {
             let optItems = menuOptionList[i].prod_i_cd;

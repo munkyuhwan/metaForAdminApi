@@ -362,11 +362,10 @@ export const addToOrderList =  createAsyncThunk("order/addToOrderList", async(_,
 
     const {item,menuOptionSelected} = _;
     const {orderList} = getState().order;
-    const {menuDetail} = getState().menuDetail;
+    //const {menuDetail} = getState().menuDetail;
     let currentOrderList = Object.assign([],orderList);
     let orderData = setOrderData(item, orderList);
-
-    if(META_SET_MENU_SEPARATE_CODE_LIST.indexOf(menuDetail?.prod_gb) >= 0) {
+    if(META_SET_MENU_SEPARATE_CODE_LIST.indexOf(item?.prod_gb) >= 0) {
         // 메뉴 선택하부금액 
         // 선택한 옵션의 가격이 들어감
         // 세트 메인 품목의 가격은 그대로 하위 품목들의 가격이 들어가고 그에따라 수량이 늘아날떄 가격과 수량이 같이 올라가야함
@@ -411,8 +410,8 @@ export const addToOrderList =  createAsyncThunk("order/addToOrderList", async(_,
         let optionTrim = [];
         let optionPrice = 0;
         for(var i=0;i<menuOptionSelected.length;i++) {
-            optionPrice = optionPrice+(menuOptionSelected[i].AMT+menuOptionSelected[i].VAT)*menuOptionSelected[i].QTY
-            optionTrim.push({...menuOptionSelected[i],...{ITEM_SEQ:orderData.ITEM_SEQ,AMT:menuOptionSelected[i].AMT*menuOptionSelected[i].QTY,VAT:menuOptionSelected[i].VAT*menuOptionSelected[i].QTY}});
+            optionPrice = optionPrice+(Number(menuOptionSelected[i].AMT)+Number(menuOptionSelected[i].VAT))*Number(menuOptionSelected[i].QTY)
+            optionTrim.push({...menuOptionSelected[i],...{ITEM_SEQ:orderData.ITEM_SEQ,AMT:Number(menuOptionSelected[i].AMT)*menuOptionSelected[i].QTY,VAT:Number(menuOptionSelected[i].VAT)*Number(menuOptionSelected[i].QTY)}});
         }
         // 세트 메뉴 추가
         orderData["SETITEM_INFO"] = optionTrim;
