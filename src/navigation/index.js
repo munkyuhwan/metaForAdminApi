@@ -35,6 +35,7 @@ import PopupIndicatorNonCancel from '../components/common/popupIndicatoreNonCanc
 import { getCategories, getGoodsByStoreID } from '../utils/api/newApi'
 
 const Stack = createStackNavigator()
+var statusInterval;
 
 export default function Navigation() {
     var statusInterval;
@@ -79,6 +80,17 @@ export default function Navigation() {
             }
         })
     }
+    useEffect(()=>{
+        //if(!isEmpty(tableInfo)) { 
+            // 주석 나중에 빼자
+            statusInterval = setInterval(() => {
+                //console.log("status interval")
+                // 광고 받기
+                //dispatch(getAD()); 
+                dispatch(getTableStatus());
+            }, DEFAULT_TABLE_STATUS_UPDATE_TIME);
+        //}
+    },[])
 
     useEffect(()=>{
         dispatch(getAdminCategories());

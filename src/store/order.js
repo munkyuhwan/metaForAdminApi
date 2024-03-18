@@ -375,9 +375,9 @@ export const addToOrderList =  createAsyncThunk("order/addToOrderList", async(_,
         let optionPrice = 0;
         let optionVat = 0;
         for(var i=0;i<menuOptionSelected.length;i++) {
-            optionPrice = optionPrice+(menuOptionSelected[i].AMT+menuOptionSelected[i].VAT)*menuOptionSelected[i].QTY
-            optionTrim.push({...menuOptionSelected[i],...{ITEM_SEQ:orderData.ITEM_SEQ,AMT:menuOptionSelected[i].AMT*menuOptionSelected[i].QTY+menuOptionSelected[i].VAT*menuOptionSelected[i].QTY, VAT:menuOptionSelected[i].VAT*menuOptionSelected[i].QTY}});
-            optionVat += menuOptionSelected[i].VAT*menuOptionSelected[i].QTY;
+            optionPrice = optionPrice+(Number(menuOptionSelected[i].AMT)+Number(menuOptionSelected[i].VAT))*Number(menuOptionSelected[i].QTY)
+            optionTrim.push({...menuOptionSelected[i],...{ITEM_SEQ:orderData.ITEM_SEQ,AMT:Number(menuOptionSelected[i].AMT)*Number(menuOptionSelected[i].QTY)+Number(menuOptionSelected[i].VAT)*Number(menuOptionSelected[i].QTY), VAT:Number(menuOptionSelected[i].VAT)*Number(menuOptionSelected[i].QTY)}});
+            optionVat += Number(menuOptionSelected[i].VAT)*Number(menuOptionSelected[i].QTY);
         }
         // 세트 메뉴 추가
         orderData["SETITEM_INFO"] = optionTrim;
@@ -402,7 +402,7 @@ export const addToOrderList =  createAsyncThunk("order/addToOrderList", async(_,
         //openPopup(dispatch,{innerView:"AutoClose", isPopupVisible:true,param:{msg:"장바구니에 추가했습니다."}});
         //openTransperentPopup(dispatch, {innerView:"OrderComplete", isPopupVisible:true,param:{msg:"장바구니에 추가했습니다."}});
         //newOrderList.reverse();
-        return {orderList:newOrderList, vatTotal:optionVat+totalResult?.vatTotal, grandTotal:totalResult.grandTotal+optionPrice,totalItemCnt:totalResult.itemCnt, orderPayData:[] };
+        return {orderList:newOrderList, vatTotal:Number(optionVat)+Number(totalResult?.vatTotal), grandTotal:Number(totalResult.grandTotal)+Number(optionPrice),totalItemCnt:Number(totalResult.itemCnt), orderPayData:[] };
     }else {
         // 다른 메뉴들
         // 세트메뉴 경우 그냥 세트 품목들 0원 세트 메인 상품의 가격에 세트메뉴 가격을 추가함

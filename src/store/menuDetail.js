@@ -13,6 +13,31 @@ export const setItemDetail = createAsyncThunk("menuDetail/setItemDetail", async(
     return itemID;
 })
 
+export const setMenuOptionSelected = createAsyncThunk("menuDetail/setMenuOptionSelected", async(_,{dispatch, getState}) =>{
+    const {menuOptionSelected, menuOptionGroupCode} = getState().menuDetail;
+    const {data, isAdd, isAmt} = _;
+    let newOptSelect= Object.assign([], menuOptionSelected);
+    if(!isAmt){
+        let dupleCheck = newOptSelect.filter(el=>el.PROD_I_CD == data.PROD_I_CD);
+        if(dupleCheck.length <=0 ) {
+            newOptSelect.push(data)
+        }else {
+            newOptSelect = newOptSelect.filter(el=>el.PROD_I_CD != data.PROD_I_CD);
+        }
+    }else {
+            newOptSelect = newOptSelect.filter(el=>el.PROD_I_CD != data.PROD_I_CD);
+            if(data?.QTY>0) {
+                newOptSelect.push(data)
+            }
+    }
+    if(isAdd) {
+
+    }else {
+        newOptSelect = newOptSelect.filter(el=>el.PROD_I_CD!=data.PROD_I_CD);
+    } 
+    return newOptSelect;
+});
+
 /*** 이하 삭제 */
 export const getSingleMenu = createAsyncThunk("menuDetail/getSingleMenu", async(itemID,{getState}) =>{
     const {displayMenu} = getState().menu;
@@ -96,36 +121,6 @@ export const setMenuOptionSelect = createAsyncThunk("menuDetail/setMenuOptionSel
 });
 export const setMenuOptionSelectInit = createAsyncThunk("menuDetail/setMenuOptionSelectInit", async() =>{
     return {menuOptionSelect: []};
-});
-export const setMenuOptionSelected = createAsyncThunk("menuDetail/setMenuOptionSelected", async(_,{dispatch, getState}) =>{
-    const {menuOptionSelected, menuOptionGroupCode} = getState().menuDetail;
-    const {data, isAdd, isAmt} = _;
-    let newOptSelect= Object.assign([], menuOptionSelected);
-    if(!isAmt){
-        let dupleCheck = newOptSelect.filter(el=>el.PROD_I_CD == data.PROD_I_CD);
-        if(dupleCheck.length <=0 ) {
-            newOptSelect.push(data)
-        }else {
-            newOptSelect = newOptSelect.filter(el=>el.PROD_I_CD != data.PROD_I_CD);
-        }
-    }else {
-        
-            newOptSelect = newOptSelect.filter(el=>el.PROD_I_CD != data.PROD_I_CD);
-            if(data?.QTY>0) {
-                newOptSelect.push(data)
-            }
-        
-    }
-    if(isAdd) {
-
-    }else {
-       //openPopup(dispatch,{innerView:"AutoClose", isPopupVisible:true,param:{msg:"옵션을 추가할 수 없습니다."}});
-
-        newOptSelect = newOptSelect.filter(el=>el.PROD_I_CD!=data.PROD_I_CD);
-        //newOptSelect = newOptSelect.slice(0,newOptSelect.length-1);
-    } 
-
-    return newOptSelect;
 });
 export const setMenuOptionGroupCode = createAsyncThunk("menuDetail/setMenuOptionGroupCode", async(data) =>{
     return data;

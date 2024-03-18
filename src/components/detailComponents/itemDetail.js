@@ -79,15 +79,15 @@ const ItemDetail = (props) => {
     },[menuDetailID])
 
 
-    const onOptionSelect = (limitCnt, itemData) =>{        
+    const onOptionSelect = (limitCnt, itemData) =>{     
         let setItem =  {
             "ITEM_SEQ" : 0,
             "SET_SEQ" : menuOptionSelected.length+1,
             "PROD_I_CD" : itemData?.prod_cd,
             "PROD_I_NM" : itemData?.gname_kr,
             "QTY" : 1,
-            "AMT" : itemData?.sal_tot_amt,
-            "VAT" : itemData?.sal_vat,
+            "AMT" : Number(itemData?.sal_amt),
+            "VAT" : Number(itemData?.sal_vat),
         }; 
         // 옵션 구룹의 수량 초과 하지 않도록 체크
         let tmpOptionSelected = Object.assign([],menuOptionSelected);
@@ -106,20 +106,20 @@ const ItemDetail = (props) => {
         
     }
     const addToCart = () => {
-        dispatch(addToOrderList({item:menuDetail,menuOptionSelected:[]}));
-        closeDetail();
+        //dispatch(addToOrderList({item:menuDetail,menuOptionSelected:[]}));
+        //closeDetail();
 
-        /*
+        
         let booleanArr = true;
         for(var i=0;i<menuOptionList.length;i++) {
-            let optItems = menuOptionList[i].OPT_ITEMS;
-            if(menuOptionList[i].QTY == 0) {
+            let optItems = menuOptionList[i].prod_i_cd;
+            if(menuOptionList[i].limit_count == 0) {
                 booleanArr = booleanArr && true;
             }else {
                 let cnt = 0;
                 for(var j=0;j<menuOptionSelected.length;j++) {
                     // 해당 중분류의 아이템이 몇개가 선택 되었는지 체크;
-                    let filter = optItems.filter(el=>el.PROD_I_CD == menuOptionSelected[j].PROD_I_CD);
+                    let filter = optItems.filter(el=>el == menuOptionSelected[j].PROD_I_CD);
                     if(filter.length > 0) {
                         cnt = cnt+menuOptionSelected[j]?.QTY;
                     } 
@@ -135,7 +135,7 @@ const ItemDetail = (props) => {
             dispatch(addToOrderList({item:menuDetail,menuOptionSelected:menuOptionSelected}));
             closeDetail();
         }
-        */
+        
 
 
     }

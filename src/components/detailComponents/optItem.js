@@ -12,13 +12,13 @@ import { max } from 'moment';
 const OptItem = (props)=>{
     const {language} = useSelector(state=>state.languages);
     const dispatch = useDispatch();
-
+    const menuDetail = props?.menuData;
     const optionProdCD = props.optionProdCD;
     //console.log("optionData: ",optionProdCD);
     const maxQty = props.maxQty;
     
     const {allItems} = useSelector((state)=>state.menu);
-    const {menuDetailID,  menuOptionGroupCode, menuOptionSelected, menuOptionList, setGroupItem} = useSelector((state)=>state.menuDetail);
+    const {menuDetailID,  menuOptionGroupCode, menuOptionSelected, setGroupItem} = useSelector((state)=>state.menuDetail);
     const [isSelected, setSelected] = useState(false);
     const [addtivePrice, setAdditivePrice] = useState();
     const [qty,setQty] = useState(1);
@@ -51,20 +51,22 @@ const OptItem = (props)=>{
             return true;
         }else {
             let booleanArr = true;
-            console.log("menuOptionList: ",menuOptionList);
+            const menuOptionList = menuDetail?.option;
+            
             for(var i=0;i<menuOptionList.length;i++) {
-                console.log("OPT_ITEMS:",menuOptionList[i].OPT_ITEMS);
-                let optItems = menuOptionList[i].OPT_ITEMS;
-                if(menuOptionList[i].QTY == 0) {
+                let optItems = menuOptionList[i].prod_i_cd;
+                if(menuOptionList[i].limit_count == 0) {
                     booleanArr = booleanArr && true;
                 }else {
                     let cnt = 0;
                     for(var j=0;j<menuOptionSelected.length;j++) {
                         // 해당 중분류의 아이템이 몇개가 선택 되었는지 체크;
-                        let filter = optItems.filter(el=>el.PROD_I_CD == menuOptionSelected[j].PROD_I_CD);
+                        
+                        let filter = optItems.filter(el=>el == menuOptionSelected[j].PROD_I_CD);
                         if(filter.length > 0) {
                             cnt = cnt+menuOptionSelected[j]?.QTY;
-                        } 
+                        }
+
                     }
                     booleanArr = booleanArr && menuOptionList[i]?.QTY==cnt;
                 }
@@ -77,7 +79,6 @@ const OptItem = (props)=>{
         if(maxQty == 0) {
             let tmpOptions = Object.assign([],menuOptionSelected);
             let filteredTmpOptions = tmpOptions.filter(el=>el.prod_i_cd ==optionProdCD )
-    
             let tmpOptionPut = filteredTmpOptions[0];
             let qty = 1;
             if(filteredTmpOptions.length > 0) {
@@ -90,8 +91,8 @@ const OptItem = (props)=>{
             
             if(!isOptionAdd()){
                 let tmpOptions = Object.assign([],menuOptionSelected);
-                let filteredTmpOptions = tmpOptions.filter(el=>el.prod_i_cd ==optionProdCD )
-        
+                let filteredTmpOptions = tmpOptions.filter(el=>el.PROD_I_CD ==optionProdCD )
+                
                 let tmpOptionPut = filteredTmpOptions[0];
                 let qty = 1;
                 if(filteredTmpOptions.length > 0) {
@@ -107,7 +108,7 @@ const OptItem = (props)=>{
     }
     const minusCnt = () => {
         let tmpOptions = Object.assign([],menuOptionSelected);
-        let filteredTmpOptions = tmpOptions.filter(el=>el.prod_i_cd ==optionProdCD )
+        let filteredTmpOptions = tmpOptions.filter(el=>el.PROD_I_CD ==optionProdCD )
         let tmpOptionPut = filteredTmpOptions[0];
         let qty = 1;
         if(filteredTmpOptions.length > 0) {
@@ -142,7 +143,7 @@ const OptItem = (props)=>{
                         <OptItemDim isSelected={props.isSelected}/>
                         <OptItemInfoWrapper>
                             <OptItemInfoTitle>{ItemTitle()||itemDetail[0]?.gname_kr }</OptItemInfoTitle>
-                            <OptItemInfoPrice>{itemDetail[0]?.sal_tot_amt?"+"+Number(itemDetail[0]?.sal_tot_amt*qty).toLocaleString(undefined,{maximumFractionDigits:0})+"원":""}</OptItemInfoPrice>
+                            <OptItemInfoPrice>{(itemDetail[0]?.sal_amt)?"+"+(Number(itemDetail[0]?.sal_amt)+Number(itemDetail[0]?.sal_vat))*Number(qty).toLocaleString(undefined,{maximumFractionDigits:0})+"원":""}</OptItemInfoPrice>
                             {/* <OptItemInfoChecked isSelected={props.isSelected} source={require("../../assets/icons/check_red.png")}/> */}
                         </OptItemInfoWrapper>
                     </OptItemWrapper>
