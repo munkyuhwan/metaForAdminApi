@@ -85,8 +85,8 @@ const CartView = () =>{
 
     },[isMonthSelectShow,monthSelected])
     const makePayment = async () =>{
-        dispatch(postToMetaPos({payData:{}}));
-        /* 
+        //dispatch(postToMetaPos({payData:{}}));
+
             //console.log("storeInfo result: ", storeInfo);
             if( tableStatus?.now_later == "선불") {
                 const bsnNo = await AsyncStorage.getItem("BSN_NO");
@@ -101,9 +101,13 @@ const CartView = () =>{
                 
                 var kocessAppPay = new KocesAppPay();
                 kocessAppPay.requestKocesPayment({amt:payAmt, taxAmt:vatTotal, months:monthSelected, bsnNo:bsnNo,termID:tidNo })
-                .then(result=>{
-                    //console.log("result: ",result);
-                    dispatch(postToMetaPos({payData:result}));
+                .then(async (result)=>{
+                    console.log("result: ",result);
+                    //dispatch(postToMetaPos({payData:result}));
+                    await dispatch(presetOrderData({paydata:result}));
+                    dispatch(adminDataPost({payData:null}));
+                    dispatch(postOrderToPos({payData:null}));
+
                 })
                 .catch((err)=>{
                     //console.log("error: ",err)
@@ -112,22 +116,48 @@ const CartView = () =>{
                 })
 
             }else {
-                dispatch(postToMetaPos({payData:{}}));
+                //dispatch(postToMetaPos({payData:{}}));
+                await dispatch(presetOrderData({paydata:null}));
+                dispatch(adminDataPost({payData:null}));
+                dispatch(postOrderToPos({payData:null}));
             }
-         */
+         
     }
 
     const doPayment = async () =>{
-        await dispatch(presetOrderData({paydata:{}}));
-        dispatch(adminDataPost({payData:null}));
-        dispatch(postOrderToPos({payData:null}));
+        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"주문 중 입니다."})
 
-        
-        //makePayment();
+        const isPostable = await isNetworkAvailable().catch(()=>{EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); return false;});
+        if(!isPostable) {
+            displayErrorNonClosePopup(dispatch, "XXXX", "인터넷에 연결할 수 없습니다.");
+            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
+            return;
+        }
 
+        const storeInfo = await getStoreInfo()
+        .catch((err)=>{
+            displayErrorNonClosePopup(dispatch, "XXXX", "상점 정보를 가져올 수 없습니다.");
+            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); 
+            return [];
+        })
+
+        // 개점정보 확인
+        if(!storeInfo?.SAL_YMD) {
+            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
+            displayErrorPopup(dispatch, "XXXX", "개점이 되지않아 주문을 할 수 없습니다.");
+        }else {
             //테이블 주문 가능한지 체크
-          /* 
-                
+            const tableAvail = await getTableAvailability(dispatch).catch(()=>{EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); return [];});
+            if(!tableAvail) {
+                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
+            }else {
+                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"주문 중 입니다."})
+    
+                const resultData = await getMenuUpdateState(dispatch).catch(err=>{EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); return [];});
+                if(!resultData) {
+                    EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
+                }else {
+                    EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
                     const isUpdated = resultData?.ERROR_CD == "E0000" ;
                     const updateDateTime = resultData?.UPD_DT;
                     const msg = resultData?.ERROR_MSG;
@@ -173,9 +203,11 @@ const CartView = () =>{
                         }else {
                             makePayment();
                         }
+                        //dispatch(postToMetaPos());
                     }
-                 */
-            
+                } 
+            }
+        }
         
         
     }
@@ -188,15 +220,16 @@ const CartView = () =>{
         let totalCnt = 0
         if(orderList) {
             if(orderList?.length>0) {
-                orderList?.map((el)=>{
+                orderList?.map((el,index)=>{
                     totalAmt += Number(el.ITEM_AMT);
                     //totalCnt++;
-                    totalCnt = totalCnt+el?.ITEM_QTY;
+                    totalCnt = totalCnt+Number(el?.ITEM_QTY);
                     for(var i=0;i<el.SETITEM_INFO.length;i++) {
-                        totalAmt += el.SETITEM_INFO[i].AMT
+                        totalAmt += Number(el.SETITEM_INFO[i].AMT)
                     }
                 })
             }
+
             setTotalAmt(totalAmt);
             setTotalCnt(totalCnt);
             

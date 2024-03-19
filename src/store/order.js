@@ -102,8 +102,7 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
 
     const orderNo = `${date.getFullYear().toString().substring(2,4)}${numberPad(date.getMonth()+1,2)}${numberPad(date.getDate(),2)}${moment().valueOf()}`;
     const totalResult = grandTotalCalculate(orderList?.ITEM_INFO);
-    console.log("totalResult=================================================================================");
-
+    const {STORE_IDX} = await getStoreID()
     // 결제시 추가 결제 결과 데이터
     let addOrderData = {};
     if(!isEmpty(payData)) {
@@ -145,6 +144,7 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
         "TOTAL_AMT":Number(totalResult?.grandTotal),
         "TOTAL_VAT":Number(totalResult?.vatTotal),
         "TOTAL_DC":0,
+        "STORE_ID":STORE_IDX,
     }    
     orderList = {...orderList,...orderData};
     console.log("orderData=================================================================================");
@@ -179,7 +179,7 @@ export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{
     }
 
     const orderNo = `${date.getFullYear().toString().substring(2,4)}${numberPad(date.getMonth()+1,2)}${numberPad(date.getDate(),2)}${moment().valueOf()}`;
-   
+
     // 결제시 추가 결제 결과 데이터
     let addOrderData = {};
     if(!isEmpty(payData)) {
@@ -224,11 +224,29 @@ export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{
     }    
     // 포스로 전달
     //let orderData = {"VERSION":"0010","WORK_CD":"8020","ORDER_NO":"2312271703684313782","TBL_NO":"001","PRINT_YN":"Y","USER_PRINT_YN":"Y","PRINT_ORDER_NO":"2312271703684313782","TOT_INWON":4,"ITEM_CNT":1,"ITEM_INFO":[{"ITEM_SEQ":1,"ITEM_CD":"900022","ITEM_NM":"치즈 추가","ITEM_QTY":1,"ITEM_AMT":1004,"ITEM_VAT":91,"ITEM_DC":0,"ITEM_CANCEL_YN":"N","ITEM_GB":"N","ITEM_MSG":"","SETITEM_CNT":0,"SETITEM_INFO":[]}],"TOTAL_AMT":"50004","TOTAL_VAT":"0","TOTAL_DC":"0","ORDER_STATUS":"3","CANCEL_YN":"N","PREPAYMENT_YN":"Y","CUST_CARD_NO":"94119400","CUST_NM":"","PAYMENT_CNT":1,"PAYMENT_INFO":{"PAY_SEQ":1,"PAY_KIND":"2","PAY_AMT":"50004","PAY_VAT":"0","PAY_APV_NO":"02761105","PAY_APV_DATE":"231227113649","PAY_CART_NO":"94119400","PAY_UPD_DT":"231227113649","PAY_CANCEL_YN":"N","PAY_CART_TYPE":"신한카드","PAY_CARD_MONTH":"00"}}
+    console.log("orderlist=================================================================");
     console.log(JSON.stringify(orderList));
     const {POS_IP} = await getIP();
     try {
         const data = await callApiWithExceptionHandling(`${POS_BASE_URL(POS_IP)}`,orderList, {}); 
         console.log("data: ",data);
+        if(data) {
+            if(data.ERROR_CD == "E0000") {
+                dispatch(setCartView(false));
+                dispatch(initOrderList());
+                if( tableStatus?.now_later == "선불") {
+                    openTransperentPopup(dispatch, {innerView:"OrderComplete", isPopupVisible:true,param:{msg:"주문을 완료했습니다."}});
+                }else {
+                    openTransperentPopup(dispatch, {innerView:"OrderComplete", isPopupVisible:true,param:{msg:"주문을 완료했습니다."}});
+                    setTimeout(() => {
+                        openTransperentPopup(dispatch, {innerView:"OrderList", isPopupVisible:true, param:{timeOut:10000} });
+                    }, 3000);
+                }
+            }else {
+                displayErrorPopup(dispatch, "XXXX", data?.ERROR_MSG);
+
+            }
+        }
         return;
       } catch (error) {
         // 예외 처리
@@ -374,7 +392,7 @@ export const addToOrderList =  createAsyncThunk("order/addToOrderList", async(_,
         let optionPrice = 0;
         let optionVat = 0;
         for(var i=0;i<menuOptionSelected.length;i++) {
-            optionPrice = optionPrice+(Number(menuOptionSelected[i].AMT)+Number(menuOptionSelected[i].VAT))*Number(menuOptionSelected[i].QTY)
+            optionPrice = optionPrice+Number(menuOptionSelected[i].AMT)*Number(menuOptionSelected[i].QTY)
             optionTrim.push({...menuOptionSelected[i],...{ITEM_SEQ:orderData.ITEM_SEQ,AMT:Number(menuOptionSelected[i].AMT)*Number(menuOptionSelected[i].QTY)+Number(menuOptionSelected[i].VAT)*Number(menuOptionSelected[i].QTY), VAT:Number(menuOptionSelected[i].VAT)*Number(menuOptionSelected[i].QTY)}});
             optionVat += Number(menuOptionSelected[i].VAT)*Number(menuOptionSelected[i].QTY);
         }
@@ -410,13 +428,13 @@ export const addToOrderList =  createAsyncThunk("order/addToOrderList", async(_,
         let optionTrim = [];
         let optionPrice = 0;
         for(var i=0;i<menuOptionSelected.length;i++) {
-            optionPrice = optionPrice+(Number(menuOptionSelected[i].AMT)+Number(menuOptionSelected[i].VAT))*Number(menuOptionSelected[i].QTY)
+            optionPrice = optionPrice+Number(menuOptionSelected[i].AMT)*Number(menuOptionSelected[i].QTY)
             optionTrim.push({...menuOptionSelected[i],...{ITEM_SEQ:orderData.ITEM_SEQ,AMT:Number(menuOptionSelected[i].AMT)*menuOptionSelected[i].QTY,VAT:Number(menuOptionSelected[i].VAT)*Number(menuOptionSelected[i].QTY)}});
         }
         // 세트 메뉴 추가
         orderData["SETITEM_INFO"] = optionTrim;
         orderData["SETITEM_CNT"] = optionTrim.length;
-        orderData["ITEM_AMT"] = Number(orderData["ITEM_AMT"])+Number(optionPrice);
+        orderData["ITEM_AMT"] = Number(orderData["ITEM_AMT"]);
         // 중복 체크 후 수량 변경
         let newOrderList = orderListDuplicateCheck(currentOrderList, orderData);
         //newOrderList.reverse();

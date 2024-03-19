@@ -27,7 +27,7 @@ const CartListItem = (props) => {
     const order = props?.item;
     const additiveItemList = order?.SETITEM_INFO;
     const itemDetail = allItems?.filter(el=>el.prod_cd == order?.ITEM_CD);
-    const prodGb = itemDetail[0]?.PROD_GB; // 세트하부금액 구분용
+    const prodGb = itemDetail[0]?.prod_gb; // 세트하부금액 구분용
     // 이미지 찾기
     const itemExtra = menuExtra.filter(el=>el.pos_code == order?.ITEM_CD);
     const ItemTitle = () => {
@@ -91,18 +91,18 @@ const CartListItem = (props) => {
             // 선택하부금액 
             
             let additivePrice = 0;
+            console.log("additiveItemList: ",additiveItemList); 
             for(var i=0;i<additiveItemList.length;i++) {
                 //console.log("additive item: ",additiveItemList[i]);
                 additivePrice = additivePrice+(additiveItemList[i]?.AMT)
                 //additivePrice = additivePrice+additi
             }
-            
+
             return Number(order?.ITEM_AMT)+Number(additivePrice);
         }else {
             return order?.ITEM_AMT||0;
         }
     }
-
     return(
         <>
             <CartItemWrapper>
