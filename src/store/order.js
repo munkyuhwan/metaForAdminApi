@@ -16,6 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { EventRegister } from 'react-native-event-listeners';
 import { ADMIN_API_BASE_URL, ADMIN_API_POST_ORDER, TMP_STORE_DATA } from '../resources/newApiResource';
 import { callApiWithExceptionHandling } from '../utils/api/apiRequest';
+import { displayErrorPopup } from '../utils/errorHandler/metaErrorHandler';
 
 export const initOrderList = createAsyncThunk("order/initOrderList", async() =>{
     return  {
@@ -229,7 +230,6 @@ export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{
     const {POS_IP} = await getIP();
     try {
         const data = await callApiWithExceptionHandling(`${POS_BASE_URL(POS_IP)}`,orderList, {}); 
-        console.log("data: ",data);
         if(data) {
             if(data.ERROR_CD == "E0000") {
                 dispatch(setCartView(false));
@@ -292,8 +292,8 @@ export const resetAmtOrderList = createAsyncThunk("order/resetAmtOrderList", asy
     const selectedMenu = tmpOrderList[index];
 
     // 포스 메뉴 정보
-    const menuPosDetail = allItems.filter(el=>el.PROD_CD == selectedMenu?.ITEM_CD);
-    if( META_SET_MENU_SEPARATE_CODE_LIST.indexOf(menuPosDetail[0]?.PROD_GB)>=0) {
+    const menuPosDetail = allItems.filter(el=>el.prod_cd == selectedMenu?.ITEM_CD);
+    if( META_SET_MENU_SEPARATE_CODE_LIST.indexOf(menuPosDetail[0]?.prod_gb)>=0) {
         // 선택하부금액
         // 선택하부금액은 메인 금액일아 하부 메뉴 금액이랑 같이 올려줘야함
         let itemCnt = selectedMenu?.ITEM_QTY;
@@ -305,7 +305,6 @@ export const resetAmtOrderList = createAsyncThunk("order/resetAmtOrderList", asy
         }else {
             itemCnt = 0;
         }
-         
         if(itemCnt<=0) {
             tmpOrderList.splice(index,1);
             if(tmpOrderList.length <= 0) {

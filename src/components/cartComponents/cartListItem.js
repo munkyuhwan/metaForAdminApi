@@ -91,7 +91,6 @@ const CartListItem = (props) => {
             // 선택하부금액 
             
             let additivePrice = 0;
-            console.log("additiveItemList: ",additiveItemList); 
             for(var i=0;i<additiveItemList.length;i++) {
                 //console.log("additive item: ",additiveItemList[i]);
                 additivePrice = additivePrice+(additiveItemList[i]?.AMT)
