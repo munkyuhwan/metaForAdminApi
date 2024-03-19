@@ -52,10 +52,10 @@ const OptItem = (props)=>{
         }else {
             let booleanArr = true;
             const menuOptionList = menuDetail?.option;
-            
             for(var i=0;i<menuOptionList.length;i++) {
                 let optItems = menuOptionList[i].prod_i_cd;
-                if(menuOptionList[i].limit_count == 0) {
+                const limitCount = Number(menuOptionList[i].limit_count);
+                if(limitCount == 0) {
                     booleanArr = booleanArr && true;
                 }else {
                     let cnt = 0;
@@ -68,7 +68,7 @@ const OptItem = (props)=>{
                         }
 
                     }
-                    booleanArr = booleanArr && menuOptionList[i]?.QTY==cnt;
+                    booleanArr = booleanArr && menuOptionList[i]?.limit_count<=cnt;
                 }
             }
             return booleanArr;
@@ -93,7 +93,7 @@ const OptItem = (props)=>{
                 let tmpOptions = Object.assign([],menuOptionSelected);
                 let filteredTmpOptions = tmpOptions.filter(el=>el.PROD_I_CD ==optionProdCD )
                 
-                let tmpOptionPut = filteredTmpOptions[0];
+                var tmpOptionPut = filteredTmpOptions[0];
                 let qty = 1;
                 if(filteredTmpOptions.length > 0) {
                     qty = filteredTmpOptions[0].QTY+1

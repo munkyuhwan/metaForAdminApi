@@ -93,15 +93,19 @@ const ItemDetail = (props) => {
         let tmpOptionSelected = Object.assign([],menuOptionSelected);
         const filteredOptList = menuDetail?.option;
         let itemCheckCnt = 0;
+        console.log("filteredOptList: ",filteredOptList);
         if(filteredOptList?.length>0) {
             for(var i=0;i<tmpOptionSelected?.length;i++) {
-                //console.log("tmpOptionSelected; ",tmpOptionSelected[i]);
-                const checkItems = filteredOptList?.filter(el=>el.prod_i_cd == tmpOptionSelected[i]?.prod_i_cd);
+                console.log("tmpOptionSelected; ",tmpOptionSelected[i]);
+                const checkItems = filteredOptList?.filter(el=>el.prod_i_cd == tmpOptionSelected[i]?.PROD_I_CD);
+                //console.log("checkItems: ",checkItems);
                 if(checkItems?.length > 0) {
                     itemCheckCnt = itemCheckCnt+1;
                 }
             }
         }
+        console.log("itemCheckCnt: ",itemCheckCnt);
+        console.log("limitCnt>itemCheckCnt||limitCnt==0:",limitCnt>itemCheckCnt||limitCnt==0)
         dispatch(setMenuOptionSelected({data:setItem,isAdd:limitCnt>itemCheckCnt||limitCnt==0, isAmt:false  }));
         
     }
