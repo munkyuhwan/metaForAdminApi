@@ -7,9 +7,11 @@ const OrderListItem = (props) => {
     const item = props?.order.item;
     const {language} = useSelector(state=>state.languages);
     const {menuExtra} = useSelector(state=>state.menuExtra);
+    const {allItems} = useSelector((state)=>state.menu);
     // 이미지 찾기
-    const itemExtra = menuExtra.filter(el=>el.pos_code == item.ITEM_CD);
+    const itemExtra = allItems.filter(el=>el.prod_cd == item.ITEM_CD);
     const imgUrl = itemExtra[0]?.gimg_chg;
+
     const ItemTitle = () => {
         let selTitleLanguage = "";
         const selExtra = itemExtra.filter(el=>el.pos_code==item.ITEM_CD);
