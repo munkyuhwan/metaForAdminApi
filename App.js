@@ -19,7 +19,7 @@ const App =() =>{
           <Provider store={store} >
               <Navigation />
           </Provider>
-      )
+    )
 }
 
 const codePushOptions = {

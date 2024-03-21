@@ -2,10 +2,10 @@ import React, { useState } from 'react'
 import styled, {css} from 'styled-components/native';
 import { RADIUS, RADIUS_CATEGORY } from '../values';
 import { colorRed, colorWhite, sideMenuColor } from '../../assets/colors/color';
-
+//width:15.9%;
 export const SideMenuWrapper = styled.View`
     height:100%;
-    width:15.9%;
+    width:220px;
     backgroundColor:${sideMenuColor};
     borderTopRightRadius:${RADIUS};
     borderBottomRightRadius:${RADIUS};
@@ -38,6 +38,7 @@ export const SideMenuItemWrapper = styled.View`
 export const SideMenuItemOff = styled.View`
     backgroundColor:#404040;
     width:95%;
+    height:60px;
     marginTop:5px;
 `
 export const SideMenuItem = styled.View`
@@ -47,20 +48,19 @@ export const SideMenuItem = styled.View`
     borderBottomRightRadius:${RADIUS};
 `
 export const SideMenuItemOn = styled.View`
-    backgroundColor:#ed3810;
     width:100%;
+    height:60px;
+    backgroundColor:#ed3810;
     borderTopRightRadius:${RADIUS_CATEGORY};
     borderBottomRightRadius:${RADIUS_CATEGORY};
     marginTop:5px;
-
 `
 /// 사이드 메뉴 텍스트스타일
 export const SideMenuText = styled.Text`
-    paddingTop:18px;
-    paddingBottom:18px;
+    lineHeight:70px;
     paddingRight:22px;
     paddingLeft:22px;
-    fontSize:24px;
+    fontSize:28px;
     fontWeight:bold;
     color: #ffffff;
     textAlign:center;

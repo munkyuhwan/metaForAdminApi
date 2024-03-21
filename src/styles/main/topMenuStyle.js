@@ -17,7 +17,7 @@ export const BulletinWrapper = styled(ScrollView)`
 
 `
 export const BulletinText = styled.Text`
-    fontSize:42px;
+    fontSize:45px;
     color:${colorRed};
     fontWeight:bold;
 `
