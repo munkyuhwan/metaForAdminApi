@@ -14,7 +14,7 @@ import { getMenuUpdateState, getPosItemsAll, getPosItemsWithCategory, getPosMain
 import { scanFile } from 'react-native-fs';
 import { setMenuOptionGroupCode } from './menuDetail';
 import { displayErrorNonClosePopup, displayErrorPopup } from '../utils/errorHandler/metaErrorHandler';
-import { isNetworkAvailable, openPopup } from '../utils/common';
+import { getStoreID, isNetworkAvailable, openPopup } from '../utils/common';
 import { Alert } from 'react-native';
 import moment from 'moment';
 import 'moment/locale/ko';
@@ -31,8 +31,10 @@ export const clearAllItems = createAsyncThunk("menu/clearAllItems", async(_,{dis
 
 // 전체 메뉴 받기
 export const getAdminItems = createAsyncThunk("menu/getAdminItems", async(_,{dispatch,getstate, rejectWithValue})=>{
+    const {STORE_IDX} = await getStoreID();
+
     try {
-        const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_GOODS}`,TMP_STORE_DATA, {}); 
+        const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_GOODS}`,{"STORE_ID":`${STORE_IDX}`}, {}); 
         return data;
       } catch (error) {
         // 예외 처리

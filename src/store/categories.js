@@ -8,15 +8,21 @@ import { getCategories } from '../utils/api/newApi';
 import { callApiWithExceptionHandling } from '../utils/api/apiRequest';
 import { ADMIN_API_BASE_URL, ADMIN_API_CATEGORY, TMP_STORE_DATA } from '../resources/newApiResource';
 import {isEmpty} from 'lodash';
+import { getStoreID } from '../utils/common';
 
 export const setCategories = createAsyncThunk("categories/setCategories", async(data) =>{
     return data;
 })
 // 어드민 카테고리 받기
 export const getAdminCategories = createAsyncThunk("categories/getAdminCategories", async(_,{dispatch,rejectWithValue}) =>{
+    const {STORE_IDX} = await getStoreID();
     try {
-        const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_CATEGORY}`,TMP_STORE_DATA, {});
-        return data;
+        const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_CATEGORY}`,{"STORE_ID":`${STORE_IDX}`}, {});
+        if(data?.goods_category == null) {
+            return rejectWithValue("DATA DOES NOT EXIST");
+        }else {
+            return data;
+        }
       } catch (error) {
         // 예외 처리
         console.error(error.message);
