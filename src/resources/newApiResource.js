@@ -12,3 +12,9 @@ export const ADMIN_API_POST_CALL_SERVICE = "/call2.php";
 
 
 export const TMP_STORE_DATA = {"STORE_ID":"I24031800004"}
+
+
+
+export const ERROR_DATA = {
+    
+}

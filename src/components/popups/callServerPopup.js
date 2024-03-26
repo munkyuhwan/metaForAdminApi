@@ -5,7 +5,7 @@ import { colorDarkGrey, colorGrey, colorRed, colorWhite } from '../../assets/col
 import { TransparentPopupBottomButtonIcon, TransparentPopupBottomButtonText, TransparentPopupBottomButtonWraper, TransparentPopupBottomInnerWrapper, TransparentPopupBottomWrapper, TransparentPopupTopWrapper, TransparentPopupWrapper, TransperentPopupMidWrapper, TransperentPopupTopSubTitle, TransperentPopupTopTitle } from '../../styles/common/popup';
 import { LANGUAGE } from '../../resources/strings';
 import SelectItemComponent from '../common/selectItemComponent';
-import { getCallServerItems, getServiceList, postAdminSerivceList, sendToPos } from '../../store/callServer';
+import { getCallServerItems, getServiceList, postAdminSerivceList, postService, sendToPos } from '../../store/callServer';
 import { getStoreID, openFullSizePopup, openPopup, openTransperentPopup } from '../../utils/common';
 import { getAdminServices } from '../../utils/apis';
 import { posErrorHandler } from '../../utils/errorHandler/ErrorHandler';
@@ -49,16 +49,12 @@ const CallServerPopup = () => {
                         indexData.push(`"${el}"`);
                     }
                 })
-                const {STORE_ID} = await getStoreID()
-                .catch(err=>{
-                    posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:'STORE_ID, SERVICE_ID를 입력 해 주세요.',MSG2:""})
-                });;
                 const tableNm = await AsyncStorage.getItem("TABLE_NM").catch(err=>{return ""});
                 const tableInfo =  await AsyncStorage.getItem("TABLE_INFO");   
-                const postCallData = {"STORE_ID":STORE_ID,"t_name":tableNm, "t_id":tableInfo, midx:selectedService, subject:subjectData};
-                dispatch(postAdminSerivceList(postCallData));
-                openFullSizePopup(dispatch, {innerView:"", isPopupVisible:false});
-                openPopup(dispatch,{innerView:"AutoClose", isPopupVisible:true,param:{msg:"직원호출을 완료했습니다."}});
+                const postCallData = {midx:selectedService, subject:subjectData};
+                dispatch(postService({postCallData}));
+                //openFullSizePopup(dispatch, {innerView:"", isPopupVisible:false});
+                //openPopup(dispatch,{innerView:"AutoClose", isPopupVisible:true,param:{msg:"직원호출을 완료했습니다."}});
              
             }else {
 
