@@ -27,15 +27,10 @@ const CallServerPopup = () => {
 
     useEffect(()=>{
         if(isFullPopupVisible==true && innerFullView=="CallServer") {
-            console.log("popup up open");
-            //dispatch(getCallServerItems());
             dispatch(getServiceList());
         }
     },[isFullPopupVisible, innerFullView])
 
-    useEffect(()=>{
-        //console.log("callServerItems : ",callServerItems)
-    },[callServerItems])
 
     const onServiceSelected = (indexArray) =>{
         setSelectedService(indexArray);
@@ -111,9 +106,6 @@ const CallServerPopup = () => {
             <TransparentPopupTopWrapper>
                 <TouchableWithoutFeedback onPress={()=>{ countDown(); onSettingPress();} } style={{position:'absolute',  top:0,left:0, zIndex:999999999}}>
                     <View style={{padding:0}} >
-                        <View style={{width:100, height:40, backgroundColor:'transparent'}} >
-                            <Text style={{color:'transparent'}} >ddd</Text>    
-                        </View>
                         <TransperentPopupTopTitle>{LANGUAGE[language]?.serverPopup.callServer}</TransperentPopupTopTitle>
                         <TransperentPopupTopSubTitle>{LANGUAGE[language]?.serverPopup.text}</TransperentPopupTopSubTitle>
                     </View>
@@ -121,11 +113,11 @@ const CallServerPopup = () => {
                 </TransparentPopupTopWrapper>     
             <TransperentPopupMidWrapper>
                 
-                <SelectItemComponent 
-                    data={callServerItems}
-                    numColumns={4}
-                    onServiceSelected={onServiceSelected}
-                />
+            <SelectItemComponent 
+                data={callServerItems}
+                numColumns={4}
+                onServiceSelected={onServiceSelected}
+            />
                 
             </TransperentPopupMidWrapper>   
             <TransparentPopupBottomWrapper>
@@ -136,7 +128,7 @@ const CallServerPopup = () => {
                             <TransparentPopupBottomButtonIcon source={require("../../assets/icons/bell_trans.png")} />
                         </TransparentPopupBottomButtonWraper>
                     </TouchableWithoutFeedback>
-                    <TouchableWithoutFeedback onPress={()=>{openFullSizePopup(dispatch, {innerView:"", isPopupVisible:false});}}>
+                    <TouchableWithoutFeedback onPress={()=>{openFullSizePopup(dispatch, {innerView:"", isFullPopupVisible:false});}}>
                         <TransparentPopupBottomButtonWraper bgColor={colorDarkGrey} >
                             <TransparentPopupBottomButtonText>{LANGUAGE[language]?.serverPopup.closeBtnText}</TransparentPopupBottomButtonText>
                             <TransparentPopupBottomButtonIcon source={require("../../assets/icons/cancel.png")} />

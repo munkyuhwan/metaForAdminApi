@@ -100,8 +100,6 @@ export default function Navigation() {
         dispatch(getAdminItems());
         // 기기 정보 받기
         getDeviceInfo();
-        // 직원호출 받기
-        dispatch(getServiceList());
     },[])
     useEffect(()=>{
         dispatch(setSelectedItems());

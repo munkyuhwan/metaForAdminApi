@@ -39,7 +39,6 @@ export const TransparentPopupWrapper = styled.View`
 `
 // 투명배경 상단 텍스트
 export const TransparentPopupTopWrapper = styled.View`
-
 `
 export const TransperentPopupTopTitle = styled.Text`
     fontSize:38px;

@@ -14,6 +14,7 @@ export const getServiceList = createAsyncThunk("callServer/getServiceList", asyn
         const result = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_CALL_SERVICE}`,{"STORE_ID":`${STORE_IDX}`}, {}); 
         if(result?.result == true) {
             const data = result?.data;
+            console.log("getServiceList data: ",data);
             return data;
         }else {
             return rejectWithValue(error.message)
