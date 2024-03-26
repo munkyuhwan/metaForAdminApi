@@ -48,9 +48,10 @@ export const setSubCategories = createAsyncThunk("categories/setSubCategories", 
         return[]
     }
 })
-
-
 /***** 이하 삭제 */
+
+
+
 // delete 어드민 카테고리 추가 정보 받아오기
 export const getAdminCategoryData = createAsyncThunk("categories/getAdminCategoryData", async(_,{dispatch}) =>{
     const adminResult = await getAdminMainCategory(dispatch);

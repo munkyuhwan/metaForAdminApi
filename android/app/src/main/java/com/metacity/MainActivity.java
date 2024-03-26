@@ -52,18 +52,8 @@ public class MainActivity extends ReactActivity {
                     | View.SYSTEM_UI_FLAG_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
     onScreenTouch();
-/*
-    String url = "bmmarketapp://www.bmmarket.co.kr/member/login/password/reset?token=eyJhbGciOiJIUzM4NCJ9.eyJuYW1lIjoi7Jik64-Z7KSAIiwibWVtYmVySWQiOiJrb2szNDQzMSIsImlhdCI6MTY5NDUwMzE4MiwiZXhwIjoxNjk0NTA5MTgyfQ.YoAWimw1XUbHs60sE9HOkqY-f8V1j8XCnC-BWf5SU33vLMi813MrhqtOa6XQnjRS";
-    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        startActivity(intent);
-      }
-    });
 
- */
+
 
   }
 

@@ -16,9 +16,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initOrderList } from '../../store/order';
 import { setCartView } from '../../store/cart';
 import { getStoreInfo } from '../../utils/api/metaApis';
-import { getMenuState, initMenu } from '../../store/menu';
+import { getAdminItems, getMenuState, initMenu } from '../../store/menu';
 import { CODE_PUSH_PRODUCTION, CODE_PUSH_SECRET } from '../../resources/apiResources';
 import { KocesAppPay } from '../../utils/payment/kocesPay';
+import { getAdminCategories } from '../../store/categories';
 
 const SettingPopup = () =>{
 
@@ -461,7 +462,11 @@ const SettingPopup = () =>{
                 displayOnAlert("설정할 수 없습니다.",{});
             })
         })
+    }
 
+    const updateMenuCateogires = () => {
+        dispatch(getAdminCategories());
+        dispatch(getAdminItems())
     }
 
     return (
@@ -548,68 +553,9 @@ const SettingPopup = () =>{
                                     <StoreIDTextLabel>층 입력:</StoreIDTextLabel><StoreIDTextInput keyboardType='numeric'  defaultValue={floor} onChangeText={(val)=>{ setFloor(val); }} />
                                 </SelectWrapper>
                                     <Dropdown/>
-                                    {/* 
-                                <SelectWrapper style={{marginRight:'auto', marginLeft:'auto', paddingBottom:20}} >
-                                    <StoreIDTextLabel>테이블 번호:</StoreIDTextLabel>
-                                    <StoreIDTextInput keyboardType='numeric'  defaultValue={tableNo} onChangeText={(val)=>{ setTableNo(val); }} />
-                                    <TouchableWithoutFeedback onPress={()=>{setTableInfo()}}>
-                                        <SelectCancelWrapper>
-                                            <SelectCancelText>설정하기</SelectCancelText>
-                                        </SelectCancelWrapper>
-                                    </TouchableWithoutFeedback>
-                                </SelectWrapper>
-                                    */}
-                                {/* 
-                                <StoreIDTextLabel>테이블 번호:</StoreIDTextLabel>
-                                <StoreIDTextInput keyboardType='numeric'  defaultValue={tableNo} onChangeText={(val)=>{ setTableNo(val); }} />
-                                    
-                                <TouchableWithoutFeedback onPress={()=>{ dispatch(getTableList()); setTableSettingShow(!isTableSettingShow) }} >
-                                    <SettingButtonText isMargin={false} >테이블 세팅</SettingButtonText>
-                                </TouchableWithoutFeedback> 
-                                <Dropdown/> 
-                                 */}
                             </SettingItemWrapper>
-                            {/* 
-                            <TouchableWithoutFeedback onPress={()=>{checkTableOrder(dispatch,{tableInfo})}} >
-                                <SettingButtonText isMargin={true} >테이블 상태</SettingButtonText>
-                            </TouchableWithoutFeedback> 
-                            <TouchableWithoutFeedback onPress={()=>{cancelOrder(dispatch,{tableInfo})}} >
-                                <SettingButtonText isMargin={true} >주문취소</SettingButtonText>
-                            </TouchableWithoutFeedback>  
-                            <TouchableWithoutFeedback onPress={()=>{getIndicateAvailableDeviceInfo();}} >
-                                <SettingButtonText isMargin={true} >단말기 서비스 확인</SettingButtonText>
-                            </TouchableWithoutFeedback>
-                            <TouchableWithoutFeedback onPress={()=>{smartroServiceSetting();}} >
-                                <SettingButtonText isMargin={true} >단말기 서비스 설정하기</SettingButtonText>
-                            </TouchableWithoutFeedback>
-                                <TouchableWithoutFeedback onPress={()=>{smartroServiceGetting();}} >
-                                    <SettingButtonText isMargin={true} >단말기 서비스 설정 확인</SettingButtonText>
-                                </TouchableWithoutFeedback>
-                            <SettingItemWrapper>
-                                <TouchableWithoutFeedback onPress={()=>{}} >
-                                    <SettingButtonText isMargin={false} >단말기 서비스 기능</SettingButtonText>
-                                </TouchableWithoutFeedback>
-                                <ServiceDropDown/>
-                            </SettingItemWrapper>
-                            <SettingItemWrapper>    
-                                <TouchableWithoutFeedback onPress={()=>{}} >
-                                    <SettingButtonText isMargin={false} >단말기 결제 기능</SettingButtonText>
-                                </TouchableWithoutFeedback>
-                                <PaymentDropdown/>
-                            </SettingItemWrapper>
-                            <TouchableWithoutFeedback onPress={()=>{initTable(); }} >
-                                <SettingButtonText isMargin={true} >테이블 주문 초기화</SettingButtonText>
-                            </TouchableWithoutFeedback>
-                           
-                            <TouchableWithoutFeedback onPress={()=>{uploadLog(); }} >
-                                <SettingButtonText isMargin={true} >로그 올리기</SettingButtonText>
-                            </TouchableWithoutFeedback>
-                            */}
                             
-                            <TouchableWithoutFeedback onPress={()=>{dispatch(getMenuState());}} >
-                                <SettingButtonText isMargin={true} >메뉴 업데이트 여부 체크</SettingButtonText>
-                            </TouchableWithoutFeedback>
-                            <TouchableWithoutFeedback onPress={()=>{dispatch(initMenu());}} >
+                            <TouchableWithoutFeedback onPress={()=>{updateMenuCateogires()}} >
                                 <SettingButtonText isMargin={true} >화면 업데이트</SettingButtonText>
                             </TouchableWithoutFeedback>
                             <TouchableWithoutFeedback onPress={()=>{checkUpdate();}} >

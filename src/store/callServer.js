@@ -2,6 +2,31 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { SERVICE_ID, STORE_ID } from '../resources/apiResources';
 import { addOrderToPos, checkTableOrder, getAdminServices, postAdminServices, postOrderToPos } from '../utils/apis';
 import LogWriter from '../utils/logWriter';
+import { getStoreID } from '../utils/common';
+import { ADMIN_API_BASE_URL, ADMIN_API_CALL_SERVICE } from '../resources/newApiResource';
+import { callApiWithExceptionHandling } from '../utils/api/apiRequest';
+
+
+export const getServiceList = createAsyncThunk("callServer/getServiceList", async(_,{dispatch,getstate, rejectWithValue}) =>{
+    const {STORE_IDX} = await getStoreID();
+
+    try {
+        const result = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_CALL_SERVICE}`,{"STORE_ID":`${STORE_IDX}`}, {}); 
+        if(result?.result == true) {
+            const data = result?.data;
+            return data;
+        }else {
+            return rejectWithValue(error.message)
+        }
+      } catch (error) {
+        // 예외 처리
+        console.error(error.message);
+        return rejectWithValue(error.message)
+
+    }
+});
+
+/** 이하 삭제 */
 
 export const getCallServerItems = createAsyncThunk("callServer/getCallServerItems", async() =>{
     const getCallServerItem = []
@@ -12,11 +37,6 @@ export const setCallServerList = createAsyncThunk("callServer/setCallServerList"
 })
 export const setCallServerItem = createAsyncThunk("callServer/setCallServerItem", async(index) =>{
     return index;
-})
-
-export const getServiceList = createAsyncThunk("callServer/getServiceList", async(_,{dispatch}) =>{
-    const serviceList = await getAdminServices(dispatch);
-    return serviceList?.data;
 })
 export const postAdminSerivceList = createAsyncThunk("callServer/postAdminSerivceList", async(data,{dispatch}) =>{
     const postService = await postAdminServices(dispatch,data);
@@ -99,23 +119,36 @@ export const callServerSlice = createSlice({
     initialState: {
         callServerItems:[],
         selectedItem:0,
+        error:null,
     },
     extraReducers:(builder)=>{
+        // 직원호출 셋
+        // 관리자 직원호출 하기
+        builder.addCase(getServiceList.fulfilled,(state, action)=>{
+            console.log("state: ",state);
+            if(action.payload) {
+                state.callServerItems = action.payload;
+            }else {
+                
+            }
+        })
+        builder.addCase(getServiceList.pending,(state, action)=>{
+
+        })
+        builder.addCase(getServiceList.rejected,(state, action)=>{
+            
+        })
+
+        /** 이하 삭제 */
         // 메인 카테고리 받기
         builder.addCase(getCallServerItems.fulfilled,(state, action)=>{
-            state.callServerItems = action.payload;
+            if(action.payload) {
+                state.callServerItems = action.payload;
+            }
         })
         // 메인 카테고리 선택
         builder.addCase(setCallServerItem.fulfilled,(state, action)=>{
             state.selectedItem = action.payload;
-        })
-        // 직원호출 셋
-        builder.addCase(setCallServerList.fulfilled,(state, action)=>{
-            state.callServerItems = action.payload;
-        })
-        // 관리자 직원호출 하기
-        builder.addCase(getServiceList.fulfilled,(state, action)=>{
-            state.callServerItems = action.payload;
         })
         
     }

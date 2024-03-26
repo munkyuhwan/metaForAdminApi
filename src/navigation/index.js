@@ -26,13 +26,14 @@ import { DEFAULT_CATEGORY_ALL_CODE, DEFAULT_TABLE_STATUS_UPDATE_TIME } from '../
 import { getAdminBulletin, getAdminMenuItems } from '../store/menuExtra'
 import { getStoreInfo } from '../utils/api/metaApis'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { fileDownloader, openTransperentPopup } from '../utils/common'
+import { fileDownloader, getDeviceInfo, openTransperentPopup } from '../utils/common'
 import { getDisplay } from 'react-native-device-info'
 import { getAD } from '../store/ad'
 import ADScreenPopup from '../components/popups/adPopup'
 import MonthSelectPopup from '../components/popups/monthSelectPopup'
 import PopupIndicatorNonCancel from '../components/common/popupIndicatoreNonCancel'
 import { getCategories, getGoodsByStoreID } from '../utils/api/newApi'
+import { getServiceList } from '../store/callServer'
 
 const Stack = createStackNavigator()
 var statusInterval;
@@ -93,8 +94,14 @@ export default function Navigation() {
     },[])
 
     useEffect(()=>{
+        // 카테고리 받기
         dispatch(getAdminCategories());
-        dispatch(getAdminItems())
+        // 메뉴 받아오기
+        dispatch(getAdminItems());
+        // 기기 정보 받기
+        getDeviceInfo();
+        // 직원호출 받기
+        dispatch(getServiceList());
     },[])
     useEffect(()=>{
         dispatch(setSelectedItems());

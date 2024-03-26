@@ -3,7 +3,7 @@ import { getAdminTableStatus, posTableList } from '../utils/apis';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DeviceInfo, { getUniqueId, getManufacturer, getAndroidId } from 'react-native-device-info';
 import { getTableListInfo } from '../utils/api/metaApis';
-import { ADMIN_API_BASE_URL, ADMIN_API_CATEGORY, TMP_STORE_DATA, ADMIN_TABLE_STATUS } from '../resources/newApiResource';
+import { ADMIN_API_BASE_URL, ADMIN_API_CATEGORY, TMP_STORE_DATA, ADMIN_API_TABLE_STATUS } from '../resources/newApiResource';
 import { getStoreID } from '../utils/common';
 import { callApiWithExceptionHandling } from '../utils/api/apiRequest';
 
@@ -15,7 +15,7 @@ export const getTableStatus = createAsyncThunk("tableInfo/getTableStatus", async
     const TABLE_INFO =  await AsyncStorage.getItem("TABLE_INFO");
     
     try {
-        const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_TABLE_STATUS}`,{"STORE_ID":`${STORE_IDX}`, "t_num":TABLE_INFO}, {});
+        const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_TABLE_STATUS}`,{"STORE_ID":`${STORE_IDX}`, "t_num":TABLE_INFO}, {});
         if(data?.data == null) {
             return rejectWithValue("DATA DOES NOT EXIST");
         }else {

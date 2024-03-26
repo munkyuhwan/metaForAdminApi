@@ -8,6 +8,14 @@ import RNFetchBlob from 'rn-fetch-blob';
 import { addImageStorage } from '../store/imageStorage';
 import { setAdImgs } from '../store/ad';
 import { fetch } from "@react-native-community/netinfo";
+// device info
+import DeviceInfo, { getUniqueId, getManufacturer } from 'react-native-device-info';
+
+export function getDeviceInfo () {
+    DeviceInfo.getBatteryLevel().then((batteryLevel) => {
+        //console.log("batteryLevel: ",batteryLevel)
+    });
+}
 
 export function openPopup (dispatch, {innerView, isPopupVisible, param}) {
     if(isPopupVisible) {

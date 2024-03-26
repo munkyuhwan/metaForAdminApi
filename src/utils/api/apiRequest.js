@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 export async function callApiWithExceptionHandling(url,postData={}, options = {}) {
-  console.log("call api");
     try {
       // Axios를 사용하여 API 호출
       const response = await axios.post(url,postData, options);
