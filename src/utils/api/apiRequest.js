@@ -20,7 +20,8 @@ export async function callApiWithExceptionHandling(url,postData={}, options = {}
       // Axios가 네트워크 에러 또는 타임아웃 등으로 인해 예외를 던졌을 경우
       if (error.response) {
         // 서버 응답이 있으며 상태 코드가 2xx 범위 밖인 경우
-        throw new Error(`API 호출 실패: 상태 코드 ${error.response.status}, 메시지: ${error.response.data}`);
+        //throw new Error(`API 호출 실패: 상태 코드 ${error.response.status}, 메시지: ${error.response.data}`);
+        throw new Error(`API 호출 실패: 상태 코드 ${error.response.status}`);
       } else if (error.request) {
         // 요청이 이루어졌으나 응답을 받지 못한 경우
         throw new Error('API 응답을 받지 못했습니다.');

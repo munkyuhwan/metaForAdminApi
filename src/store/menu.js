@@ -34,11 +34,18 @@ export const getAdminItems = createAsyncThunk("menu/getAdminItems", async(_,{dis
     const {STORE_IDX} = await getStoreID();
 
     try {
-        const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_GOODS}`,{"STORE_ID":`${STORE_IDX}`}, {}); 
-        return data;
+        const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_GOODS}`,{"STORE_ID":`${STORE_IDX}`}, {});
+        if(data) {
+            if(data?.result==true) {
+                return data;
+            }else {
+                return rejectWithValue(error.message)
+            }
+        }else {
+            return rejectWithValue(error.message)
+        }
       } catch (error) {
         // 예외 처리
-        console.error(error.message);
         return rejectWithValue(error.message)
 
     }
@@ -230,6 +237,8 @@ export const menuSlice = createSlice({
         allItems:[],
         allSets:[],
         isProcessPaying:false,
+        menuError:{ERROR_MSG:"",IS_ERROR:false},
+        isMenuLoading:false,
     },
     extraReducers:(builder)=>{
 
@@ -237,13 +246,16 @@ export const menuSlice = createSlice({
         builder.addCase(getAdminItems.fulfilled,(state, action)=>{
             if(!isEmpty(action.payload)) { 
                 state.allItems = action?.payload.order;
+                state.isMenuLoading = false;
             }
         }) 
         builder.addCase(getAdminItems.rejected,(state, action)=>{
-            
+            console.log("getAdminItems.rejected: ",action.payload);
+            state.isMenuLoading = false;
+            state.menuError = {ERROR_MSG:action?.payload,IS_ERROR:true}
         }) 
         builder.addCase(getAdminItems.pending,(state, action)=>{
-            
+            state.isMenuLoading = true;
         }) 
 
         // 보여줄 아이템셋

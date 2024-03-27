@@ -26,7 +26,7 @@ import { DEFAULT_CATEGORY_ALL_CODE, DEFAULT_TABLE_STATUS_UPDATE_TIME } from '../
 import { getAdminBulletin, getAdminMenuItems } from '../store/menuExtra'
 import { getStoreInfo } from '../utils/api/metaApis'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { fileDownloader, getDeviceInfo, openTransperentPopup } from '../utils/common'
+import { fileDownloader, getDeviceInfo, openPopup, openTransperentPopup } from '../utils/common'
 import { getDisplay } from 'react-native-device-info'
 import { getAD } from '../store/ad'
 import ADScreenPopup from '../components/popups/adPopup'
@@ -34,6 +34,7 @@ import MonthSelectPopup from '../components/popups/monthSelectPopup'
 import PopupIndicatorNonCancel from '../components/common/popupIndicatoreNonCancel'
 import { getCategories, getGoodsByStoreID } from '../utils/api/newApi'
 import { getServiceList } from '../store/callServer'
+import { setErrorData } from '../store/error'
 
 const Stack = createStackNavigator()
 var statusInterval;
@@ -41,11 +42,12 @@ var statusInterval;
 export default function Navigation() {
     var statusInterval;
     const dispatch = useDispatch();
+
     const [spinnerText, setSpinnerText] = React.useState("")
     const [spinnerTextNonCancel, setSpinnerTextNonCancel] = React.useState("")
 
     const {tableStatus} = useSelector(state=>state.tableInfo);
-    const {allItems} = useSelector(state=>state.menu);
+    const {allItems,isMenuLoading, menuError} = useSelector(state=>state.menu);
     const {selectedMainCategory, selectedSubCategory, allCategories} = useSelector(state=>state.categories);
     const {isShow} = useSelector(state=>state.ads);
     const {isMonthSelectShow} = useSelector(state=>state.monthSelect);
@@ -81,6 +83,24 @@ export default function Navigation() {
             }
         })
     }
+    // loading useeffect
+    useEffect(()=>{
+        console.log("isMenuLoading: ",isMenuLoading);
+        if(isMenuLoading) {
+            EventRegister.emit("showSpinner",{isSpinnerShow:true, msg:"메뉴를 로딩 중 입니다."})
+        }else {
+            EventRegister.emit("showSpinner",{isSpinnerShow:false, msg:""})
+        }
+    },isMenuLoading)
+    // error useeffect
+    useEffect(()=>{
+        if(menuError.IS_ERROR == true) {
+            dispatch(setErrorData({errorCode:"XXXX",errorMsg:menuError?.ERROR_MSG})); 
+            openPopup(dispatch,{innerView:"Error", isPopupVisible:true}); 
+        }
+    },[menuError])
+
+
     useEffect(()=>{
         //if(!isEmpty(tableInfo)) { 
             // 주석 나중에 빼자
@@ -94,6 +114,7 @@ export default function Navigation() {
     },[])
 
     useEffect(()=>{
+        handleEventListener();
         // 카테고리 받기
         dispatch(getAdminCategories());
         // 메뉴 받아오기
@@ -110,6 +131,36 @@ export default function Navigation() {
             dispatch(setSelectedMainCategory(allCategories[0]?.cate_code1));
         }
     },[allItems])
+    // 테이블 상태
+    useEffect(()=>{
+        if(!isEmpty(tableStatus)) {
+            const statusValue = tableStatus?.status;
+            switch (statusValue) {
+                case "1":
+                    // 판매중
+
+                break;
+                case "2":
+                    // 준비중
+                    dispatch(initOrderList());
+                    navigate?.current.navigate("status");
+                break;
+                case "3":
+                    // 강제 판매중
+                    //dispatch(initOrderList());
+                    //navigate?.current.navigate("status");
+                break;
+                case "4":
+                    // 예약중
+                    dispatch(initOrderList());
+                    navigate?.current.navigate("status");
+                break;
+                default:
+
+                break;
+            }
+        }
+    },[tableStatus])
 
     return (
         <>  
@@ -151,14 +202,14 @@ export default function Navigation() {
             {isShow &&
                 <ADScreenPopup/>
             }
-            {(spinnerText!="")&&
-                <PopupIndicator text={spinnerText} setText={setSpinnerText} />
-            }
             {(spinnerTextNonCancel!="")&&
                 <PopupIndicatorNonCancel text={spinnerTextNonCancel} />
             }
             {isMonthSelectShow &&
                 <MonthSelectPopup/>
+            }
+            {(spinnerText!="")&&
+                <PopupIndicator text={spinnerText} setText={setSpinnerText} />
             }
         </>
     )
