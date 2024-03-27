@@ -37,7 +37,6 @@ export const postService = createAsyncThunk("callServer/postService", async(data
     const tableInfo =  await AsyncStorage.getItem("TABLE_INFO").catch(err=>{return rejectWithValue("직원호출을 할 수없습니다.")});
 
     const tableData = {"STORE_ID":STORE_IDX,"t_name":tableNm, "t_id":tableInfo}
-
     try {
         const result = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_POST_CALL_SERVICE}`, {...tableData,...postCallData} , {}); 
         if(result?.result == true) {

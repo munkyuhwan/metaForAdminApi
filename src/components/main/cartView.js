@@ -87,7 +87,6 @@ const CartView = () =>{
     const makePayment = async () =>{
         //dispatch(postToMetaPos({payData:{}}));
 
-            //console.log("storeInfo result: ", storeInfo);
             if( tableStatus?.now_later == "선불") {
                 const bsnNo = await AsyncStorage.getItem("BSN_NO");
                 const tidNo = await AsyncStorage.getItem("TID_NO");
@@ -117,6 +116,7 @@ const CartView = () =>{
 
             }else {
                 //dispatch(postToMetaPos({payData:{}}));
+                console.log("post pay order-======")
                 await dispatch(presetOrderData({paydata:null}));
                 dispatch(adminDataPost({payData:null}));
                 dispatch(postOrderToPos({payData:null}));
@@ -133,7 +133,9 @@ const CartView = () =>{
             EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
             return;
         }
+        makePayment();
 
+        /* 
         const storeInfo = await getStoreInfo()
         .catch((err)=>{
             displayErrorNonClosePopup(dispatch, "XXXX", "상점 정보를 가져올 수 없습니다.");
@@ -203,12 +205,11 @@ const CartView = () =>{
                         }else {
                             makePayment();
                         }
-                        //dispatch(postToMetaPos());
                     }
                 } 
             }
         }
-        
+         */
         
     }
     useEffect(()=>{

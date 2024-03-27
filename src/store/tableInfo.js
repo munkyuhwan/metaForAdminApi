@@ -13,7 +13,6 @@ import { callApiWithExceptionHandling } from '../utils/api/apiRequest';
 export const getTableStatus = createAsyncThunk("tableInfo/getTableStatus", async(data,{dispatch,rejectWithValue}) =>{
     const {STORE_IDX} = await getStoreID();
     const TABLE_INFO =  await AsyncStorage.getItem("TABLE_INFO");
-    
     try {
         const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_TABLE_STATUS}`,{"STORE_ID":`${STORE_IDX}`, "t_num":TABLE_INFO}, {});
         if(data?.data == null) {
