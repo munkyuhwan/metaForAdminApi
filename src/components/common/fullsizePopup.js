@@ -95,6 +95,7 @@ const FullSizePopup = (props) =>{
 const PopStyle = StyleSheet.create({
     animatedPop:{
         position:'absolute',
+        zIndex:99
     }
 
 })

@@ -83,11 +83,11 @@ const PopUp = (props) =>{
     return(
         <>
             <Animated.View  style={[{...PopStyle.animatedPop,...boxWidthStyle,...{zIndex:popupZIndex, width:size, height:size}} ]} >   
-                <TouchableWithoutFeedback onPress={()=>{ openPopup(dispatch,{innerView:"", isPopupVisible:false});  /* dispatch(setPopupVisibility(false)); */ }}>
+                <TouchableWithoutFeedback onPress={()=>{ openPopup(dispatch,{innerView:"", isPopupVisible:false}); }}>
                     <PopupWrapper/>
                 </TouchableWithoutFeedback>
                 <PopupContentWrapper>
-                    <TouchableWithoutFeedback onPress={()=>{ openPopup(dispatch,{innerView:"", isPopupVisible:false});  /* dispatch(setPopupVisibility(false)); */}}>
+                    <TouchableWithoutFeedback onPress={()=>{ openPopup(dispatch,{innerView:"", isPopupVisible:false}); }}>
                         <PopupCloseButtonWrapper>
                             <PopupCloseButton source={require('../../assets/icons/close_red.png')}/>
                         </PopupCloseButtonWrapper>

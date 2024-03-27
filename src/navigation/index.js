@@ -145,9 +145,9 @@ export default function Navigation() {
                     />
                 </Stack.Navigator>
             </NavigationContainer>
-            <PopUp/>
             <TransparentPopUp/>
             <FullSizePopup/>
+            <PopUp/>
             {isShow &&
                 <ADScreenPopup/>
             }

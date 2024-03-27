@@ -27,8 +27,8 @@ export const getServiceList = createAsyncThunk("callServer/getServiceList", asyn
     }
 });
 // 직원 호출하기
-export const postService = createAsyncThunk("callServer/postService", async(data,{dispatch}) =>{
-    const {postCallData} = data;
+export const postService = createAsyncThunk("callServer/postService", async(data,{dispatch}) =>{    
+    const postCallData = data;
     const {STORE_IDX} = await getStoreID()
     .catch(err=>{
         return rejectWithValue("직원호출을 할 수없습니다.")
@@ -53,7 +53,7 @@ export const postService = createAsyncThunk("callServer/postService", async(data
         console.error(error.message);
         return rejectWithValue(error.message)
     }
-    
+     
 })
 
 // 에러 초기화

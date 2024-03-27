@@ -52,14 +52,15 @@ const CallServerPopup = () => {
                 const tableNm = await AsyncStorage.getItem("TABLE_NM").catch(err=>{return ""});
                 const tableInfo =  await AsyncStorage.getItem("TABLE_INFO");   
                 const postCallData = {midx:selectedService, subject:subjectData};
-                dispatch(postService({postCallData}));
+                dispatch(postService(postCallData));
                 //openFullSizePopup(dispatch, {innerView:"", isPopupVisible:false});
                 //openPopup(dispatch,{innerView:"AutoClose", isPopupVisible:true,param:{msg:"직원호출을 완료했습니다."}});
              
             }else {
-
-                
+                openPopup(dispatch,{innerView:"AutoClose", isPopupVisible:true,param:{msg:"호출항목을 선택 해 주세요."}});
             }
+        }else {
+            openPopup(dispatch,{innerView:"AutoClose", isPopupVisible:true,param:{msg:"호출항목을 선택 해 주세요."}});
         }
        
     } 
@@ -100,12 +101,10 @@ const CallServerPopup = () => {
     return(
         <TransparentPopupWrapper>
             <TransparentPopupTopWrapper>
-                <TouchableWithoutFeedback onPress={()=>{ countDown(); onSettingPress();} } style={{position:'absolute',  top:0,left:0, zIndex:999999999}}>
                     <View style={{padding:0}} >
                         <TransperentPopupTopTitle>{LANGUAGE[language]?.serverPopup.callServer}</TransperentPopupTopTitle>
                         <TransperentPopupTopSubTitle>{LANGUAGE[language]?.serverPopup.text}</TransperentPopupTopSubTitle>
                     </View>
-                </TouchableWithoutFeedback>
                 </TransparentPopupTopWrapper>     
             <TransperentPopupMidWrapper>
                 
