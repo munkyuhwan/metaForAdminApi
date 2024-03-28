@@ -1,16 +1,33 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { getAdminBanners } from '../utils/apis';
-import { adFileDownloader } from '../utils/common';
+import { adFileDownloader, getStoreID } from '../utils/common';
 import { ADMIN_BANNER_DIR } from '../resources/apiResources';
+import { callApiWithExceptionHandling } from '../utils/api/apiRequest';
+import { ADMIN_API_BANNER, ADMIN_API_BANNER_DIR, ADMIN_API_BASE_URL } from '../resources/newApiResource';
 
 export const getAD = createAsyncThunk("ads/getAD", async(_,{dispatch}) =>{
-    const result = await getAdminBanners(dispatch).catch(err=> {return []});
-    let payload = result?.data;
-    payload = payload?.filter(el=>el.isuse=='Y');
-    for(var i=0;i<payload.length;i++) {
-        await adFileDownloader(dispatch, `${payload[i].img_chg}`,ADMIN_BANNER_DIR+payload[i].img_chg).catch("");
+    const {STORE_IDX, SERVICE_ID} = await getStoreID()
+    try {
+        const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_BANNER}`,{"STORE_ID":`${STORE_IDX}`}, {});
+        if(data) {
+            if(data?.result==true) {
+                let payload = data?.data;
+                payload = payload?.filter(el=>el.isuse=='Y');
+                for(var i=0;i<payload.length;i++) {
+                    await adFileDownloader(dispatch, `${payload[i].img_chg}`,ADMIN_API_BANNER_DIR+payload[i].img_chg).catch("");
+                }
+                return payload;
+            }else {
+                return rejectWithValue(error.message)
+            }
+        }else {
+            return rejectWithValue(error.message)
+        }
+    } catch (error) {
+        // 예외 처리
+        return rejectWithValue(error.message)
     }
-    return payload;
+
 })
 
 export const setAdImgs = createAsyncThunk("ads/setAdImgs", async(data,{dispatch, getState}) =>{
@@ -20,19 +37,38 @@ export const setAdImgs = createAsyncThunk("ads/setAdImgs", async(data,{dispatch,
     prevImgs.push(data); 
     return prevImgs;
 })
+
+/**이하삭제 */
+
 export const setAdScreen = createAsyncThunk("ads/setAdScreen", async(data,{dispatch}) =>{
     const {isMain, isShow} = data;
     if(isMain) {
         // 메인에서 넘어갈 경우 배너 길이 확인해서 1보다 크면 넘김
-        const result = await getAdminBanners(dispatch).catch(err=> {return []});
-        let payload = result?.data;
-        payload = payload?.filter(el=>el.isuse=='Y');
-        if(payload?.length>0) {
-           await dispatch(getAD());
-        }
-        return payload?.length>0    
+        const {STORE_IDX, SERVICE_ID} = await getStoreID()
+        try {
+            const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_BANNER}`,{"STORE_ID":`${STORE_IDX}`}, {});
+            if(data) {
+                if(data?.result==true) {
+                    let payload = data?.data;
+                    payload = payload?.filter(el=>el.isuse=='Y');
+                    if(payload?.length>0) {
+                        await dispatch(getAD());
+                    }
+                    return payload?.length>0    
+                }else {
+                    return rejectWithValue(error.message)
+                }
+            }else {
+                return rejectWithValue(error.message)
+            }
+        } catch (error) {
+            // 예외 처리
+            return rejectWithValue(error.message)
+
+        }   
+    }else {
+        return isShow;
     }
-    return isShow;
 })
 
 
@@ -49,6 +85,14 @@ export const adSlice = createSlice({
         builder.addCase(getAD.fulfilled,(state, action)=>{
             state.adList = action.payload;
         })
+        builder.addCase(getAD.rejected,(state, action)=>{
+            //state.adList=[]
+        })
+        builder.addCase(getAD.pending,(state, action)=>{
+            //state.adList=[]
+        })
+
+
         builder.addCase(setAdImgs.fulfilled,(state, action)=>{
             state.adImgs = action.payload;
         })

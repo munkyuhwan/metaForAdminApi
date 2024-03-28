@@ -123,7 +123,7 @@ const MenuItem = ({item,index,setDetailShow}) => {
                             </TouchableWithoutFeedback>
                         </MenuItemButtonWrapper>
                     </MenuItemImageWrapper>
-                    {item?.soldout=='Y'&&
+                    {item?.sale_status=='3'&&// 1:대기, 2: 판매, 3: 매진
                         <SoldOutLayer style={{ width:'100%',height:height*0.28, borderRadius:RADIUS_DOUBLE}}>
                             <SoldOutText>SOLD OUT</SoldOutText>    
                             <SoldOutDimLayer style={{ width:'100%',height:height*0.28, borderRadius:RADIUS_DOUBLE}}/>

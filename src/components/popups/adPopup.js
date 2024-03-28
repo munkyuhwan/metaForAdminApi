@@ -6,6 +6,7 @@ import { TableName, TableNameBig, TableNameSmall } from '../../styles/main/topMe
 import { getAD, setAdScreen } from '../../store/ad';
 import { SettingWrapper } from '../../styles/common/settingStyle';
 import { StatusText } from '../../styles/status/statusScreenStyle';
+let swipeTimeOut;
 const ADScreenPopup = () =>{
     let adInterval;
     const dispatch = useDispatch();
@@ -16,7 +17,6 @@ const ADScreenPopup = () =>{
     const [adIndex, setAdIndex] = useState();
     const [displayUrl, setDisplayUrl] = useState("");
 
-    let swipeTimeOut;
 
     useEffect(()=>{
         console.log("광고 받기");

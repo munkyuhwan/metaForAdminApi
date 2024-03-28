@@ -64,10 +64,6 @@ export const setSelectedItems = createAsyncThunk("menu/setSelectedItems", async(
 })
 
 
-
-/** 이하 삭제 */
-
-
 export const initMenu = createAsyncThunk("menu/initMenu", async(_,{dispatch,getState}) =>{
     EventRegister.emit("showSpinner",{isSpinnerShow:true, msg:"메뉴 업데이트 중입니다. "})
     const isPostable = await isNetworkAvailable().catch(()=>{
@@ -81,29 +77,11 @@ export const initMenu = createAsyncThunk("menu/initMenu", async(_,{dispatch,getS
         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
         return [];
     }
-    // 포스 메인 카테고리
-    const mainCategories = await getPosMainCategory(dispatch).catch(err=>{EventRegister.emit("showSpinner",{isSpinnerShow:false, msg:""}); return [];});
-    let allCategories = Object.assign([],mainCategories);
-    if(allCategories?.length > 0 ) {
-        // 메인 카테고리 하위 메뉴 받기
-        for(var i=0;i<allCategories?.length;i++) {
-            const subCategoryResult = await getPosMidCategory(dispatch,{selectedMainCategory:allCategories[i].PROD_L1_CD})
-            allCategories[i]["PROD_L2_LIST"] = Object.assign([],subCategoryResult);
-        }
-        dispatch(setAllCategories({allCategories}));
-    }
-    
-    // 관리자 카테고리 추가 정보
-    dispatch(getAdminCategoryData());
-    // 관리자 메뉴 정보 받아오기;
-    dispatch(getAdminMenuItems());
-    // 전체 메뉴 받아오기
-    await dispatch(getAllItems());
-    await dispatch(setSelectedMainCategory(allCategories[0]?.PROD_L1_CD));
-    dispatch(getDisplayMenu());
-    
-    EventRegister.emit("showSpinner",{isSpinnerShow:false, msg:""});
-    return [];
+    // 카테고리 받기
+    dispatch(getAdminCategories());
+    // 메뉴 받아오기
+    dispatch(getAdminItems());
+    EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
 })
 
 export const getDisplayMenu = createAsyncThunk("menu/getDisplayMenu", async(_, {dispatch, getState}) =>{
@@ -147,85 +125,6 @@ export const getDisplayMenu = createAsyncThunk("menu/getDisplayMenu", async(_, {
     return itemsToDisplay;
 })
 
-export const updateMenu = createAsyncThunk("menu/updateMenu", async(_,{rejectWithValue}) =>{
-    return await posOrderNew();
-})
-// 전체 아이템 받아오기
-export const getAllItems = createAsyncThunk("menu/getAllItems",async(_,{dispatch,getstate})=>{
-    // 메뉴 전부 받아오기
-    let result = await getPosItemsAll().catch(err=>{return;});
-    result = result.filter(el=> el.USE_YN=="Y");
-    let setGroupData = [];
-    // 세트 그룹받아오기
-    for(var i=0;i<result.length;i++) {
-        if(result[i]?.USE_YN == "Y") {
-            // set dataform;
-            let dataForm = {
-                "PROD_CD":0,
-                "SET_GROUP":[],
-            }
-            //console.log("result: ",result[i]);
-            dataForm.PROD_CD = result[i].PROD_CD;
-            // 옵션 그룹 받기
-            const optGroup = await getPosSetGroup(dispatch,{menuDetailID:result[i].PROD_CD}).catch(err=>{return[];});
-            dataForm.SET_GROUP = Object.assign([],optGroup);
-            for(var j=0;j<optGroup.length;j++) {
-                const optItem = await getPosSetGroupItem(dispatch,{menuOptionGroupCode:optGroup[j]?.GROUP_NO})
-                dataForm.SET_GROUP[j].OPT_ITEMS = optItem;
-            }
-            setGroupData.push(dataForm);
-        }
-    }
-    return {allItems:result,allSets:setGroupData};
-})
-// 메뉴 상태 받아오기
-export const getMenuState = createAsyncThunk("menu/menuState", async(_,{dispatch, getState}) =>{
-    const {isProcessPaying} = getState().menu;
-    if(isProcessPaying) {
-        return;
-    }
-    const resultData = await getMenuUpdateState(dispatch).catch(err=>{return []});
-    if(!resultData) {
-        return
-    }else {
-        const isUpdated = resultData?.ERROR_CD == "E0000" ;
-        const updateDateTime = resultData?.UPD_DT;
-        const msg = resultData?.ERROR_MSG;
-        if(isUpdated) {
-
-            // 날짜 기준 메뉴 업트가 있으면 새로 받아 온다.
-            const lastUpdateDate = await AsyncStorage.getItem("lastUpdate");   
-            const currentDate = moment(lastUpdateDate||moment().format("YYYY-MM-DD HH:mm:ss")).format("x");
-            const updateDate = moment(updateDateTime).format("x");
-            if(resultData?.ERROR_MSG == "업데이트 된 데이터가 있습니다.") {
-                dispatch(initMenu());
-                const saveDate = moment().format("YYYY-MM-DD HH:mm:ss");
-                AsyncStorage.setItem("lastUpdate",saveDate);
-                dispatch(setCartView(false));
-                dispatch(initOrderList());
-            }
-/* 
-            if(updateDate<currentDate) {
-                console.log("go update==========================");
-                //await dispatch(getAllItems());
-                dispatch(initMenu());
-                const saveDate = moment().format("YYYY-MM-DD HH:mm:ss");
-                AsyncStorage.setItem("lastUpdate",saveDate);
-                dispatch(setCartView(false));
-                dispatch(initOrderList());
-                //dispatch(getDisplayMenu());
-            }else {
-               
-            } */
-
-        }
-    } 
-})
-
-// 메뉴 상태 받아오기
-export const setProcessPaying = createAsyncThunk("menu/setProcessPaying", async(isPaying,{dispatch}) =>{
-    return isPaying;
-})
 
 
 // Slice
@@ -250,7 +149,6 @@ export const menuSlice = createSlice({
             }
         }) 
         builder.addCase(getAdminItems.rejected,(state, action)=>{
-            console.log("getAdminItems.rejected: ",action.payload);
             state.isMenuLoading = false;
             state.menuError = {ERROR_MSG:action?.payload,IS_ERROR:true}
         }) 
@@ -268,10 +166,6 @@ export const menuSlice = createSlice({
         builder.addCase(setSelectedItems.pending,(state, action)=>{
             
         }) 
-        
-
-        /*** 이하 삭제 */
-        
 
         // 메인 카테고리 받기
         builder.addCase(getDisplayMenu.fulfilled,(state, action)=>{
@@ -282,40 +176,13 @@ export const menuSlice = createSlice({
         builder.addCase(initMenu.fulfilled,(state, action)=>{
             state.menu = action.payload;
         })
-        builder.addCase(setProcessPaying.fulfilled,(state, action)=>{
-            state.isProcessPaying = action.payload;
-        })
-
-        builder.addCase(updateMenu.fulfilled,(state, action)=>{
-            //console.log("update fulfilled: ",action.payload);
-            //const payload = action.payload;
-            //console.log("data: ",payload.data) 
-            //console.log("status: ",payload.status)
-            //console.log("state: ",state);
-            /* if(payload.ERRCODE != "") { 
-                state.menu = action.payload;
-            }else {
-                state.errorCode = action.payload.ERRORCODE
-                state.errorCode = action.payload.MSG
-            } */
-        })
-        builder.addCase(getMenuState.fulfilled,(state, action)=>{
-
-        })
-        builder.addCase(getAllItems.fulfilled,(state, action)=>{
-            state.allItems = action.payload.allItems;
-            state.allSets = action.payload.allSets;
-        })
         builder.addCase(clearAllItems.fulfilled,(state, action)=>{
             state.allItems = [];
         })
+
+        /*** 이하 삭제 */
         
-        /* 
-        builder.addCase(getMenuEdit.fulfilled,(state, action)=>{
-            state.menu = action.payload.menu;
-            state.allItems = action.payload.allItems;
-        })
- */
+        
     }
 });
 

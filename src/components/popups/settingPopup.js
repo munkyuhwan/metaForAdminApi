@@ -16,7 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initOrderList } from '../../store/order';
 import { setCartView } from '../../store/cart';
 import { getStoreInfo } from '../../utils/api/metaApis';
-import { getAdminItems, getMenuState, initMenu } from '../../store/menu';
+import { getAdminItems, initMenu } from '../../store/menu';
 import { CODE_PUSH_PRODUCTION, CODE_PUSH_SECRET } from '../../resources/apiResources';
 import { KocesAppPay } from '../../utils/payment/kocesPay';
 import { getAdminCategories } from '../../store/categories';
@@ -134,7 +134,6 @@ const SettingPopup = () =>{
         varivariTest()
         .then((result)=>{
             const jsonResult=JSON.parse(result);
-            console.log(jsonResult);
             displayOnAlert("여러가지 결제 결과",jsonResult);
         })
         .catch((error)=>{
@@ -277,7 +276,6 @@ const SettingPopup = () =>{
                     key={"tablePicker"}
                     mode='dialog'
                     onValueChange = {(itemValue, itemIndex) => {
-                        
                             const filteredItem = tableList.filter(el=>el.TBL_NO == itemValue);
                             const itemNM = filteredItem[0]?.TBL_NM;
                             setTableInfo(itemValue, itemNM)
@@ -294,7 +292,6 @@ const SettingPopup = () =>{
                     }}>
                         <Picker.Item key={"none"} label = {"미선택"} value ={{}} />
                     {tableList?.map(el=>{
-                         
                         return(
                             <Picker.Item key={"_"+el.TBL_NO}  label = {el.FLOOR_NM+" "+el.TBL_NM} value ={el.TBL_NO} />
                         )
@@ -559,7 +556,7 @@ const SettingPopup = () =>{
                                 <SettingButtonText isMargin={true} >화면 업데이트</SettingButtonText>
                             </TouchableWithoutFeedback>
                             <TouchableWithoutFeedback onPress={()=>{checkUpdate();}} >
-                                <SettingButtonText isMargin={true} >앱 업데이트 ver 2.0.3</SettingButtonText>
+                                <SettingButtonText isMargin={true} >앱 업데이트 ver 2.0.5</SettingButtonText>
                             </TouchableWithoutFeedback> 
                         </SettingButtonWrapper>
                     </SettingScrollView>

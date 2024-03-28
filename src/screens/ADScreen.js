@@ -34,13 +34,14 @@ const ADScreen = () =>{
         //dispatch(getAD()); 
     },[]))
     
-    useFocusEffect(useCallback(()=>{
+    useEffect(()=>{
+        console.log("adList: ",adList)
         if( adList?.length > 0) {
             const imgToSet = adImgs.filter(el=>el.name ==adList[0]?.img_chg );
             setDisplayUrl(imgToSet[0]?.imgData)
             setAdIndex(0)
         }
-    },[adList]))
+    },[adList]);
     
     let swipeTimeOut;
     useFocusEffect(useCallback(()=>{
@@ -54,6 +55,7 @@ const ADScreen = () =>{
             setAdIndex(indexToSet);
             if(adList[tmpIndex]?.img_chg){
                 const imgToSet = adImgs.filter(el=>el.name ==adList[tmpIndex]?.img_chg );
+                console.log("imgToSet[0]?.imgData: ",imgToSet[0]?.imgData);
                 setDisplayUrl(imgToSet[0]?.imgData)
             }
         },10000)

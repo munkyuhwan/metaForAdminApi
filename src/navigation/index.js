@@ -3,37 +3,28 @@ import { NavigationContainer, useFocusEffect, useNavigation } from '@react-navig
 import { createStackNavigator } from '@react-navigation/stack'
 
 import MainScreen from '../screens/MainScreen'
-import Header from '../components/common/headerComponent'
 import PopUp from '../components/common/popup'
 import TransparentPopUp from '../components/common/transparentPopup'
 import LoginScreen from '../screens/LoginScreen'
 import ADScreen from '../screens/ADScreen'
-import WaitIndicator from '../components/common/waitIndicator'
-import { DeviceEventEmitter, PermissionsAndroid, Text, View } from 'react-native'
+import { DeviceEventEmitter } from 'react-native'
 import PopupIndicator from '../components/common/popupIndicator'
 import { useDispatch, useSelector } from 'react-redux'
-import { getAdminCategories, getAdminCategoryData, getMainCategories, getSubCategories, setSelectedMainCategory, setSelectedSubCategory, setSubCategories } from '../store/categories'
+import { getAdminCategories, setSelectedMainCategory, setSubCategories } from '../store/categories'
 import FullSizePopup from '../components/common/fullsizePopup'
-import ErrorPopup from '../components/common/errorPopup'
-import { getAdminItems, getAllItems, getDisplayMenu, getMenuState, initMenu, setSelectedItems } from '../store/menu'
+import { getAdminItems, setSelectedItems } from '../store/menu'
 import _ from 'lodash';
-import { getTableList, getTableStatus, initTableInfo } from '../store/tableInfo'
+import {  getTableStatus } from '../store/tableInfo'
 import { EventRegister } from 'react-native-event-listeners'
 import {isEmpty} from 'lodash';
 import StatusScreen from '../screens/StatusScreen'
 import { initOrderList } from '../store/order'
-import { DEFAULT_CATEGORY_ALL_CODE, DEFAULT_TABLE_STATUS_UPDATE_TIME } from '../resources/defaults'
-import { getAdminBulletin, getAdminMenuItems } from '../store/menuExtra'
-import { getStoreInfo } from '../utils/api/metaApis'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { fileDownloader, getDeviceInfo, openPopup, openTransperentPopup } from '../utils/common'
-import { getDisplay } from 'react-native-device-info'
+import {  DEFAULT_TABLE_STATUS_UPDATE_TIME } from '../resources/defaults'
+import {  getDeviceInfo, openPopup } from '../utils/common'
 import { getAD } from '../store/ad'
 import ADScreenPopup from '../components/popups/adPopup'
 import MonthSelectPopup from '../components/popups/monthSelectPopup'
 import PopupIndicatorNonCancel from '../components/common/popupIndicatoreNonCancel'
-import { getCategories, getGoodsByStoreID } from '../utils/api/newApi'
-import { getServiceList } from '../store/callServer'
 import { setErrorData } from '../store/error'
 
 const Stack = createStackNavigator()
@@ -85,7 +76,6 @@ export default function Navigation() {
     }
     // loading useeffect
     useEffect(()=>{
-        console.log("isMenuLoading: ",isMenuLoading);
         if(isMenuLoading) {
             EventRegister.emit("showSpinner",{isSpinnerShow:true, msg:"메뉴를 로딩 중 입니다."})
         }else {
@@ -121,9 +111,14 @@ export default function Navigation() {
         dispatch(getAdminItems());
         // 기기 정보 받기
         getDeviceInfo();
+        // 광고 받기
+        dispatch(getAD()); 
+
     },[])
     useEffect(()=>{
+        // 카테고리 선택에 따라 아이템 변경
         dispatch(setSelectedItems());
+        // 카테고리 선택에 따른 서브 카테고리 변경
         dispatch(setSubCategories());
     },[selectedMainCategory, selectedSubCategory])
     useEffect(()=>{

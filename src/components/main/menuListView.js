@@ -4,7 +4,7 @@ import { Animated,FlatList,Text,TouchableWithoutFeedback, View } from 'react-nat
 import { MenuListWrapper } from '../../styles/main/menuListStyle';
 import MenuItem from '../mainComponents/menuItem';
 import ItemDetail from '../detailComponents/itemDetail';
-import { getDisplayMenu, getMenu, getMenuState, updateMenu } from '../../store/menu';
+import { getDisplayMenu, getMenu, updateMenu } from '../../store/menu';
 import { widthAnimationStyle } from '../../utils/animation';
 import { setSelectedMainCategory, setSelectedSubCategory } from '../../store/categories';
 import { useSharedValue } from 'react-native-reanimated';

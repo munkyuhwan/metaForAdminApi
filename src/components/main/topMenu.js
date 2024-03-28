@@ -22,7 +22,6 @@ import TopMenuList from '../menuComponents/topMenuList'
 import VersionCheck from 'react-native-version-check';
 import { uploadFile } from '../../store/etcFunctions'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { getMenuState } from '../../store/menu'
 import AutoScroll from "@homielab/react-native-auto-scroll";
 import { setTableInfo } from '../../store/tableInfo'
 
