@@ -1,14 +1,8 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react'
-import { Animated, TouchableWithoutFeedback, View } from 'react-native';
-import { colorRed, tabBaseColor } from '../../assets/colors/color';
+import React, { useState } from 'react'
+import { TouchableWithoutFeedback } from 'react-native';
 import { SideMenuItemOff, SideMenuItemOn, SideMenuItemWrapper, SideMenuText } from '../../styles/main/sideMenuStyle';
 import { useDispatch, useSelector } from 'react-redux';
-import { getSubCategories, setSelectedMainCategory, setSelectedSubCategory } from '../../store/categories';
-import { useFocusEffect } from '@react-navigation/native';
-import { SideMenuItemTouchableOff } from './sideMenuItem';
-import {isEmpty} from 'lodash';
-import { DEFAULT_CATEGORY_ALL_CODE } from '../../resources/defaults';
-import { initMenuDetail } from '../../store/menuDetail';
+import { setSelectedMainCategory } from '../../store/categories';
 
 const LeftMenuList = (props) => {
     const dispatch = useDispatch();

@@ -22,28 +22,26 @@ const CartListItem = (props) => {
     const {images} = useSelector(state=>state.imageStorage);
     const {allItems} = useSelector(state=>state.menu);
     // 메뉴 옵션 추가 정보
-
+    const filteredImg = images.filter(el=>el.name==props?.item.ITEM_CD);
     const index = props?.index;
     const order = props?.item;
     const additiveItemList = order?.SETITEM_INFO;
     const itemDetail = allItems?.filter(el=>el.prod_cd == order?.ITEM_CD);
     const prodGb = itemDetail[0]?.prod_gb; // 세트하부금액 구분용
     // 이미지 찾기
-    const itemExtra = menuExtra.filter(el=>el.pos_code == order?.ITEM_CD);
     const ItemTitle = () => {
         let selTitleLanguage = "";
-        const selExtra = itemExtra.filter(el=>el.pos_code==order?.ITEM_CD);
         if(language=="korean") {
-            selTitleLanguage = order.ITEM_NM;
+            selTitleLanguage = itemDetail[0]?.gname_kr;
         }
         else if(language=="japanese") {
-            selTitleLanguage = selExtra[0]?.gname_jp||order.ITEM_NM;
+            selTitleLanguage = itemDetail[0]?.gname_jp||itemDetail[0].gname_kr;
         }
         else if(language=="chinese") {
-            selTitleLanguage = selExtra[0]?.gname_cn||order.ITEM_NM;
+            selTitleLanguage = itemDetail[0]?.gname_cn||itemDetail[0].gname_kr;
         }
         else if(language=="english") {
-            selTitleLanguage = selExtra[0]?.gname_en||order.ITEM_NM;
+            selTitleLanguage = itemDetail[0]?.gname_en||itemDetail[0].gname_kr;
         }
 
         return selTitleLanguage;
@@ -106,7 +104,7 @@ const CartListItem = (props) => {
         <>
             <CartItemWrapper>
                 <CartItemImageTogoWrapper>
-                    <CartItemImage source={ {uri:(`${itemDetail[0].gimg_chg}`),priority: FastImage.priority.high } } />
+                    <CartItemImage source={ {uri:filteredImg[0]?.imgData,priority: FastImage.priority.high } } />
                 </CartItemImageTogoWrapper>
                 
                 <CartItemTitlePriceWrapper>

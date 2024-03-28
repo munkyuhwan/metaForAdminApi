@@ -52,38 +52,12 @@ export const setSubCategories = createAsyncThunk("categories/setSubCategories", 
         return[]
     }
 })
-/***** 이하 삭제 */
-
-
-
-// delete 어드민 카테고리 추가 정보 받아오기
-export const getAdminCategoryData = createAsyncThunk("categories/getAdminCategoryData", async(_,{dispatch}) =>{
-    const adminResult = await getAdminMainCategory(dispatch);
-    dispatch(setMenuCategories(adminResult));
-    return []; 
-})
-// delete 전체 카테고리 전체 세팅
-export const setAllCategories = createAsyncThunk("categories/setAllCategories", async(_,{dispatch}) =>{
-    const {allCategories} = _;
-    return allCategories;
-})
-// delete 메인 카테고리 전체 세팅
-export const setAllMainCategories = createAsyncThunk("categories/setAllMainCategories", async(_,{dispatch}) =>{
-    return [];
-})
-// delete 서브 카테고리 전체 세팅
-export const setAllSubCategories = createAsyncThunk("categories/setAllSubCategories", async(_,{dispatch}) =>{
-    return [];
-})
-
-
-export const setMainCategories = createAsyncThunk("categories/setMainCategories", async(_)=>{
-    return _;
-});
-
 export const setSelectedSubCategory = createAsyncThunk("categories/setSelectedSubCategory", async(index) =>{
     return index
 })
+
+/***** 이하 삭제 */
+
 // Slice
 export const cagegoriesSlice = createSlice({
     name: 'categories',
@@ -134,11 +108,6 @@ export const cagegoriesSlice = createSlice({
         builder.addCase(setSubCategories.pending,(state, action)=>{
             
         })
-
-        /** 이하 삭제 */
-
-
-
         // set categories
         builder.addCase(setCategories.fulfilled,(state, action)=>{
             const payload = action.payload;
@@ -148,26 +117,6 @@ export const cagegoriesSlice = createSlice({
                     state[el] = action.payload[el];
                 })
             }
-        })
-        
-
-
-        // 전체 카테고리 세팅
-        builder.addCase(setAllCategories.fulfilled,(state,action)=>{
-            state.allCategories = action.payload;
-        })
-        // 메인 카테고리 전체
-        builder.addCase(setAllMainCategories.fulfilled,(state, action)=>{
-            state.mainCategories = action.payload;
-        })
-        // 서브 카테고리 전체
-        builder.addCase(setAllSubCategories.fulfilled,(state, action)=>{
-            state.subCategories = action.payload;
-        })
-
-        // 메인 카테고리 업데이트
-        builder.addCase(setMainCategories.fulfilled,(state, action)=>{
-            state.mainCategories = action.payload;
         })
        
         // 서브 카테고리 선택

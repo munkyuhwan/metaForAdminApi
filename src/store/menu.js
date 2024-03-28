@@ -2,11 +2,10 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { useSelector } from 'react-redux';
 import { MENU_DATA } from '../resources/menuData';
 import axios, { all } from 'axios';
-import { adminMenuEdit, adminOptionEdit, getAdminCategories, posMenuEdit, posMenuState, posOrderNew } from '../utils/apis';
-import { getAdminCategoryData, getMainCategories, setAllCategories, setMainCategories, setSelectedMainCategory } from './categories';
+import { getAdminCategories } from '../utils/apis';
+import { getAdminCategoryData, getMainCategories, setAllCategories, setSelectedMainCategory } from './categories';
 import { EventRegister } from 'react-native-event-listeners';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getAdminMenuItems, setMenuCategories, setMenuExtra, setOptionExtra } from './menuExtra';
 import { CALL_SERVICE_GROUP_CODE } from '../resources/apiResources';
 import { setCallServerList } from './callServer';
 import { DEFAULT_CATEGORY_ALL_CODE } from '../resources/defaults';
@@ -14,7 +13,7 @@ import { getMenuUpdateState, getPosItemsAll, getPosItemsWithCategory, getPosMain
 import { scanFile } from 'react-native-fs';
 import { setMenuOptionGroupCode } from './menuDetail';
 import { displayErrorNonClosePopup, displayErrorPopup } from '../utils/errorHandler/metaErrorHandler';
-import { getStoreID, isNetworkAvailable, openPopup } from '../utils/common';
+import { fileDownloader, getStoreID, isNetworkAvailable, openPopup } from '../utils/common';
 import { Alert } from 'react-native';
 import moment from 'moment';
 import 'moment/locale/ko';
@@ -37,6 +36,9 @@ export const getAdminItems = createAsyncThunk("menu/getAdminItems", async(_,{dis
         const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_GOODS}`,{"STORE_ID":`${STORE_IDX}`}, {});
         if(data) {
             if(data?.result==true) {
+                data?.order?.map(async (el)=>{
+                    await fileDownloader(dispatch, `${el.prod_cd}`,`${el.gimg_chg}`).catch("");
+                });
                 return data;
             }else {
                 return rejectWithValue(error.message)
@@ -84,47 +86,6 @@ export const initMenu = createAsyncThunk("menu/initMenu", async(_,{dispatch,getS
     EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
 })
 
-export const getDisplayMenu = createAsyncThunk("menu/getDisplayMenu", async(_, {dispatch, getState}) =>{
-    //console.log("getDisplayMenu==========================================");
-    const {selectedMainCategory,selectedSubCategory, mainCategories} = getState().categories
-    const {allItems} = getState().menu;
-    const {menuExtra} = getState().menuExtra;
-
-    let mCat ="";
-    let sCat = "";
-    if(selectedMainCategory == "0" || selectedMainCategory == undefined ) {
-        mCat=mainCategories[0];
-    }
-    if(selectedSubCategory == "0" || selectedSubCategory == undefined ) {
-        sCat= "0000"
-    } 
-
-    let selectedItems = []
-    //let itemResult = [];
-    //itemResult = await getPosItemsWithCategory(dispatch, {selectedMainCategory:mCat,selectedSubCategory:sCat});
-    if(selectedMainCategory!=0) {
-        if(selectedSubCategory == "0000") {
-            selectedItems = allItems.filter(el=>el.PROD_L1_CD == selectedMainCategory); 
-        }else {
-            selectedItems = allItems.filter(el=>el.PROD_L1_CD == selectedMainCategory && el.PROD_L2_CD == selectedSubCategory ); 
-        }
-    }
-    selectedItems = selectedItems.filter(el=>el.PROD_NM != "공란");
-    
-    // 어드민에서 데이터 확인 후 노출 여부 정함
-    let itemsToDisplay = [];
-    for(var i=0;i<selectedItems?.length;i++) {
-        const itemExtra = menuExtra?.filter(el=>el.pos_code == selectedItems[i]?.PROD_CD);
-        if(itemExtra?.length>0) {
-            if(itemExtra[0]?.is_use == "Y" && itemExtra[0]?.is_view == "Y" ) {
-                itemsToDisplay.push(selectedItems[i]);
-            }
-        }
-    }
-    
-    return itemsToDisplay;
-})
-
 
 
 // Slice
@@ -167,12 +128,6 @@ export const menuSlice = createSlice({
             
         }) 
 
-        // 메인 카테고리 받기
-        builder.addCase(getDisplayMenu.fulfilled,(state, action)=>{
-            if(action.payload) {
-                state.displayMenu = action.payload;
-            }
-        })
         builder.addCase(initMenu.fulfilled,(state, action)=>{
             state.menu = action.payload;
         })

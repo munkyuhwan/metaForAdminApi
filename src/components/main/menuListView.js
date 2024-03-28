@@ -4,7 +4,7 @@ import { Animated,FlatList,Text,TouchableWithoutFeedback, View } from 'react-nat
 import { MenuListWrapper } from '../../styles/main/menuListStyle';
 import MenuItem from '../mainComponents/menuItem';
 import ItemDetail from '../detailComponents/itemDetail';
-import { getDisplayMenu, getMenu, updateMenu } from '../../store/menu';
+import { getMenu, updateMenu } from '../../store/menu';
 import { widthAnimationStyle } from '../../utils/animation';
 import { setSelectedMainCategory, setSelectedSubCategory } from '../../store/categories';
 import { useSharedValue } from 'react-native-reanimated';
@@ -69,7 +69,6 @@ const MenuListView = () => {
 
     useEffect(()=>{
         if(displayMenu.length>0) {
-            //dispatch(getDisplayMenu());
             //listRef?.current?.scrollTo({x:0,animated: false});
             //if(listRef)listRef?.current?.scrollTo({y:0,animated: false});
             listRef.current.scrollToOffset({ animated: false, offset: 0 });
