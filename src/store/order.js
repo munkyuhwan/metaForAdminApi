@@ -39,7 +39,6 @@ export const presetOrderData = createAsyncThunk("order/presetOrderData", async(_
         posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:"테이블 설정",MSG2:"테이블 번호를 설정 해 주세요."});
         return 
     }
-     
     //const orderNo = `${date.getFullYear().toString().substring(2,4)}${numberPad(date.getMonth()+1,2)}${numberPad(date.getDate(),2)}${moment().format("HHMMSSs")}`;
     const orderNo = `${date.getFullYear().toString().substring(2,4)}${numberPad(date.getMonth()+1,2)}${numberPad(date.getDate(),2)}${moment().valueOf()}`;
      
@@ -84,6 +83,7 @@ export const presetOrderData = createAsyncThunk("order/presetOrderData", async(_
         };
         orderData = {...orderData,...addOrderData};
     }
+    console.log("orderdata: ",orderData);
     return orderData;
 })
 
@@ -97,6 +97,7 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
 
     const tableNo = await getTableInfo().catch(err=>{posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:"테이블 설정",MSG2:"테이블 번호를 설정 해 주세요."});});
     if(isEmpty(tableNo)) {
+        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
         posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:"테이블 설정",MSG2:"테이블 번호를 설정 해 주세요."});
         return 
     }
@@ -149,6 +150,7 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
     }    
     orderList = {...orderList,...orderData};
     try {
+        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
         const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_POST_ORDER}`,orderList, {});
         if(data) {
             if(data?.result) {
@@ -171,6 +173,7 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
         // 예외 처리
         console.log("admin api error=========================================");
         console.error(error.message);
+        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
         return rejectWithValue(error.message)
     }
 })
@@ -186,6 +189,7 @@ export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{
 
     const tableNo = await getTableInfo().catch(err=>{posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:"테이블 설정",MSG2:"테이블 번호를 설정 해 주세요."});});
     if(isEmpty(tableNo)) {
+        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
         posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:"테이블 설정",MSG2:"테이블 번호를 설정 해 주세요."});
         return 
     }
@@ -220,26 +224,15 @@ export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{
             }]
         };
         orderList = {...orderList,...addOrderData};
-    }
+    } 
     //console.log("orderData: ",orderList);
-    let orderData = {
-        "VERSION" : POS_VERSION_CODE,
-        "WORK_CD" : !isEmpty(payData)?POS_WORK_CD_PREPAY_ORDER_REQUEST:POS_WORK_CD_POSTPAY_ORDER, //선불 후불에 따라 코드 다름
-        "ORDER_NO" : orderNo,
-        "TBL_NO" : `${tableNo.TABLE_INFO}`, 
-        "PRINT_YN" : "Y",
-        "USER_PRINT_YN" : "Y",
-        "PRINT_ORDER_NO" : orderNo, 
-        "TOT_INWON" : 4,
-        "ITEM_CNT" : orderList.ITEM_CNT,
-        "ITEM_INFO" :orderList
-    }    
     // 포스로 전달
     //let orderData = {"VERSION":"0010","WORK_CD":"8020","ORDER_NO":"2312271703684313782","TBL_NO":"001","PRINT_YN":"Y","USER_PRINT_YN":"Y","PRINT_ORDER_NO":"2312271703684313782","TOT_INWON":4,"ITEM_CNT":1,"ITEM_INFO":[{"ITEM_SEQ":1,"ITEM_CD":"900022","ITEM_NM":"치즈 추가","ITEM_QTY":1,"ITEM_AMT":1004,"ITEM_VAT":91,"ITEM_DC":0,"ITEM_CANCEL_YN":"N","ITEM_GB":"N","ITEM_MSG":"","SETITEM_CNT":0,"SETITEM_INFO":[]}],"TOTAL_AMT":"50004","TOTAL_VAT":"0","TOTAL_DC":"0","ORDER_STATUS":"3","CANCEL_YN":"N","PREPAYMENT_YN":"Y","CUST_CARD_NO":"94119400","CUST_NM":"","PAYMENT_CNT":1,"PAYMENT_INFO":{"PAY_SEQ":1,"PAY_KIND":"2","PAY_AMT":"50004","PAY_VAT":"0","PAY_APV_NO":"02761105","PAY_APV_DATE":"231227113649","PAY_CART_NO":"94119400","PAY_UPD_DT":"231227113649","PAY_CANCEL_YN":"N","PAY_CART_TYPE":"신한카드","PAY_CARD_MONTH":"00"}}
-    console.log("orderlist=================================================================");
-    console.log(JSON.stringify(orderList));
+    //console.log("orderlist=================================================================");
+    //console.log(JSON.stringify(orderList));
     const {POS_IP} = await getIP();
     try {
+        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
         const data = await callApiWithExceptionHandling(`${POS_BASE_URL(POS_IP)}`,orderList, {}); 
         if(data) {
             if(data.ERROR_CD == "E0000") {
@@ -259,8 +252,9 @@ export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{
             }
         }
         return;
-      } catch (error) {
+    } catch (error) {
         // 예외 처리
+        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
         console.error(error.message);
         return rejectWithValue(error.message)
     }

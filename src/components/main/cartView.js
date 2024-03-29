@@ -15,7 +15,7 @@ import { setCartView, setIconClick } from '../../store/cart';
 import { IconWrapper } from '../../styles/main/topMenuStyle';
 import TopButton from '../menuComponents/topButton';
 import {  isNetworkAvailable, numberWithCommas, openTransperentPopup } from '../../utils/common';
-import { adminDataPost, postLog, postOrderToPos, presetOrderData } from '../../store/order';
+import { adminDataPost, postLog, postOrderToPos, postToMetaPos, presetOrderData } from '../../store/order';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {isEmpty} from 'lodash';
 import LogWriter from '../../utils/logWriter';
@@ -97,23 +97,25 @@ const CartView = () =>{
                 var kocessAppPay = new KocesAppPay();
                 kocessAppPay.requestKocesPayment({amt:payAmt, taxAmt:vatTotal, months:monthSelected, bsnNo:bsnNo,termID:tidNo })
                 .then(async (result)=>{
+                     
                     console.log("result: ",result);
                     //dispatch(postToMetaPos({payData:result}));
-                    await dispatch(presetOrderData({paydata:result}));
-                    dispatch(adminDataPost({payData:null}));
-                    dispatch(postOrderToPos({payData:null}));
-
+                    //const result = {"AnsCode": "0000", "AnswerTrdNo": "null", "AuNo": "36263593", "AuthType": "null", "BillNo": "", "CardKind": "1", "CardNo": "94119400", "ChargeAmt": "null", "DDCYn": "1", "DisAmt": "null", "EDCYn": "0", "GiftAmt": "", "InpCd": "1107", "InpNm": "신한카드", "Keydate": "", "MchData": "wooriorder", "MchNo": "22101257", "Message": "000005923065                            ", "Month": "", "OrdCd": "1107", "OrdNm": "개인신용", "PcCard": "null", "PcCoupon": "null", "PcKind": "null", "PcPoint": "null", "QrKind": "null", "RefundAmt": "null", "SvcAmt": "0", "TaxAmt": "91", "TaxFreeAmt": "0", "TermID": "0710000900", "TradeNo": "000005923065", "TrdAmt": "913", "TrdDate": "240329225017", "TrdType": "A15"}
+                    await dispatch(presetOrderData({payData:result}));
+                    dispatch(postOrderToPos({payData:result}));
+                    dispatch(adminDataPost({payData:result}));
+ 
                 })
                 .catch((err)=>{
                     //console.log("error: ",err)
                     dispatch(postLog({payData:err}))
                     displayErrorPopup(dispatch, "XXXX", err?.Message)
-                })
+                }) 
 
             }else {
                 //dispatch(postToMetaPos({payData:{}}));
                 console.log("post pay order-======")
-                await dispatch(presetOrderData({paydata:null}));
+                await dispatch(presetOrderData({payData:null}));
                 dispatch(adminDataPost({payData:null}));
                 dispatch(postOrderToPos({payData:null}));
             }

@@ -75,6 +75,7 @@ export const cagegoriesSlice = createSlice({
             const payload = action?.payload
             const result = payload?.result
             if(result == true) {
+                const goodsCategory = payload?.goods_category;
                 state.allCategories =  payload?.goods_category;
             }
         })
