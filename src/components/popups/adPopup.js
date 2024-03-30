@@ -17,7 +17,6 @@ const ADScreenPopup = () =>{
     const [adIndex, setAdIndex] = useState();
     const [displayUrl, setDisplayUrl] = useState("");
 
-
     useEffect(()=>{
         console.log("광고 받기");
         dispatch(getAD()); 
@@ -47,8 +46,8 @@ const ADScreenPopup = () =>{
                 const imgToSet = adImgs.filter(el=>el.name ==adList[tmpIndex]?.img_chg );
                 setDisplayUrl(imgToSet[0]?.imgData)
             }
-            clearTimeout(swipeTimeOut); 
-            swipeTimeOut=null;
+            //clearTimeout(swipeTimeOut); 
+            //swipeTimeOut=null;
         },10000)
     },[adIndex])
 
@@ -60,7 +59,7 @@ const ADScreenPopup = () =>{
 
     return(
         <>
-            <TouchableWithoutFeedback onPress={()=>{ clearTimeout(swipeTimeOut); dispatch(setAdScreen({isShow:false,isMain:false})) /* navigation.navigate("main") */}}>
+            <TouchableWithoutFeedback onPress={()=>{ clearTimeout(swipeTimeOut); swipeTimeOut=null; dispatch(setAdScreen({isShow:false,isMain:false})) /* navigation.navigate("main") */}}>
                 <ADWrapper>
                     {/* <View style={{position:'absolute', right:158}}>
                         <TableName>

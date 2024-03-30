@@ -83,7 +83,7 @@ export const presetOrderData = createAsyncThunk("order/presetOrderData", async(_
         };
         orderData = {...orderData,...addOrderData};
     }
-    console.log("orderdata: ",orderData);
+    //console.log("orderdata: ",(orderData));
     return orderData;
 })
 
