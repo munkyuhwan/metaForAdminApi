@@ -80,6 +80,8 @@ const ItemDetail = (props) => {
 
 
     const onOptionSelect = (limitCnt, itemData) =>{     
+
+
         let setItem =  {
             "ITEM_SEQ" : 0,
             "SET_SEQ" : menuOptionSelected.length+1,
@@ -93,20 +95,26 @@ const ItemDetail = (props) => {
         let tmpOptionSelected = Object.assign([],menuOptionSelected);
         const filteredOptList = menuDetail?.option;
         let itemCheckCnt = 0;
-        console.log("filteredOptList: ",filteredOptList);
+        
+
         if(filteredOptList?.length>0) {
             for(var i=0;i<tmpOptionSelected?.length;i++) {
-                console.log("tmpOptionSelected; ",tmpOptionSelected[i]);
-                const checkItems = filteredOptList?.filter(el=>el.prod_i_cd == tmpOptionSelected[i]?.PROD_I_CD);
+                // 현재 선택한 옵션이 옵션그룹에 속해 있는지 확인
+                const checkItems = filteredOptList?.filter(el=>el.prod_i_cd.filter(cdEl => cdEl == tmpOptionSelected[i]?.PROD_I_CD).length>0 );
                 //console.log("checkItems: ",checkItems);
                 if(checkItems?.length > 0) {
                     itemCheckCnt = itemCheckCnt+1;
                 }
             }
         }
-        console.log("itemCheckCnt: ",itemCheckCnt);
-        console.log("limitCnt>itemCheckCnt||limitCnt==0:",limitCnt>itemCheckCnt||limitCnt==0)
-        dispatch(setMenuOptionSelected({data:setItem,isAdd:limitCnt>itemCheckCnt||limitCnt==0, isAmt:false  }));
+        //console.log("itemCheckCnt: ",itemCheckCnt);
+        //console.log("limitCnt>itemCheckCnt||limitCnt==0:",limitCnt>itemCheckCnt||limitCnt==0)
+        //console.log("limitCnt>itemCheckCnt||limitCnt==0: ",limitCnt>itemCheckCnt||limitCnt==0);
+        if(limitCnt>itemCheckCnt||limitCnt==0) {
+            dispatch(setMenuOptionSelected({data:setItem,isAdd:limitCnt>itemCheckCnt||limitCnt==0, isAmt:false  }));
+        }else {
+            posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:`옵션 필수 수량을 확인 해 주세요.`,MSG2:""})
+        }
         
     }
     const addToCart = () => {
