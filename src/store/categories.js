@@ -76,7 +76,10 @@ export const cagegoriesSlice = createSlice({
             const result = payload?.result
             if(result == true) {
                 const goodsCategory = payload?.goods_category;
-                state.allCategories =  payload?.goods_category;
+                if(goodsCategory.length > 0) {
+                    const categories = goodsCategory.filter(el=>el.is_use=='Y');
+                    state.allCategories =  categories;
+                }
             }
         })
         builder.addCase(getAdminCategories.pending, (state, action)=>{
