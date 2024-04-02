@@ -15,14 +15,18 @@ import { setCartView, setIconClick } from '../../store/cart';
 import { IconWrapper } from '../../styles/main/topMenuStyle';
 import TopButton from '../menuComponents/topButton';
 import {  isNetworkAvailable, numberWithCommas, openTransperentPopup } from '../../utils/common';
-import { adminDataPost, postLog, postOrderToPos, postToMetaPos, presetOrderData } from '../../store/order';
+import { adminDataPost, initOrderList, postLog, postOrderToPos, postToMetaPos, presetOrderData } from '../../store/order';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {isEmpty} from 'lodash';
 import LogWriter from '../../utils/logWriter';
 import { KocesAppPay } from '../../utils/payment/kocesPay';
 import { displayErrorNonClosePopup, displayErrorPopup } from '../../utils/errorHandler/metaErrorHandler';
-import { setSelectedMonth } from '../../store/monthPopup';
+import { setMonthPopup, setSelectedMonth } from '../../store/monthPopup';
 import { EventRegister } from 'react-native-event-listeners';
+import { getMenuUpdateState, getStoreInfo, getTableAvailability } from '../../utils/api/metaApis';
+import { initMenu } from '../../store/menu';
+import { PAY_SEPRATE_AMT_LIMIT } from '../../resources/defaults';
+import moment from 'moment';
 
 const windowWidth = Dimensions.get('window').width;
 const CartView = () =>{
@@ -82,7 +86,6 @@ const CartView = () =>{
     },[isMonthSelectShow,monthSelected])
     const makePayment = async () =>{
         //dispatch(postToMetaPos({payData:{}}));
-
             if( tableStatus?.now_later == "선불") {
                 const bsnNo = await AsyncStorage.getItem("BSN_NO");
                 const tidNo = await AsyncStorage.getItem("TID_NO");
@@ -115,6 +118,7 @@ const CartView = () =>{
                 })  
                  
             }else {
+                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
                 //dispatch(postToMetaPos({payData:{}}));
                 console.log("post pay order-======")
                 await dispatch(presetOrderData({payData:null}));
@@ -133,16 +137,16 @@ const CartView = () =>{
             EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
             return;
         }
-        makePayment();
+        //makePayment();
 
-        /* 
+        
         const storeInfo = await getStoreInfo()
         .catch((err)=>{
             displayErrorNonClosePopup(dispatch, "XXXX", "상점 정보를 가져올 수 없습니다.");
             EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); 
-            return [];
+            return;
         })
-
+        
         // 개점정보 확인
         if(!storeInfo?.SAL_YMD) {
             EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
@@ -163,6 +167,7 @@ const CartView = () =>{
                     const isUpdated = resultData?.ERROR_CD == "E0000" ;
                     const updateDateTime = resultData?.UPD_DT;
                     const msg = resultData?.ERROR_MSG;
+
                     if(isUpdated) {
                         
                         // 날짜 기준 메뉴 업트가 있으면 새로 받아 온다.
@@ -177,7 +182,10 @@ const CartView = () =>{
                                     text:'확인',
                                 }]
                             );
-                            dispatch(initMenu());
+                            // 카테고리 받기
+                            dispatch(getAdminCategories());
+                            // 메뉴 받아오기
+                            dispatch(getAdminItems());
                             const saveDate = moment().format("YYYY-MM-DD HH:mm:ss");
                             AsyncStorage.setItem("lastUpdate",saveDate);
                             dispatch(setCartView(false));
@@ -209,7 +217,7 @@ const CartView = () =>{
                 } 
             }
         }
-         */
+         
         
     }
     useEffect(()=>{

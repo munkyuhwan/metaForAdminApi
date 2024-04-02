@@ -26,7 +26,7 @@ export const DetailWhiteWrapper = styled.View`
 
 export const DetailInfoWrapper = styled.View`
     width:100%;
-    height:166px;
+    height:135px;
     flexDirection:row;
     backgroundColor:transparent;
 `
@@ -40,7 +40,7 @@ export const DetailItemInfoWrapper = styled.View`
 `
 export const DetailItemInfoImageWrapper = styled.ImageBackground`
     width:360px;
-    height:250px;
+    height:220px;
     borderRadius:${RADIUS};
     backgroundColor:black;
 `
@@ -52,7 +52,7 @@ export const DetailItemInfoImage = styled.Image`
 
 export const DetailItemInfoFastImage = styled(FastImage)`
     width:360px;
-    height:250px;
+    height:220px;
     resizeMode:cover;
     borderRadius:${RADIUS};
 `
