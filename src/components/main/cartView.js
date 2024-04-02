@@ -225,6 +225,14 @@ const CartView = () =>{
     },[isOn])
 
     useEffect(()=>{
+        //console.log("order list: ",orderList.length);
+        //console.log("order list: ",orderList);
+        if(orderList?.length > 0) {
+            dispatch(setCartView(true))
+        }else {
+            dispatch(setCartView(false))
+        }
+        /* 
         let totalAmt = 0;
         let totalCnt = 0
         if(orderList) {
@@ -251,7 +259,7 @@ const CartView = () =>{
             orderListRef?.current?.scrollToOffset({ animated: true, offset: 0 });
         }
         setPrevOrderList(orderList);
-        
+         */
     },[orderList])
   
     useEffect(()=>{
@@ -263,6 +271,7 @@ const CartView = () =>{
             setCartCnt(tmpPrice);
         } */
     },[orderStatus])
+
 
     return(
         <>  

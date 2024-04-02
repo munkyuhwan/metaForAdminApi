@@ -111,7 +111,7 @@ const MenuItem = ({item,index,setDetailShow}) => {
                                     <MenuItemSpiciness source={require('../../assets/icons/spicy_5.png')}/>
                                 </MenuItemButtonInnerWrapperRight>
                             }
-                            <TouchableWithoutFeedback onPress={()=>{ if(item?.prod_gb!="00"){setDetailShow(true);  dispatch(setItemDetail({itemID}));} else { dispatch(addToOrderList({item:item,menuOptionSelected:[]}));} }} >
+                            <TouchableWithoutFeedback onPress={()=>{ if(item?.prod_gb=="09"||item?.prod_gb=="02"){setDetailShow(true);  dispatch(setItemDetail({itemID}));} else { dispatch(addToOrderList({item:item,menuOptionSelected:[]}));} }} >
                                 <MenuItemButtonInnerWrapperLeft>
                                     <MenuItemButton source={require('../../assets/icons/add.png')}/>
                                 </MenuItemButtonInnerWrapperLeft>

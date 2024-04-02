@@ -6,7 +6,6 @@ import _ from "lodash";
 import { colorRed, colorWhite } from '../../assets/colors/color'
 import { openFullSizePopup, openPopup, openTransperentPopup } from '../../utils/common'
 import LeftMenuList from '../menuComponents/leftMenuList'
-import { setCartView } from '../../store/cart';
 import { LANGUAGE } from '../../resources/strings';
 import { DEFAULT_CATEGORY_ALL_CODE } from '../../resources/defaults';
 

@@ -22,12 +22,14 @@ const CartListItem = (props) => {
     const {images} = useSelector(state=>state.imageStorage);
     const {allItems} = useSelector(state=>state.menu);
     // 메뉴 옵션 추가 정보
-    const filteredImg = images.filter(el=>el.name==props?.item.ITEM_CD);
+    const filteredImg = images.filter(el=>el.name==props?.item.prod_cd);
     const index = props?.index;
     const order = props?.item;
-    const additiveItemList = order?.SETITEM_INFO;
-    const itemDetail = allItems?.filter(el=>el.prod_cd == order?.ITEM_CD);
+    const additiveItemList = order?.set_item;
+    const itemDetail = allItems?.filter(el=>el.prod_cd == props?.item.prod_cd);
     const prodGb = itemDetail[0]?.prod_gb; // 세트하부금액 구분용
+
+
     // 이미지 찾기
     const ItemTitle = () => {
         let selTitleLanguage = "";
@@ -97,9 +99,12 @@ const CartListItem = (props) => {
 
             return Number(order?.ITEM_AMT)+Number(additivePrice);
         }else {
-            return order?.ITEM_AMT||0;
+            const itemTotal = Number(itemDetail[0]?.account)*Number(order?.qty);
+            return itemTotal||0;
         }
     }
+
+
     return(
         <>
             <CartItemWrapper>
@@ -108,13 +113,13 @@ const CartListItem = (props) => {
                 </CartItemImageTogoWrapper>
                 
                 <CartItemTitlePriceWrapper>
-                    <CartItemTitle numberOfLines={1} ellipsizeMode="tail" >{ItemTitle()||order.ITEM_NM}</CartItemTitle>
+                    <CartItemTitle numberOfLines={1} ellipsizeMode="tail" >{ItemTitle()||itemDetail.gname_kr}</CartItemTitle>
                     <CartItemOpts numberOfLines={2} ellipsizeMode="tail" >
-                        {additiveItemList.length>0 &&
+                        {/*additiveItemList.length>0 &&
                             additiveItemList.map((el,index)=>{
                                 return `${ItemOptionTitle(el.PROD_I_CD,index)||el.PROD_I_NM}`+`${el.QTY}개`+`${index<(additiveItemList.length-1)?", ":""}`;
                             })
-                        }
+                        */}
                     </CartItemOpts>
                     <CartItemPrice>{numberWithCommas(itemTotalPrice())}원</CartItemPrice>
                     <CartItemAmtWrapper>
@@ -124,7 +129,7 @@ const CartListItem = (props) => {
                                <OperandorText>-</OperandorText>
                             </CartItemAmtController>
                         </TouchableWithoutFeedback>
-                        <CartItemAmtText>{order?.ITEM_QTY}</CartItemAmtText>
+                        <CartItemAmtText>{order?.qty}</CartItemAmtText>
                         <TouchableWithoutFeedback  onPress={()=>{calculateAmt("plus",1)}} >
                             <CartItemAmtController>
                                 <OperandorText>+</OperandorText>

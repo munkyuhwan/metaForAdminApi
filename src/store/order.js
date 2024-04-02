@@ -381,7 +381,54 @@ export const resetAmtOrderList = createAsyncThunk("order/resetAmtOrderList", asy
 })
 
 export const addToOrderList =  createAsyncThunk("order/addToOrderList", async(_,{dispatch, getState,extra}) =>{
+    
+    const item = _?.item;
+    const menuOptionSelected = _?.menuOptionSelected;
+    const {orderList} = getState().order;
 
+    var currentOrderList = Object.assign([],orderList);
+    var orderItemForm = {
+        prod_cd:"",
+        qty:0,
+        set_item:[]
+    };
+    var orderSetForm={
+        prod_i_cd:"",
+        prod_i_nm:"",
+        qty:0,
+    }
+
+    if( META_SET_MENU_SEPARATE_CODE_LIST.indexOf(item?.prod_gb)>=0) {
+        // 메뉴 선택하부금액 
+        // 선택한 옵션의 가격이 들어감
+        // 세트 메인 품목의 가격은 그대로 하위 품목들의 가격이 들어가고 그에따라 수량이 늘아날떄 가격과 수량이 같이 올라가야함
+        // 메뉴 데이터 주문데이터에 맞게 변경
+        console.log("menuOptionSelected: ",menuOptionSelected);
+
+        
+    }else {
+         // 다른 메뉴들
+        // 세트메뉴 경우 그냥 세트 품목들 0원 세트 메인 상품의 가격에 세트메뉴 가격을 추가함
+        //console.log("item: ",item);
+
+        const duplicatedList = currentOrderList.filter(el=>el.prod_cd == item?.prod_cd);
+
+        if(duplicatedList.length>0) {
+            for(var i=0;i<orderList.length;i++) {
+                if(orderList[i].prod_cd == item?.prod_cd) {
+                    currentOrderList[i] = Object.assign({},{...currentOrderList[i],...{qty:Number(orderList[i]["qty"])+1}});
+                }
+            }
+        }else {
+            orderItemForm["prod_cd"] = item?.prod_cd;
+            orderItemForm["qty"] = 1;
+            orderItemForm["set_item"] = [];
+            currentOrderList.push(orderItemForm);
+        }
+        return({orderList:currentOrderList});
+
+    }
+    /* 
     const {item,menuOptionSelected} = _;
     const {orderList} = getState().order;
     //const {menuDetail} = getState().menuDetail;
@@ -420,9 +467,6 @@ export const addToOrderList =  createAsyncThunk("order/addToOrderList", async(_,
         // 금액계산
         const totalResult = grandTotalCalculate(newOrderList);
         
-        //openPopup(dispatch,{innerView:"AutoClose", isPopupVisible:true,param:{msg:"장바구니에 추가했습니다."}});
-        //openTransperentPopup(dispatch, {innerView:"OrderComplete", isPopupVisible:true,param:{msg:"장바구니에 추가했습니다."}});
-        //newOrderList.reverse();
         return {orderList:newOrderList, vatTotal:Number(optionVat)+Number(totalResult?.vatTotal), grandTotal:Number(totalResult.grandTotal)+Number(optionPrice),totalItemCnt:Number(totalResult.itemCnt), orderPayData:[] };
     }else {
         // 다른 메뉴들
@@ -453,14 +497,10 @@ export const addToOrderList =  createAsyncThunk("order/addToOrderList", async(_,
             newOrderList[i] = Object.assign({},{...newOrderList[i],...{ITEM_SEQ:i+1}});
         }
         // 금액계산
-        const totalResult = grandTotalCalculate(newOrderList)
-        //openPopup(dispatch,{innerView:"AutoClose", isPopupVisible:true,param:{msg:"장바구니에 추가했습니다."}});
-        //openTransperentPopup(dispatch, {innerView:"OrderComplete", isPopupVisible:true,param:{msg:"장바구니에 추가했습니다."}});
-        //newOrderList.reverse();
-  
+        const totalResult = grandTotalCalculate(newOrderList);
         return {orderList:newOrderList,vatTotal:totalResult?.vatTotal, grandTotal:totalResult.grandTotal,totalItemCnt:totalResult.itemCnt, orderPayData:[] };
     }
-      
+     */
 })
 // 주문로그 
 export const postLog =  createAsyncThunk("order/postLog", async(_,{dispatch, getState,extra}) =>{
@@ -711,54 +751,6 @@ export const clearOrderStatus = createAsyncThunk("order/clearOrderStatus", async
     return [];
 })
 
-/* 
-export const addToOrderList =  createAsyncThunk("order/addToOrderList", async(_,{getState,extra}) =>{
-    console.log("menuDetail: ",_.menuDetail);
-    const menuDetail = _.menuDetail;
-    const {grandTotal, orderList} = getState().order;
-    const selectedOptions = _.selectedOptions||[];
-    const selectedRecommend = _.selectedRecommend||[];
-    let currentOrderList = orderList;
-    // 최초 카트에 추가할떄
-    var orderAmt = 1;
-    var orderData = {menuIndex:_.menuDetailIndex,selectedOptions:selectedOptions, amount:orderAmt};
-
-    // 기존에 카트에 있는지 체크
-    const requestedOrderData = {menuIndex:_.menuDetailIndex,selectedOptions:selectedOptions}
-    if(currentOrderList.length>0) {
-        currentOrderList.map((el, index)=>{
-            let prevEl = el;
-            // amount 빼고 같은값이 있나 비교
-            const {amount, ...obj} = prevEl;
-            prevEl = obj;
-            if(JSON.stringify(prevEl) == JSON.stringify(requestedOrderData) ) {
-                const prevOrderAmt = el.amount;
-                return {menuIndex:el.menuIndex,selectedOptions:el.selectedOptions, amount:Number(prevOrderAmt)+1};
-            }else {
-                console.log('중복 아님');
-                return {menuIndex:_.menuDetailIndex,selectedOptions:selectedOptions, amount:orderAmt};
-            }
-        })   
-    }
-    console.log("currentOrderList: ",currentOrderList);
-
-    var totalPrice = Number(menuDetail.price)+grandTotal;
-    for(var i=0;i<selectedOptions.length;i++) {
-        // 총합계 계산
-        totalPrice+=Number(MENU_DATA.options[selectedOptions[i]].price);
-    }
-    //const optData= MENU_DATA.options[el];
-    var orderMenu = [orderData];
-    for(var i=0;i<selectedRecommend.length;i++) {
-        // 메뉴 추가
-        orderMenu.push({menuIndex:selectedRecommend[i],selectedOptions:[]})
-        // 총합계 계산
-        totalPrice+=Number(MENU_DATA.menuAll[selectedRecommend[i]].price);
-    }
-    
-    return {orderList:orderMenu, grandTotal:totalPrice};
-}) 
-*/
 // Slice
 export const orderSlice = createSlice({
     name: 'order',
@@ -815,10 +807,13 @@ export const orderSlice = createSlice({
             //console.log("addToOrderList========",action.payload);
             if(action.payload){
                 state.orderList = action.payload.orderList;
+                /* 
+                state.orderList = action.payload.orderList;
                 state.grandTotal = action.payload.grandTotal;
                 state.totalItemCnt = action.payload.totalItemCnt;
                 state.orderPayData = action.payload.orderPayData;
                 state.vatTotal = action.payload.vatTotal;
+                */
             }
         })
         // 주문 수량 수정
