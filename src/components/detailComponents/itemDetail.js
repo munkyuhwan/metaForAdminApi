@@ -115,7 +115,6 @@ const ItemDetail = (props) => {
 
         if(filterOpt.length > 0) {
             // 추가된 옵션에 수량만 올리기
-            
             if(isAdd) {
                 // 추가 
                 selectedOpt['qty'] = Number(filterOpt[0]['qty'])+1;
