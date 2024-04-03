@@ -129,6 +129,8 @@ const ItemDetail = (props) => {
             // 새로 추가 
             currentOpt.push(selectedOpt)
         }
+        currentOpt = currentOpt.slice().sort((a, b) => b.optItem - a.optItem);
+
         setOptSelected(currentOpt);
     }
     const addToCart = () => {
