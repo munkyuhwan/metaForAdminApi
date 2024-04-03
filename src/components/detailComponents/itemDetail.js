@@ -24,10 +24,11 @@ const ItemDetail = (props) => {
     const isDetailShow = props.isDetailShow;
     const dispatch = useDispatch();
     const {allItems} = useSelector((state)=>state.menu);
-    const {menuDetailID, menuOptionSelected, menuOptionList, setGroupItem} = useSelector((state)=>state.menuDetail);
+    const {menuDetailID, menuOptionSelected} = useSelector((state)=>state.menuDetail);
     const [detailZIndex, setDetailZIndex] = useState(0);
     const [menuDetail, setMenuDetail] = useState(null);
 
+    const [optSelected, setOptSelected] = useState([]);
 
     // animation set
     const [widthAnimation, setWidthAnimation] = useState(new Animated.Value(0));
@@ -78,44 +79,60 @@ const ItemDetail = (props) => {
         }
     },[menuDetailID])
 
+    
+    const onOptionSelect = ( isAdd, optGroup, optItem) =>{     
+        // 선택한 옵션
+        var selectedOpt = {optGroup:optGroup?.idx, optItem:optItem.prod_cd, qty:1};
+        // 추가 전 옵션 리스트
+        var currentOpt = Object.assign([],optSelected);
 
-    const onOptionSelect = (limitCnt, itemData) =>{     
+        // 기존 옵션이 있는지 체크
+        const filterOpt = currentOpt.filter(el=>el.optGroup == optGroup?.idx&&el.optItem == optItem.prod_cd);
+        // 선택된 옵션이랑 다른 옵션만 담기
+        const expendedOpt = currentOpt.filter(el=>el.optGroup != optGroup?.idx||el.optItem != optItem.prod_cd);
 
-
-        let setItem =  {
-            "ITEM_SEQ" : 0,
-            "SET_SEQ" : menuOptionSelected.length+1,
-            "PROD_I_CD" : itemData?.prod_cd,
-            "PROD_I_NM" : itemData?.gname_kr,
-            "QTY" : 1,
-            "AMT" : Number(itemData?.sal_amt),
-            "VAT" : Number(itemData?.sal_vat),
-        }; 
-        // 옵션 구룹의 수량 초과 하지 않도록 체크
-        let tmpOptionSelected = Object.assign([],menuOptionSelected);
-        const filteredOptList = menuDetail?.option;
-        let itemCheckCnt = 0;
-        
-
-        if(filteredOptList?.length>0) {
-            for(var i=0;i<tmpOptionSelected?.length;i++) {
-                // 현재 선택한 옵션이 옵션그룹에 속해 있는지 확인
-                const checkItems = filteredOptList?.filter(el=>el.prod_i_cd.filter(cdEl => cdEl == tmpOptionSelected[i]?.PROD_I_CD).length>0 );
-                //console.log("checkItems: ",checkItems);
-                if(checkItems?.length > 0) {
-                    itemCheckCnt = itemCheckCnt+1;
+        // 옵션 그룹의 선택 한도 수량 체크
+        const groupOptCheck = currentOpt.filter(el=>el.optGroup == optGroup?.idx);
+        // * 옵션 선택 가능 수량 체크
+        const groupLimitCnt = optGroup?.limit_count;
+        if(groupLimitCnt > 0) {
+            // if count equals to 0 it's unlimited select count
+            // check the current quantity
+            var groupOptCnt = 0;
+            for(var i=0;i<groupOptCheck.length;i++) {
+                //console.log("groupOptCheck:",groupOptCheck[i]);
+                groupOptCnt = groupOptCnt+groupOptCheck[i].qty
+            }  
+            if(isAdd) {
+                //추가할 때만 수량 넘어가면 얼럿
+                if(groupOptCnt >= groupLimitCnt) {
+                    posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:`옵션 필수 수량을 확인 해 주세요.`,MSG2:""})        
+                    return
                 }
             }
         }
-        //console.log("itemCheckCnt: ",itemCheckCnt);
-        //console.log("limitCnt>itemCheckCnt||limitCnt==0:",limitCnt>itemCheckCnt||limitCnt==0)
-        //console.log("limitCnt>itemCheckCnt||limitCnt==0: ",limitCnt>itemCheckCnt||limitCnt==0);
-        if(limitCnt>itemCheckCnt||limitCnt==0) {
-            dispatch(setMenuOptionSelected({data:setItem,isAdd:limitCnt>itemCheckCnt||limitCnt==0, isAmt:false  }));
+
+
+        if(filterOpt.length > 0) {
+            // 추가된 옵션에 수량만 올리기
+            
+            if(isAdd) {
+                // 추가 
+                selectedOpt['qty'] = Number(filterOpt[0]['qty'])+1;
+            }else {
+                // 빼기
+                selectedOpt['qty'] = Number(filterOpt[0]['qty'])-1;
+            }
+            if(selectedOpt['qty']>0) {
+                expendedOpt.push(selectedOpt);
+            }
+            currentOpt = expendedOpt;
+
         }else {
-            posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:`옵션 필수 수량을 확인 해 주세요.`,MSG2:""})
+            // 새로 추가 
+            currentOpt.push(selectedOpt)
         }
-        
+        setOptSelected(currentOpt);
     }
     const addToCart = () => {
         dispatch(addToOrderList({item:menuDetail,menuOptionSelected:[]}));
@@ -328,8 +345,9 @@ const ItemDetail = (props) => {
                                                     {
                                                         el?.prod_i_cd &&
                                                         el?.prod_i_cd?.map((itemEl,index)=>{
+                                                            const optSel = optSelected.filter(optEl=>optEl.optGroup==el.idx && optEl.optItem==itemEl);
                                                             return(
-                                                                <OptItem key={"optItem_"+index} maxQty={el.limit_count} isSelected={menuOptionSelected.filter(menuEl=>menuEl.PROD_I_CD ==itemEl).length>0 } optionProdCD={itemEl} menuData={menuDetail} onPress={(itemSel)=>{ onOptionSelect(el?.limit_count, itemSel); } } />    
+                                                                <OptItem key={"optItem_"+index} maxQty={el.limit_count} isSelected={optSel.length>0 } selectedCnt={optSel.length<=0?0:optSel[0].qty} optionProdCD={itemEl} menuData={menuDetail} onPress={(isAdd, itemSel)=>{ onOptionSelect(isAdd, el, itemSel); } } />    
                                                             );
                                                             
                                                         })

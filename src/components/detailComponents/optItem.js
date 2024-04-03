@@ -16,6 +16,7 @@ const OptItem = (props)=>{
     const optionProdCD = props.optionProdCD;
     //console.log("optionData: ",optionProdCD);
     const maxQty = props.maxQty;
+    const selectedCnt = props.selectedCnt;
     
     const {allItems} = useSelector((state)=>state.menu);
     const {menuDetailID,  menuOptionGroupCode, menuOptionSelected, setGroupItem} = useSelector((state)=>state.menuDetail);
@@ -127,11 +128,10 @@ const OptItem = (props)=>{
     },[menuOptionSelected])
 // <OptItemFastImage  source={{uri:`https:${itemMenuExtra[0]?.gimg_chg}`,headers: { Authorization: 'AuthToken' },priority: FastImage.priority.normal}}/>
 
-
     return(
         <>
             { 
-            <TouchableWithoutFeedback onPress={()=>{ if(maxQty==0){ props.onPress(itemDetail[0]); }else{  props.onPress(itemDetail[0]) }}} >
+            <TouchableWithoutFeedback onPress={()=>{ props.onPress(true, itemDetail[0]); }} >
                 <View>
 
                     <OptItemWrapper>
@@ -150,13 +150,13 @@ const OptItem = (props)=>{
                     {/* 옵션 수량 조절 */}
                     {props.isSelected &&
                         <DetailItemAmtWrapper>
-                            <TouchableWithoutFeedback  onPress={()=>{ minusCnt();}} >
+                            <TouchableWithoutFeedback  onPress={()=>{ props.onPress(false, itemDetail[0]); }} >
                                 <DetailItemAmtController>
                                 <DetailOperandorText>-</DetailOperandorText>
                                 </DetailItemAmtController>
                             </TouchableWithoutFeedback>
-                            <DetailItemAmtText>{qty}</DetailItemAmtText>
-                            <TouchableWithoutFeedback  onPress={()=>{ plusCnt(); }} >
+                            <DetailItemAmtText>{selectedCnt}</DetailItemAmtText>
+                            <TouchableWithoutFeedback  onPress={()=>{ props.onPress(true, itemDetail[0]); }} >
                                 <DetailItemAmtController>
                                     <DetailOperandorText>+</DetailOperandorText>
                                 </DetailItemAmtController>
