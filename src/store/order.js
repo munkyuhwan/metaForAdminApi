@@ -381,126 +381,79 @@ export const resetAmtOrderList = createAsyncThunk("order/resetAmtOrderList", asy
 })
 
 export const addToOrderList =  createAsyncThunk("order/addToOrderList", async(_,{dispatch, getState,extra}) =>{
-    
     const item = _?.item;
+    const isAdd =  _?.isAdd;
+    const isDelete =  _?.isDelete;
     const menuOptionSelected = _?.menuOptionSelected;
     const {orderList} = getState().order;
-
     var currentOrderList = Object.assign([],orderList);
     var orderItemForm = {
         prod_cd:"",
         qty:0,
         set_item:[]
     };
-    var orderSetForm={
-        prod_i_cd:"",
-        prod_i_nm:"",
-        qty:0,
-    }
 
     if( META_SET_MENU_SEPARATE_CODE_LIST.indexOf(item?.prod_gb)>=0) {
         // 메뉴 선택하부금액 
         // 선택한 옵션의 가격이 들어감
         // 세트 메인 품목의 가격은 그대로 하위 품목들의 가격이 들어가고 그에따라 수량이 늘아날떄 가격과 수량이 같이 올라가야함
         // 메뉴 데이터 주문데이터에 맞게 변경
-        console.log("menuOptionSelected: ",menuOptionSelected);
-
-        
-    }else {
-         // 다른 메뉴들
-        // 세트메뉴 경우 그냥 세트 품목들 0원 세트 메인 상품의 가격에 세트메뉴 가격을 추가함
-        //console.log("item: ",item);
-
-        const duplicatedList = currentOrderList.filter(el=>el.prod_cd == item?.prod_cd);
-
+        const duplicatedList = currentOrderList.filter(el=> (el.prod_cd == item?.prod_cd) && ( isEqual(el.set_item,menuOptionSelected) ) );
+        // 중복 체크
         if(duplicatedList.length>0) {
             for(var i=0;i<orderList.length;i++) {
                 if(orderList[i].prod_cd == item?.prod_cd) {
-                    currentOrderList[i] = Object.assign({},{...currentOrderList[i],...{qty:Number(orderList[i]["qty"])+1}});
+                    // 옵션도 비교해야함
+                    if(isEqual(orderList[i].set_item, menuOptionSelected)) {
+                        if(isAdd) {
+                            currentOrderList[i] = Object.assign({},{...currentOrderList[i],...{qty:Number(orderList[i]["qty"])+1}});
+                        }else {
+                            if(isDelete) {
+                                currentOrderList[i] = Object.assign({},{...currentOrderList[i],...{qty:0}});
+                            }else {
+                                currentOrderList[i] = Object.assign({},{...currentOrderList[i],...{qty:Number(orderList[i]["qty"])-1}});
+                            }
+                        }
+                    }
+                }
+            }
+        }else {
+            orderItemForm["prod_cd"] = item?.prod_cd;
+            orderItemForm["qty"] = 1;
+            orderItemForm["set_item"] = menuOptionSelected;
+            currentOrderList.unshift(orderItemForm);
+        }
+        currentOrderList = currentOrderList.filter(el=>el.qty > 0);
+        return({orderList:currentOrderList});
+    }else {
+         // 다른 메뉴들
+        // 세트메뉴 경우 그냥 세트 품목들 0원 세트 메인 상품의 가격에 세트메뉴 가격을 추가함
+        const duplicatedList = currentOrderList.filter(el=>el.prod_cd == item?.prod_cd);
+        const exceptedList = currentOrderList.filter(el=>el.prod_cd != item?.prod_cd);
+        
+        if(duplicatedList.length>0) {
+            for(var i=0;i<orderList.length;i++) {
+                if(orderList[i].prod_cd == item?.prod_cd) {
+                    if(isAdd) {
+                        currentOrderList[i] = Object.assign({},{...currentOrderList[i],...{qty:Number(orderList[i]["qty"])+1}});
+                    }else {
+                        if(isDelete) {
+                            currentOrderList[i] = Object.assign({},{...currentOrderList[i],...{qty:0}});
+                        }else {
+                            currentOrderList[i] = Object.assign({},{...currentOrderList[i],...{qty:Number(orderList[i]["qty"])-1}});
+                        }
+                    }
                 }
             }
         }else {
             orderItemForm["prod_cd"] = item?.prod_cd;
             orderItemForm["qty"] = 1;
             orderItemForm["set_item"] = [];
-            currentOrderList.push(orderItemForm);
+            currentOrderList.unshift(orderItemForm);
         }
+        currentOrderList = currentOrderList.filter(el=>el.qty > 0);
         return({orderList:currentOrderList});
-
     }
-    /* 
-    const {item,menuOptionSelected} = _;
-    const {orderList} = getState().order;
-    //const {menuDetail} = getState().menuDetail;
-    let currentOrderList = Object.assign([],orderList);
-    let orderData = setOrderData(item, orderList);
-    if(META_SET_MENU_SEPARATE_CODE_LIST.indexOf(item?.prod_gb) >= 0) {
-        // 메뉴 선택하부금액 
-        // 선택한 옵션의 가격이 들어감
-        // 세트 메인 품목의 가격은 그대로 하위 품목들의 가격이 들어가고 그에따라 수량이 늘아날떄 가격과 수량이 같이 올라가야함
-        // 메뉴 데이터 주문데이터에 맞게 변경
-        let optionTrim = [];
-        let optionPrice = 0;
-        let optionVat = 0;
-        for(var i=0;i<menuOptionSelected.length;i++) {
-            optionPrice = optionPrice+Number(menuOptionSelected[i].AMT)*Number(menuOptionSelected[i].QTY)
-            optionTrim.push({...menuOptionSelected[i],...{ITEM_SEQ:orderData.ITEM_SEQ,AMT:Number(menuOptionSelected[i].AMT)*Number(menuOptionSelected[i].QTY)+Number(menuOptionSelected[i].VAT)*Number(menuOptionSelected[i].QTY), VAT:Number(menuOptionSelected[i].VAT)*Number(menuOptionSelected[i].QTY)}});
-            optionVat += Number(menuOptionSelected[i].VAT)*Number(menuOptionSelected[i].QTY);
-        }
-        // 세트 메뉴 추가
-        orderData["SETITEM_INFO"] = optionTrim;
-        orderData["SETITEM_CNT"] = optionTrim.length;
-        orderData["ITEM_AMT"] = Number(orderData["ITEM_AMT"]);
-        // 중복 체크 후 수량 변경
-        let newOrderList = orderListDuplicateCheck(currentOrderList, orderData);
-        //newOrderList.reverse();
-    
-        if(newOrderList.length <= 0) {
-            dispatch(setCartView(false));
-        }else {
-            dispatch(setCartView(true));
-        }
-
-        for(var i=0;i<newOrderList.length;i++) {
-            newOrderList[i] = Object.assign({},{...newOrderList[i],...{ITEM_SEQ:i+1}});
-        }
-        // 금액계산
-        const totalResult = grandTotalCalculate(newOrderList);
-        
-        return {orderList:newOrderList, vatTotal:Number(optionVat)+Number(totalResult?.vatTotal), grandTotal:Number(totalResult.grandTotal)+Number(optionPrice),totalItemCnt:Number(totalResult.itemCnt), orderPayData:[] };
-    }else {
-        // 다른 메뉴들
-        // 세트메뉴 경우 그냥 세트 품목들 0원 세트 메인 상품의 가격에 세트메뉴 가격을 추가함
-                 
-        // 메뉴 데이터 주문데이터에 맞게 변경
-        let optionTrim = [];
-        let optionPrice = 0;
-        for(var i=0;i<menuOptionSelected.length;i++) {
-            optionPrice = optionPrice+Number(menuOptionSelected[i].AMT)*Number(menuOptionSelected[i].QTY)
-            optionTrim.push({...menuOptionSelected[i],...{ITEM_SEQ:orderData.ITEM_SEQ,AMT:Number(menuOptionSelected[i].AMT)*menuOptionSelected[i].QTY,VAT:Number(menuOptionSelected[i].VAT)*Number(menuOptionSelected[i].QTY)}});
-        }
-        // 세트 메뉴 추가
-        orderData["SETITEM_INFO"] = optionTrim;
-        orderData["SETITEM_CNT"] = optionTrim.length;
-        orderData["ITEM_AMT"] = Number(orderData["ITEM_AMT"]);
-        // 중복 체크 후 수량 변경
-        let newOrderList = orderListDuplicateCheck(currentOrderList, orderData);
-        //newOrderList.reverse();
-    
-        if(newOrderList.length <= 0) {
-            dispatch(setCartView(false));
-        }else {
-            dispatch(setCartView(true));
-        }
-
-        for(var i=0;i<newOrderList.length;i++) {
-            newOrderList[i] = Object.assign({},{...newOrderList[i],...{ITEM_SEQ:i+1}});
-        }
-        // 금액계산
-        const totalResult = grandTotalCalculate(newOrderList);
-        return {orderList:newOrderList,vatTotal:totalResult?.vatTotal, grandTotal:totalResult.grandTotal,totalItemCnt:totalResult.itemCnt, orderPayData:[] };
-    }
-     */
 })
 // 주문로그 
 export const postLog =  createAsyncThunk("order/postLog", async(_,{dispatch, getState,extra}) =>{

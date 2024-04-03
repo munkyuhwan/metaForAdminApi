@@ -25,7 +25,7 @@ import { setMonthPopup, setSelectedMonth } from '../../store/monthPopup';
 import { EventRegister } from 'react-native-event-listeners';
 import { getMenuUpdateState, getStoreInfo, getTableAvailability } from '../../utils/api/metaApis';
 import { initMenu } from '../../store/menu';
-import { PAY_SEPRATE_AMT_LIMIT } from '../../resources/defaults';
+import { META_SET_MENU_SEPARATE_CODE_LIST, PAY_SEPRATE_AMT_LIMIT } from '../../resources/defaults';
 import moment from 'moment';
 
 const windowWidth = Dimensions.get('window').width;
@@ -38,6 +38,7 @@ const CartView = () =>{
     const {isOn} = useSelector((state)=>state.cartView);
     const {orderList,vatTotal} = useSelector((state)=>state.order);
     const {orderStatus} = useSelector(state=>state.order);    
+    const {allItems} = useSelector(state=>state.menu);
     const { tableInfo, tableStatus } = useSelector(state=>state.tableInfo);
     const {isMonthSelectShow, monthSelected} = useSelector(state=>state.monthSelect)
     //console.log("orderList: ",orderList);
@@ -226,11 +227,41 @@ const CartView = () =>{
 
     useEffect(()=>{
         //console.log("order list: ",orderList.length);
-        //console.log("order list: ",orderList);
         if(orderList?.length > 0) {
             dispatch(setCartView(true))
         }else {
             dispatch(setCartView(false))
+        }
+        if(orderList.length > 0) {
+            var itemTotal = 0;
+            var qtyTotal = 0;
+            orderList.map((orderItem)=>{
+                console.log(orderItem)
+                const itemDetail = allItems?.filter(el=>el.prod_cd == orderItem?.prod_cd);
+                
+                if(META_SET_MENU_SEPARATE_CODE_LIST.indexOf(orderItem?.prod_gb)>=0) {
+                    // 선택하부금액 
+                     
+                    itemTotal = Number(itemDetail[0]?.account);
+                    const setItem = orderItem?.set_item;
+                    var setItemPrice = 0;
+                    for(var i=0;i<setItem.length;i++) {
+                        const setItemData = allItems?.filter(el=>el.prod_cd == setItem[i].optItem);
+                        if(setItemData.length>0) {
+                            setItemPrice = Number(setItemPrice)+(Number(setItemData[0]?.account)*Number(setItem[i]?.qty));
+                        }
+                        itemTotal = (Number(itemTotal)+Number(setItemPrice))*Number(order?.qty);
+                    }
+                    qtyTotal = qtyTotal+orderItem?.qty;
+
+                }else {
+                    itemTotal = itemTotal+(Number(itemDetail[0]?.account)*Number(orderItem?.qty));
+                    qtyTotal = qtyTotal+orderItem?.qty;
+                } 
+            })
+            setTotalCnt(qtyTotal)
+            setTotalAmt(itemTotal)
+            console.log("itemTotal: ",itemTotal)
         }
         /* 
         let totalAmt = 0;

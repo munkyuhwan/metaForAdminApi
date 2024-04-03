@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { numberWithCommas, openPopup } from '../../utils/common';
 import { MENU_DATA } from '../../resources/menuData';
 import { LANGUAGE } from '../../resources/strings';
-import { resetAmtOrderList, setOrderList } from '../../store/order';
+import { addToOrderList, resetAmtOrderList, setOrderList } from '../../store/order';
 import FastImage from 'react-native-fast-image';
 import { META_SET_MENU_SEPARATE_CODE_LIST } from '../../resources/defaults';
 
@@ -22,11 +22,11 @@ const CartListItem = (props) => {
     const {images} = useSelector(state=>state.imageStorage);
     const {allItems} = useSelector(state=>state.menu);
     // 메뉴 옵션 추가 정보
-    const filteredImg = images.filter(el=>el.name==props?.item.prod_cd);
+    const filteredImg = images.filter(el=>el.name==props?.item?.prod_cd);
     const index = props?.index;
     const order = props?.item;
     const additiveItemList = order?.set_item;
-    const itemDetail = allItems?.filter(el=>el.prod_cd == props?.item.prod_cd);
+    const itemDetail = allItems?.filter(el=>el.prod_cd == props?.item?.prod_cd);
     const prodGb = itemDetail[0]?.prod_gb; // 세트하부금액 구분용
 
 
@@ -89,21 +89,22 @@ const CartListItem = (props) => {
     const itemTotalPrice = () => {
         if(META_SET_MENU_SEPARATE_CODE_LIST.indexOf(prodGb)>=0) {
             // 선택하부금액 
-            
-            let additivePrice = 0;
-            for(var i=0;i<additiveItemList.length;i++) {
-                //console.log("additive item: ",additiveItemList[i]);
-                additivePrice = additivePrice+(additiveItemList[i]?.AMT)
-                //additivePrice = additivePrice+additi
+            var itemTotal = Number(itemDetail[0]?.account);
+            const setItem = order?.set_item;
+            var setItemPrice = 0;
+            for(var i=0;i<setItem.length;i++) {
+                const setItemData = allItems?.filter(el=>el.prod_cd == setItem[i].optItem);
+                if(setItemData.length>0) {
+                    setItemPrice = Number(setItemPrice)+(Number(setItemData[0]?.account)*Number(setItem[i]?.qty));
+                }
+                itemTotal = (Number(itemTotal)+Number(setItemPrice))*Number(order?.qty);
             }
-
-            return Number(order?.ITEM_AMT)+Number(additivePrice);
+            return itemTotal||0;
         }else {
             const itemTotal = Number(itemDetail[0]?.account)*Number(order?.qty);
             return itemTotal||0;
         }
     }
-
 
     return(
         <>
@@ -123,14 +124,14 @@ const CartListItem = (props) => {
                     </CartItemOpts>
                     <CartItemPrice>{numberWithCommas(itemTotalPrice())}원</CartItemPrice>
                     <CartItemAmtWrapper>
-                        <TouchableWithoutFeedback  onPress={()=>{calculateAmt("minus",1)}} >
+                        <TouchableWithoutFeedback  onPress={()=>{ dispatch(addToOrderList({isAdd:false, isDelete: false, item:itemDetail[0],menuOptionSelected:order?.set_item})); }} >
                             <CartItemAmtController>
                                {/*  <CartItemAmtControllerImage source={require("../../assets/icons/minusIcon.png")}  /> */}
                                <OperandorText>-</OperandorText>
                             </CartItemAmtController>
                         </TouchableWithoutFeedback>
                         <CartItemAmtText>{order?.qty}</CartItemAmtText>
-                        <TouchableWithoutFeedback  onPress={()=>{calculateAmt("plus",1)}} >
+                        <TouchableWithoutFeedback  onPress={()=>{ dispatch(addToOrderList({isAdd:true, isDelete: false, item:itemDetail[0],menuOptionSelected:order?.set_item})); }} >
                             <CartItemAmtController>
                                 <OperandorText>+</OperandorText>
                                 {/* <CartItemAmtControllerImage  source={require("../../assets/icons/plusIcon.png")} /> */}
@@ -138,7 +139,7 @@ const CartListItem = (props) => {
                         </TouchableWithoutFeedback>
                     </CartItemAmtWrapper>
                 </CartItemTitlePriceWrapper>
-                <TouchableWithoutFeedback onPress={()=>{calculateAmt("cancel",0)}}>
+                <TouchableWithoutFeedback onPress={()=>{ dispatch(addToOrderList({isAdd:false, isDelete: true, item:itemDetail[0],menuOptionSelected:order?.set_item})); }}>
                     <CartItemCancelWrapper>
                         <CartItemCancelBtn source={require("../../assets/icons/close_grey.png")} />
                     </CartItemCancelWrapper>

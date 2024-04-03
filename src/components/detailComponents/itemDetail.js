@@ -24,7 +24,7 @@ const ItemDetail = (props) => {
     const isDetailShow = props.isDetailShow;
     const dispatch = useDispatch();
     const {allItems} = useSelector((state)=>state.menu);
-    const {menuDetailID, menuOptionSelected} = useSelector((state)=>state.menuDetail);
+    const {menuDetailID} = useSelector((state)=>state.menuDetail);
     const [detailZIndex, setDetailZIndex] = useState(0);
     const [menuDetail, setMenuDetail] = useState(null);
 
@@ -132,20 +132,14 @@ const ItemDetail = (props) => {
         setOptSelected(currentOpt);
     }
     const addToCart = () => {
-        //dispatch(addToOrderList({item:menuDetail,menuOptionSelected:[]}));
-        //closeDetail();
         const optGroups = menuDetail?.option;
-        //console.log("optGroups: ",optGroups);
         // 옵션 수량 체크
         var isPass = true;
         for(var i=0;i<optGroups.length;i++) {
-            //console.log("limitCnt: ",optGroups[i].limit_count," idx: ",optGroups[i].idx);
             const optFil = optSelected.filter(el=>el.optGroup == optGroups[i].idx);
-            //console.log("optFil: ",optFil)
             var groupQty = 0;
             if(optFil.length>0) {
                 for(var j=0;j<optFil.length;j++) {
-                    //console.log('qty: ',optFil[j]);
                     // 옵션 선택 수량 총 합
                     groupQty = groupQty + Number(optFil[j].qty);
                 }
@@ -158,56 +152,15 @@ const ItemDetail = (props) => {
                         isPass = false;
                     }
                 }
-                console.log("group qty: ",groupQty);
             }
         }
         if(!isPass) {
             posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:`옵션 필수 수량을 확인 해 주세요.`,MSG2:""})
         }else {
             // 주문 하기
-            
-        }
-        /* 
-        for(var i=0;i<optSelected.length;i++) {
-            const optGrp = optGroups.filter(el=>el.idx == optSelected[i].optGroup);
-            if(optGrp.length > 0) {
-                const limitCnt = optGrp[0].limit_count;
-                console.log("limitCnt: ",limitCnt);
-
-
-            }
-
-        } */
-        
-        /* 
-        let booleanArr = true;
-        for(var i=0;i<menuOptionList.length;i++) {
-            let optItems = menuOptionList[i].prod_i_cd;
-            if(menuOptionList[i].limit_count == 0) {
-                booleanArr = booleanArr && true;
-            }else {
-                let cnt = 0;
-                for(var j=0;j<menuOptionSelected.length;j++) {
-                    // 해당 중분류의 아이템이 몇개가 선택 되었는지 체크;
-                    let filter = optItems.filter(el=>el == menuOptionSelected[j].PROD_I_CD);
-                    if(filter.length > 0) {
-                        cnt = cnt+menuOptionSelected[j]?.QTY;
-                    } 
-                }
-                //console.log(menuOptionList[i].GROUP_NM,menuOptionList[i].QTY," cnt: ",cnt)
-                booleanArr = booleanArr && menuOptionList[i]?.QTY==cnt;
-            }
-        }
-        //console.log("is pass: ",booleanArr);
-        if(!booleanArr) {
-            posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:`옵션 필수 수량을 확인 해 주세요.`,MSG2:""})
-        }else { 
-            dispatch(addToOrderList({item:menuDetail,menuOptionSelected:menuOptionSelected}));
+            dispatch(addToOrderList({isAdd:true, isDelete: false, item:menuDetail,menuOptionSelected:optSelected}));
             closeDetail();
         }
-         */
-        
-
     }
 
     const closeDetail = () =>{

@@ -70,7 +70,7 @@ const RecommendItem = (props) => {
                         dispatch(setItemDetail({itemID:recommentItemID}));
                         //dispatch(setMenuDetail({itemID:recommentItemID}));
                     }else{  
-                        dispatch(addToOrderList({item:menuDetail,menuOptionSelected:[]}));
+                        dispatch(addToOrderList({isAdd:true, isDelete: false, item:menuDetail,menuOptionSelected:[]}));
                         openTransperentPopup(dispatch, {innerView:"OrderComplete", isPopupVisible:true,param:{msg:"장바구니에 추가했습니다."}});  //    } 
                     }
                 }}>
