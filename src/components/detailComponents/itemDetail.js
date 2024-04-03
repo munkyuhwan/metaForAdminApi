@@ -111,8 +111,6 @@ const ItemDetail = (props) => {
                 }
             }
         }
-
-
         if(filterOpt.length > 0) {
             // 추가된 옵션에 수량만 올리기
             if(isAdd) {
@@ -134,8 +132,53 @@ const ItemDetail = (props) => {
         setOptSelected(currentOpt);
     }
     const addToCart = () => {
-        dispatch(addToOrderList({item:menuDetail,menuOptionSelected:[]}));
-        closeDetail();
+        //dispatch(addToOrderList({item:menuDetail,menuOptionSelected:[]}));
+        //closeDetail();
+        const optGroups = menuDetail?.option;
+        //console.log("optGroups: ",optGroups);
+        // 옵션 수량 체크
+        var isPass = true;
+        for(var i=0;i<optGroups.length;i++) {
+            //console.log("limitCnt: ",optGroups[i].limit_count," idx: ",optGroups[i].idx);
+            const optFil = optSelected.filter(el=>el.optGroup == optGroups[i].idx);
+            //console.log("optFil: ",optFil)
+            var groupQty = 0;
+            if(optFil.length>0) {
+                for(var j=0;j<optFil.length;j++) {
+                    //console.log('qty: ',optFil[j]);
+                    // 옵션 선택 수량 총 합
+                    groupQty = groupQty + Number(optFil[j].qty);
+                }
+                // 수량 계산 합한게 리미트랑 비교
+                var limitCnt = Number(optGroups[i].limit_count);
+                if(limitCnt > 0) {
+                    // 0은 무제한이라 체크 안함
+                    if(limitCnt > groupQty) {
+                        // 최소 수량보다 작으면 안지나감.
+                        isPass = false;
+                    }
+                }
+                console.log("group qty: ",groupQty);
+            }
+        }
+        if(!isPass) {
+            posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:`옵션 필수 수량을 확인 해 주세요.`,MSG2:""})
+        }else {
+            // 주문 하기
+            
+        }
+        /* 
+        for(var i=0;i<optSelected.length;i++) {
+            const optGrp = optGroups.filter(el=>el.idx == optSelected[i].optGroup);
+            if(optGrp.length > 0) {
+                const limitCnt = optGrp[0].limit_count;
+                console.log("limitCnt: ",limitCnt);
+
+
+            }
+
+        } */
+        
         /* 
         let booleanArr = true;
         for(var i=0;i<menuOptionList.length;i++) {
