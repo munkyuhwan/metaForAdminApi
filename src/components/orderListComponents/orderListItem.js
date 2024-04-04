@@ -10,8 +10,10 @@ const OrderListItem = (props) => {
     const {allItems} = useSelector((state)=>state.menu);
     // 이미지 찾기
     const itemExtra = allItems.filter(el=>el.prod_cd == item.ITEM_CD);
-    const imgUrl = itemExtra[0]?.gimg_chg;
+    const {images} = useSelector(state=>state.imageStorage);
+    const filteredImg = images.filter(el=>el.name==item.ITEM_CD);
 
+    const imgUrl = filteredImg[0]?.imgData
     const ItemTitle = () => {
         let selTitleLanguage = "";
         const selExtra = itemExtra.filter(el=>el.pos_code==item.ITEM_CD);

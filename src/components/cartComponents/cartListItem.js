@@ -29,7 +29,7 @@ const CartListItem = (props) => {
     const itemDetail = allItems?.filter(el=>el.prod_cd == props?.item?.prod_cd);
     const prodGb = itemDetail[0]?.prod_gb; // 세트하부금액 구분용
 
-
+    console.log("additiveItemList: ",additiveItemList)
     // 이미지 찾기
     const ItemTitle = () => {
         let selTitleLanguage = "";
@@ -51,18 +51,18 @@ const CartListItem = (props) => {
 
     const ItemOptionTitle = (additiveId,index) =>{
         let selOptTitleLanguage = "";
-        const selExtra = menuExtra.filter(el=>el.pos_code==additiveId);
+        const selExtra = allItems.filter(el=>el.prod_cd==additiveId);
         if(language=="korean") {
-            selOptTitleLanguage = additiveItemList[index]?.PROD_I_NM;
+            selOptTitleLanguage = selExtra[0]?.gname_kr;
         }
         else if(language=="japanese") {
-            selOptTitleLanguage = selExtra[0]?.op_name_jp||additiveItemList[index]?.PROD_I_NM;
+            selOptTitleLanguage = selExtra[0]?.gname_jp||selExtra[0]?.gname_kr;
         }
         else if(language=="chinese") {
-            selOptTitleLanguage = selExtra[0]?.op_name_cn||additiveItemList[index]?.PROD_I_NM;
+            selOptTitleLanguage = selExtra[0]?.gname_cn||selExtra[0]?.gname_kr;
         }
         else if(language=="english") {
-            selOptTitleLanguage = selExtra[0]?.op_name_en||additiveItemList[index]?.PROD_I_NM;
+            selOptTitleLanguage = selExtra[0]?.gname_en||selExtra[0]?.gname_kr;
         }
         return selOptTitleLanguage;
     }
@@ -116,11 +116,11 @@ const CartListItem = (props) => {
                 <CartItemTitlePriceWrapper>
                     <CartItemTitle numberOfLines={1} ellipsizeMode="tail" >{ItemTitle()||itemDetail.gname_kr}</CartItemTitle>
                     <CartItemOpts numberOfLines={2} ellipsizeMode="tail" >
-                        {/*additiveItemList.length>0 &&
+                        {additiveItemList.length>0 &&
                             additiveItemList.map((el,index)=>{
-                                return `${ItemOptionTitle(el.PROD_I_CD,index)||el.PROD_I_NM}`+`${el.QTY}개`+`${index<(additiveItemList.length-1)?", ":""}`;
+                                return `${ItemOptionTitle(el.optItem,index)}`+`${el.qty}개`+`${index<(additiveItemList.length-1)?", ":""}`;
                             })
-                        */}
+                        }
                     </CartItemOpts>
                     <CartItemPrice>{numberWithCommas(itemTotalPrice())}원</CartItemPrice>
                     <CartItemAmtWrapper>

@@ -121,7 +121,7 @@ const CartView = () =>{
                         //const result = {"AnsCode": "0000", "AnswerTrdNo": "null", "AuNo": "48104019", "AuthType": "null", "BillNo": "", "CardKind": "1", "CardNo": "94119400", "ChargeAmt": "null", "DDCYn": "1", "DisAmt": "null", "EDCYn": "0", "GiftAmt": "", "InpCd": "1107", "InpNm": "신한카드", "Keydate": "", "MchData": "wooriorder", "MchNo": "22101257", "Message": "000005791029                            ", "Month": "", "OrdCd": "1107", "OrdNm": "개인신용", "PcCard": "null", "PcCoupon": "null", "PcKind": "null", "PcPoint": "null", "QrKind": "null", "RefundAmt": "null", "SvcAmt": "0", "TaxAmt": "91", "TaxFreeAmt": "0", "TermID": "0710000900", "TradeNo": "000005791029", "TrdAmt": "913", "TrdDate": "240330202942", "TrdType": "A15"}
                         console.log("result: ",result);
                         const orderData = await metaPostPayFormat(orderList,result, allItems);
-                        //dispatch(postOrderToPos({payData:result,orderData:orderData}));
+                        dispatch(postOrderToPos({payData:result,orderData:orderData}));
                         dispatch(adminDataPost({payData:result,orderData:orderData}));
                     })
                     .catch((err)=>{
@@ -136,7 +136,7 @@ const CartView = () =>{
                 //dispatch(postToMetaPos({payData:{}}));
                 const orderData = await metaPostPayFormat(orderList,{}, allItems);
                 dispatch(adminDataPost({payData:null,orderData:orderData}));
-                //dispatch(postOrderToPos({payData:null,orderData:orderData}));
+                dispatch(postOrderToPos({payData:null,orderData:orderData}));
             }
          
     }
