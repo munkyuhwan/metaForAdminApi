@@ -89,7 +89,6 @@ export const presetOrderData = createAsyncThunk("order/presetOrderData", async(_
 
 /// 어드민에 주문 데이터 보내기 
 export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{dispatch, rejectWithValue, getState})=>{
-    console.log("adminDataPost============================================================");
     const { tableStatus } = getState().tableInfo;
     const {payData, orderData} = _;
     var postOrderData = Object.assign({}, orderData);
@@ -100,9 +99,6 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
         posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:"테이블 설정",MSG2:"테이블 번호를 설정 해 주세요."});
         return 
     }
-    
-    const orderNo = `${date.getFullYear().toString().substring(2,4)}${numberPad(date.getMonth()+1,2)}${numberPad(date.getDate(),2)}${moment().valueOf()}`;
-    const totalResult = grandTotalCalculate(orderData?.ITEM_INFO);
     const {STORE_IDX} = await getStoreID()
     // 결제시 추가 결제 결과 데이터
     
@@ -137,7 +133,6 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
         "STORE_ID":STORE_IDX,
     }
     postOrderData = {...postOrderData,...addData};
-    console.log("postOrderData: ",postOrderData);
     try {
         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
         const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_POST_ORDER}`,postOrderData, {});
