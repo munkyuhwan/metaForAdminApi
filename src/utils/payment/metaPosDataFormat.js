@@ -42,7 +42,6 @@ var itemDataFormat =
 
 
 export const metaPostPayFormat = async (orderList,payData, allItems) => {
-    console.log("orderlist: ",orderList);    
     const date = new Date();
     
     const tableNo = await getTableInfo().catch(err=>{posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:"테이블 설정",MSG2:"테이블 번호를 설정 해 주세요."});});
@@ -70,7 +69,6 @@ export const metaPostPayFormat = async (orderList,payData, allItems) => {
         }
         for(var j=0;j<setItems.length;j++) {
             const setItemDetail = allItems?.filter(el=>el.prod_cd == setItems[j]?.optItem);
-            console.log("setItemDetail: ",setItemDetail);
             setItem["ITEM_SEQ"] = i+1;
             setItem["SET_SEQ"] = j+1;
             setItem["PROD_I_CD"] = setItems[j].optItem;
