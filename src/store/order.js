@@ -89,23 +89,23 @@ export const presetOrderData = createAsyncThunk("order/presetOrderData", async(_
 
 /// 어드민에 주문 데이터 보내기 
 export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{dispatch, rejectWithValue, getState})=>{
-    const {metaOrderData} = getState().order;
-    var orderList = Object.assign({},metaOrderData);
-    const {payData} = _;
+    console.log("adminDataPost============================================================");
     const { tableStatus } = getState().tableInfo;
+    const {payData, orderData} = _;
+    var postOrderData = Object.assign({}, orderData);
     const date = new Date();
-
     const tableNo = await getTableInfo().catch(err=>{posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:"테이블 설정",MSG2:"테이블 번호를 설정 해 주세요."});});
     if(isEmpty(tableNo)) {
         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
         posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:"테이블 설정",MSG2:"테이블 번호를 설정 해 주세요."});
         return 
     }
-
+    
     const orderNo = `${date.getFullYear().toString().substring(2,4)}${numberPad(date.getMonth()+1,2)}${numberPad(date.getDate(),2)}${moment().valueOf()}`;
-    const totalResult = grandTotalCalculate(orderList?.ITEM_INFO);
+    const totalResult = grandTotalCalculate(orderData?.ITEM_INFO);
     const {STORE_IDX} = await getStoreID()
     // 결제시 추가 결제 결과 데이터
+    
     let addOrderData = {};
     if(!isEmpty(payData)) {
         addOrderData = {
@@ -129,29 +129,18 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
                 PAY_CARD_MONTH:`${payData?.Month}`
             }]
         };
-        orderList = {...orderList,...addOrderData};
+        postOrderData = {...orderData,...addOrderData};
     }
-
-    let orderData = {
-        "VERSION" : POS_VERSION_CODE,
-        "WORK_CD" : !isEmpty(payData)?POS_WORK_CD_PREPAY_ORDER_REQUEST:POS_WORK_CD_POSTPAY_ORDER, //선불 후불에 따라 코드 다름
-        "ORDER_NO" : orderNo,
-        "TBL_NO" : `${tableNo.TABLE_INFO}`, 
+    
+    let addData = {
         "PREPAYMENT_YN":isEmpty(payData)?"N":"Y",
-        "PRINT_YN" : "Y",
-        "USER_PRINT_YN" : "Y",
-        "PRINT_ORDER_NO" : orderNo, 
-        "TOT_INWON" : 4,
-        "ITEM_CNT" : orderList.ITEM_CNT,
-        "TOTAL_AMT":Number(totalResult?.grandTotal),
-        "TOTAL_VAT":Number(totalResult?.vatTotal),
-        "TOTAL_DC":0,
         "STORE_ID":STORE_IDX,
-    }    
-    orderList = {...orderList,...orderData};
+    }
+    postOrderData = {...postOrderData,...addData};
+    console.log("postOrderData: ",postOrderData);
     try {
         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
-        const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_POST_ORDER}`,orderList, {});
+        const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_POST_ORDER}`,postOrderData, {});
         if(data) {
             if(data?.result) {
                 dispatch(setCartView(false));
@@ -176,6 +165,8 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
         return rejectWithValue(error.message)
     }
+
+
 })
 
 // 포스로 데이터 전송

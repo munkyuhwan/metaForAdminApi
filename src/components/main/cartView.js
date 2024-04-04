@@ -119,29 +119,37 @@ const CartView = () =>{
                         //const result = {"AnsCode": "0000", "AnswerTrdNo": "null", "AuNo": "48104019", "AuthType": "null", "BillNo": "", "CardKind": "1", "CardNo": "94119400", "ChargeAmt": "null", "DDCYn": "1", "DisAmt": "null", "EDCYn": "0", "GiftAmt": "", "InpCd": "1107", "InpNm": "신한카드", "Keydate": "", "MchData": "wooriorder", "MchNo": "22101257", "Message": "000005791029                            ", "Month": "", "OrdCd": "1107", "OrdNm": "개인신용", "PcCard": "null", "PcCoupon": "null", "PcKind": "null", "PcPoint": "null", "QrKind": "null", "RefundAmt": "null", "SvcAmt": "0", "TaxAmt": "91", "TaxFreeAmt": "0", "TermID": "0710000900", "TradeNo": "000005791029", "TrdAmt": "913", "TrdDate": "240330202942", "TrdType": "A15"}
                         console.log("result: ",result);
                         const orderData = await metaPostPayFormat(orderList,result, allItems);
-                        //dispatch(postOrderToPos({payData:result}));
-                        dispatch(postOrderToPos({payData:result,orderData:orderData}));
-                        //dispatch(adminDataPost({payData:result}));
+                        //dispatch(postOrderToPos({payData:result,orderData:orderData}));
+                        dispatch(adminDataPost({payData:result,orderData:orderData}));
                     })
                     .catch((err)=>{
                         //console.log("error: ",err)
                         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
                         dispatch(postLog({payData:err}))
                         displayErrorPopup(dispatch, "XXXX", err?.Message)
-                    })  
+                    })
                 }
             }else {
                 EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
                 //dispatch(postToMetaPos({payData:{}}));
                 const orderData = await metaPostPayFormat(orderList,{}, allItems);
-                //dispatch(adminDataPost({payData:null}));
-                dispatch(postOrderToPos({payData:null,orderData:orderData}));
+                dispatch(adminDataPost({payData:null,orderData:orderData}));
+                //dispatch(postOrderToPos({payData:null,orderData:orderData}));
             }
          
     }
 
     const doPayment = async () =>{
         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"주문 중 입니다."})
+        if( tableStatus?.now_later == "선불") {
+            if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
+                dispatch(setMonthPopup({isMonthSelectShow:true}))
+            }else {
+                makePayment();
+            }
+        }else {
+            makePayment();
+        }
 
         const isPostable = await isNetworkAvailable().catch(()=>{EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); return false;});
         if(!isPostable) {
@@ -149,9 +157,8 @@ const CartView = () =>{
             EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
             return;
         }
-        //makePayment();
 
-        
+        /* 
         const storeInfo = await getStoreInfo()
         .catch((err)=>{
             displayErrorNonClosePopup(dispatch, "XXXX", "상점 정보를 가져올 수 없습니다.");
@@ -165,12 +172,13 @@ const CartView = () =>{
             displayErrorPopup(dispatch, "XXXX", "개점이 되지않아 주문을 할 수 없습니다.");
         }else {
             //테이블 주문 가능한지 체크
+            
             const tableAvail = await getTableAvailability(dispatch).catch(()=>{EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); return [];});
             if(!tableAvail) {
                 EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
             }else {
-                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"주문 중 입니다."})
-                /* 
+                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"주문 중 입니다."}) 
+                
                 const resultData = await getMenuUpdateState(dispatch).catch(err=>{EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); return [];});
                 if(!resultData) {
                     EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
@@ -202,7 +210,7 @@ const CartView = () =>{
                             AsyncStorage.setItem("lastUpdate",saveDate);
                             dispatch(setCartView(false));
                             dispatch(initOrderList());
-                        }else { */
+                        }else { 
                             if( tableStatus?.now_later == "선불") {
                                 if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
                                     dispatch(setMonthPopup({isMonthSelectShow:true}))
@@ -213,7 +221,7 @@ const CartView = () =>{
                                 makePayment();
                             }
                             //dispatch(postToMetaPos());
-                       /*  }
+                       }
             
                     }else {
                         if( tableStatus?.now_later == "선불") {
@@ -226,10 +234,10 @@ const CartView = () =>{
                             makePayment();
                         }
                     } 
-                } */
+                }
             }
         }
-         
+        */
         
     }
     useEffect(()=>{
