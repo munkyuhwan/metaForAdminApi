@@ -104,12 +104,12 @@ export default function Navigation() {
         //}
     },[])
 
-    useEffect(()=>{
+    useEffect(async ()=>{
         handleEventListener();
         // 카테고리 받기
-        dispatch(getAdminCategories());
+        await dispatch(getAdminCategories());
         // 메뉴 받아오기
-        dispatch(getAdminItems());
+        await dispatch(getAdminItems());
         // 기기 정보 받기
         getDeviceInfo();
         // 광고 받기
