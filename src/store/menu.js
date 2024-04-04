@@ -2,8 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { useSelector } from 'react-redux';
 import { MENU_DATA } from '../resources/menuData';
 import axios, { all } from 'axios';
-import { getAdminCategories } from '../utils/apis';
-import { getAdminCategoryData, getMainCategories, setAllCategories, setSelectedMainCategory } from './categories';
+import { getAdminCategories, getAdminCategoryData, getMainCategories, setAllCategories, setSelectedMainCategory } from './categories';
 import { EventRegister } from 'react-native-event-listeners';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CALL_SERVICE_GROUP_CODE } from '../resources/apiResources';
@@ -22,16 +21,16 @@ import { initOrderList } from './order';
 import { getItems } from '../utils/api/newApi';
 import {isEmpty} from 'lodash';
 import { callApiWithExceptionHandling } from '../utils/api/apiRequest';
-import { ADMIN_API_BASE_URL, ADMIN_API_GOODS, TMP_STORE_DATA } from '../resources/newApiResource';
+import { ADMIN_API_BASE_URL, ADMIN_API_GOODS, ADMIN_API_MENU_UPDATE, TMP_STORE_DATA } from '../resources/newApiResource';
 
 export const clearAllItems = createAsyncThunk("menu/clearAllItems", async(_,{dispatch,getState}) =>{ 
     return [];
 })
 
 // 전체 메뉴 받기
-export const getAdminItems = createAsyncThunk("menu/getAdminItems", async(_,{dispatch,getstate, rejectWithValue})=>{
+export const getAdminItems = createAsyncThunk("menu/getAdminItems", async(_,{dispatch,getState, rejectWithValue})=>{
     const {STORE_IDX} = await getStoreID();
-
+    
     try {
         const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_GOODS}`,{"STORE_ID":`${STORE_IDX}`}, {});
         if(data) {
@@ -49,8 +48,8 @@ export const getAdminItems = createAsyncThunk("menu/getAdminItems", async(_,{dis
       } catch (error) {
         // 예외 처리
         return rejectWithValue(error.message)
-
     }
+    
 })
 // 카테고리 선택 후 메뉴 보여주기
 export const setSelectedItems = createAsyncThunk("menu/setSelectedItems", async(_,{dispatch, getState, rejectWithValue})=>{
@@ -86,7 +85,45 @@ export const initMenu = createAsyncThunk("menu/initMenu", async(_,{dispatch,getS
     EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
 })
 
+// menu update check
 
+export const menuUpdateCheck = createAsyncThunk("menu/menuUpdateCheck", async(_,{dispatch,getState}) =>{
+    const {STORE_IDX} = await getStoreID();
+    const lastUpdateDate = await AsyncStorage.getItem("lastUpdate").catch(err=>"");   
+    const {allCategories} = getState().categories;
+
+    try {
+        const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_MENU_UPDATE}`,{"STORE_ID":`${STORE_IDX}`,"currentDateTime":lastUpdateDate}, {});
+        if(data) {
+            if(data?.result==true) {
+                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"메뉴 업데이트 중입니다."})
+                if(data?.isUpdated == "true") {
+                    AsyncStorage.setItem("lastUpdate",data?.updateDateTime);
+                    dispatch(setCartView(false));
+                    dispatch(initOrderList());
+                    // 카테고리 받기
+                    await dispatch(getAdminCategories());
+                    // 메뉴 받아오기
+                    await dispatch(getAdminItems());
+                    dispatch(setSelectedItems());
+
+                }else {
+
+                }
+                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
+                return data;
+            }else {
+                return rejectWithValue(error.message)
+            }
+        }else {
+            return rejectWithValue(error.message)
+        }
+      } catch (error) {
+        // 예외 처리
+        return rejectWithValue(error.message)
+
+    }
+})
 
 // Slice
 export const menuSlice = createSlice({
@@ -104,7 +141,9 @@ export const menuSlice = createSlice({
 
         // 전체 아이템셋
         builder.addCase(getAdminItems.fulfilled,(state, action)=>{
+            console.log("action.payload: ",action.payload.order.length);
             if(!isEmpty(action.payload)) { 
+                console.log("update all items===");
                 state.allItems = action?.payload.order;
                 state.isMenuLoading = false;
             }

@@ -14,7 +14,7 @@ import { LANGUAGE } from '../../resources/strings';
 import { setCartView, setIconClick } from '../../store/cart';
 import { IconWrapper } from '../../styles/main/topMenuStyle';
 import TopButton from '../menuComponents/topButton';
-import {  isNetworkAvailable, numberWithCommas, openTransperentPopup } from '../../utils/common';
+import {  getStoreID, isNetworkAvailable, numberWithCommas, openTransperentPopup } from '../../utils/common';
 import { adminDataPost, initOrderList, postLog, postOrderToPos, postToMetaPos, presetOrderData } from '../../store/order';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {isEmpty} from 'lodash';
@@ -24,10 +24,12 @@ import { displayErrorNonClosePopup, displayErrorPopup } from '../../utils/errorH
 import { setMonthPopup, setSelectedMonth } from '../../store/monthPopup';
 import { EventRegister } from 'react-native-event-listeners';
 import { getMenuUpdateState, getStoreInfo, getTableAvailability } from '../../utils/api/metaApis';
-import { initMenu } from '../../store/menu';
+import { initMenu, menuUpdateCheck } from '../../store/menu';
 import { META_SET_MENU_SEPARATE_CODE_LIST, PAY_SEPRATE_AMT_LIMIT } from '../../resources/defaults';
 import moment from 'moment';
 import { metaPosDataFormat, metaPostPayFormat } from '../../utils/payment/metaPosDataFormat';
+import { callApiWithExceptionHandling } from '../../utils/api/apiRequest';
+import { ADMIN_API_BASE_URL, ADMIN_API_MENU_UPDATE } from '../../resources/newApiResource';
 
 const windowWidth = Dimensions.get('window').width;
 const CartView = () =>{
@@ -141,7 +143,7 @@ const CartView = () =>{
 
     const doPayment = async () =>{
         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"주문 중 입니다."})
-        if( tableStatus?.now_later == "선불") {
+        /* if( tableStatus?.now_later == "선불") {
             if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
                 dispatch(setMonthPopup({isMonthSelectShow:true}))
             }else {
@@ -149,7 +151,7 @@ const CartView = () =>{
             }
         }else {
             makePayment();
-        }
+        } */
 
         const isPostable = await isNetworkAvailable().catch(()=>{EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); return false;});
         if(!isPostable) {
@@ -158,7 +160,7 @@ const CartView = () =>{
             return;
         }
 
-        /* 
+         
         const storeInfo = await getStoreInfo()
         .catch((err)=>{
             displayErrorNonClosePopup(dispatch, "XXXX", "상점 정보를 가져올 수 없습니다.");
@@ -178,7 +180,79 @@ const CartView = () =>{
                 EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
             }else {
                 EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"주문 중 입니다."}) 
-                
+                const {STORE_IDX} = await getStoreID();
+                const lastUpdateDate = await AsyncStorage.getItem("lastUpdate").catch(err=>"");   
+            
+                try {
+                    const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_MENU_UPDATE}`,{"STORE_ID":`${STORE_IDX}`,"currentDateTime":lastUpdateDate}, {});
+                    if(data) {
+                        if(data?.result==true) {
+                            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"메뉴 업데이트 중입니다."})
+                            if(data?.isUpdated == "true") {
+                                Alert.alert(
+                                    "업데이트",
+                                    "메뉴 업데이트가 되었습니다. 업데이트 후 주문하실 수 있습니다.",
+                                    [{
+                                        text:'확인',
+                                    }]
+                                );
+
+            
+                            }else {
+            
+                                if( tableStatus?.now_later == "선불") {
+                                    if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
+                                        dispatch(setMonthPopup({isMonthSelectShow:true}))
+                                    }else {
+                                        makePayment();
+                                    }
+                                }else {
+                                    makePayment();
+                                }
+                            }
+                            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
+
+                        }else {
+
+                            if( tableStatus?.now_later == "선불") {
+                                if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
+                                    dispatch(setMonthPopup({isMonthSelectShow:true}))
+                                }else {
+                                    makePayment();
+                                }
+                            }else {
+                                makePayment();
+                            }
+                        }
+                    }else {
+
+                        if( tableStatus?.now_later == "선불") {
+                            if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
+                                dispatch(setMonthPopup({isMonthSelectShow:true}))
+                            }else {
+                                makePayment();
+                            }
+                        }else {
+                            makePayment();
+                        }
+                    }
+                  } catch (error) {
+                    // 예외 처리
+
+                    if( tableStatus?.now_later == "선불") {
+                        if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
+                            dispatch(setMonthPopup({isMonthSelectShow:true}))
+                        }else {
+                            makePayment();
+                        }
+                    }else {
+                        makePayment();
+                    }
+                    
+                }
+
+
+                /*
                 const resultData = await getMenuUpdateState(dispatch).catch(err=>{EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); return [];});
                 if(!resultData) {
                     EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
@@ -189,7 +263,6 @@ const CartView = () =>{
                     const msg = resultData?.ERROR_MSG;
 
                     if(isUpdated) {
-                        
                         // 날짜 기준 메뉴 업트가 있으면 새로 받아 온다.
                         const lastUpdateDate = await AsyncStorage.getItem("lastUpdate");      
                         const currentDate = moment(lastUpdateDate).format("x");
@@ -211,6 +284,7 @@ const CartView = () =>{
                             dispatch(setCartView(false));
                             dispatch(initOrderList());
                         }else { 
+                    
                             if( tableStatus?.now_later == "선불") {
                                 if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
                                     dispatch(setMonthPopup({isMonthSelectShow:true}))
@@ -221,6 +295,7 @@ const CartView = () =>{
                                 makePayment();
                             }
                             //dispatch(postToMetaPos());
+                            
                        }
             
                     }else {
@@ -235,9 +310,10 @@ const CartView = () =>{
                         }
                     } 
                 }
+                */
             }
         }
-        */
+        
         
     }
     useEffect(()=>{

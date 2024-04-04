@@ -5,6 +5,7 @@ export const ADMIN_API_GOODS = "/goods2.php";
 export const ADMIN_API_CATEGORY = "/category.php";
 export const ADMIN_API_POST_ORDER = "/order2.php";
 export const ADMIN_API_TABLE_STATUS = "/store_table.php";
+export const ADMIN_API_MENU_UPDATE = "/goods2_update.php";
 // 배너
 export const ADMIN_API_BANNER = "/banner.php";
 

@@ -419,7 +419,7 @@ export const getOrderByTable = async(dispatch, data) => {
     })
 }
 
-
+/* 
 // 관리자 카테고리 받기
 export const getAdminCategories = async(dispatch) => {
     const {STORE_ID, SERVICE_ID} = await getStoreID()
@@ -443,7 +443,7 @@ export const getAdminCategories = async(dispatch) => {
         })) 
         .catch(error=>reject(error.response.data));
     })
-}
+} */
 
 // 관리자 직원호출 목록 받기
 export const getAdminServices = async(dispatch) => {
