@@ -181,10 +181,10 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
 // 포스로 데이터 전송
 export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{dispatch, rejectWithValue, getState}) =>{
     console.log("postOrderToPos ========================================================");
-    const {metaOrderData} = getState().order;
-    var orderList = Object.assign({},metaOrderData);
+    //const {metaOrderData} = getState().order;
+    //var orderList = Object.assign({},metaOrderData);
     const { tableStatus } = getState().tableInfo;
-    const {payData} = _;
+    const {payData,orderData} = _;
     const date = new Date();
 
     const tableNo = await getTableInfo().catch(err=>{posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:"테이블 설정",MSG2:"테이블 번호를 설정 해 주세요."});});
@@ -223,17 +223,17 @@ export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{
                 PAY_CARD_MONTH:`${payData?.Month}`
             }]
         };
-        orderList = {...orderList,...addOrderData};
+        orderData = {...orderData,...addOrderData};
     } 
     //console.log("orderData: ",orderList);
     // 포스로 전달
     //let orderData = {"VERSION":"0010","WORK_CD":"8020","ORDER_NO":"2312271703684313782","TBL_NO":"001","PRINT_YN":"Y","USER_PRINT_YN":"Y","PRINT_ORDER_NO":"2312271703684313782","TOT_INWON":4,"ITEM_CNT":1,"ITEM_INFO":[{"ITEM_SEQ":1,"ITEM_CD":"900022","ITEM_NM":"치즈 추가","ITEM_QTY":1,"ITEM_AMT":1004,"ITEM_VAT":91,"ITEM_DC":0,"ITEM_CANCEL_YN":"N","ITEM_GB":"N","ITEM_MSG":"","SETITEM_CNT":0,"SETITEM_INFO":[]}],"TOTAL_AMT":"50004","TOTAL_VAT":"0","TOTAL_DC":"0","ORDER_STATUS":"3","CANCEL_YN":"N","PREPAYMENT_YN":"Y","CUST_CARD_NO":"94119400","CUST_NM":"","PAYMENT_CNT":1,"PAYMENT_INFO":{"PAY_SEQ":1,"PAY_KIND":"2","PAY_AMT":"50004","PAY_VAT":"0","PAY_APV_NO":"02761105","PAY_APV_DATE":"231227113649","PAY_CART_NO":"94119400","PAY_UPD_DT":"231227113649","PAY_CANCEL_YN":"N","PAY_CART_TYPE":"신한카드","PAY_CARD_MONTH":"00"}}
-    //console.log("orderlist=================================================================");
-    //console.log(JSON.stringify(orderList));
+    console.log("orderData=================================================================");
+    console.log(JSON.stringify(orderData));
     const {POS_IP} = await getIP();
     try {
         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
-        const data = await callApiWithExceptionHandling(`${POS_BASE_URL(POS_IP)}`,orderList, {}); 
+        const data = await callApiWithExceptionHandling(`${POS_BASE_URL(POS_IP)}`,orderData, {}); 
         if(data) {
             if(data.ERROR_CD == "E0000") {
                 dispatch(setCartView(false));
@@ -551,7 +551,6 @@ export const postToMetaPos =  createAsyncThunk("order/postToPos", async(_,{dispa
         };
         orderData = {...orderData,...addOrderData};
     }
-    console.log("orderData: ",orderData);
 
     //let orderData = {"VERSION":"0010","WORK_CD":"8020","ORDER_NO":"2312271703684313782","TBL_NO":"001","PRINT_YN":"Y","USER_PRINT_YN":"Y","PRINT_ORDER_NO":"2312271703684313782","TOT_INWON":4,"ITEM_CNT":1,"ITEM_INFO":[{"ITEM_SEQ":1,"ITEM_CD":"900022","ITEM_NM":"치즈 추가","ITEM_QTY":1,"ITEM_AMT":1004,"ITEM_VAT":91,"ITEM_DC":0,"ITEM_CANCEL_YN":"N","ITEM_GB":"N","ITEM_MSG":"","SETITEM_CNT":0,"SETITEM_INFO":[]}],"TOTAL_AMT":"50004","TOTAL_VAT":"0","TOTAL_DC":"0","ORDER_STATUS":"3","CANCEL_YN":"N","PREPAYMENT_YN":"Y","CUST_CARD_NO":"94119400","CUST_NM":"","PAYMENT_CNT":1,"PAYMENT_INFO":{"PAY_SEQ":1,"PAY_KIND":"2","PAY_AMT":"50004","PAY_VAT":"0","PAY_APV_NO":"02761105","PAY_APV_DATE":"231227113649","PAY_CART_NO":"94119400","PAY_UPD_DT":"231227113649","PAY_CANCEL_YN":"N","PAY_CART_TYPE":"신한카드","PAY_CARD_MONTH":"00"}}
     //console.log(JSON.stringify(orderData));

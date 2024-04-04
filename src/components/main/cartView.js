@@ -27,6 +27,7 @@ import { getMenuUpdateState, getStoreInfo, getTableAvailability } from '../../ut
 import { initMenu } from '../../store/menu';
 import { META_SET_MENU_SEPARATE_CODE_LIST, PAY_SEPRATE_AMT_LIMIT } from '../../resources/defaults';
 import moment from 'moment';
+import { metaPosDataFormat, metaPostPayFormat } from '../../utils/payment/metaPosDataFormat';
 
 const windowWidth = Dimensions.get('window').width;
 const CartView = () =>{
@@ -98,7 +99,7 @@ const CartView = () =>{
 
                 let payAmt = totalAmt - vatTotal;
                  
-                 var kocessAppPay = new KocesAppPay();
+                var kocessAppPay = new KocesAppPay();
                 kocessAppPay.requestKocesPayment({amt:payAmt, taxAmt:vatTotal, months:monthSelected, bsnNo:bsnNo,termID:tidNo })
                 .then(async (result)=>{ 
                       
@@ -121,10 +122,10 @@ const CartView = () =>{
             }else {
                 EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
                 //dispatch(postToMetaPos({payData:{}}));
-                console.log("post pay order-======")
-                await dispatch(presetOrderData({payData:null}));
-                dispatch(adminDataPost({payData:null}));
-                dispatch(postOrderToPos({payData:null}));
+                const orderData = await metaPostPayFormat(orderList,{}, allItems);
+                //await dispatch(presetOrderData({payData:null}));
+                //dispatch(adminDataPost({payData:null}));
+                dispatch(postOrderToPos({payData:null,orderData:orderData}));
             }
          
     }
@@ -159,7 +160,7 @@ const CartView = () =>{
                 EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
             }else {
                 EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"주문 중 입니다."})
-    
+                /* 
                 const resultData = await getMenuUpdateState(dispatch).catch(err=>{EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); return [];});
                 if(!resultData) {
                     EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
@@ -191,7 +192,7 @@ const CartView = () =>{
                             AsyncStorage.setItem("lastUpdate",saveDate);
                             dispatch(setCartView(false));
                             dispatch(initOrderList());
-                        }else {
+                        }else { */
                             if( tableStatus?.now_later == "선불") {
                                 if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
                                     dispatch(setMonthPopup({isMonthSelectShow:true}))
@@ -202,7 +203,7 @@ const CartView = () =>{
                                 makePayment();
                             }
                             //dispatch(postToMetaPos());
-                        }
+                       /*  }
             
                     }else {
                         if( tableStatus?.now_later == "선불") {
@@ -214,8 +215,8 @@ const CartView = () =>{
                         }else {
                             makePayment();
                         }
-                    }
-                } 
+                    } 
+                } */
             }
         }
          
@@ -235,13 +236,32 @@ const CartView = () =>{
         if(orderList.length > 0) {
             var itemTotal = 0;
             var qtyTotal = 0;
-            orderList.map((orderItem)=>{
-                console.log(orderItem)
+            for(var i=0;i<orderList.length;i++) {
+                const orderItem = orderList[i];
                 const itemDetail = allItems?.filter(el=>el.prod_cd == orderItem?.prod_cd);
-                
-                if(META_SET_MENU_SEPARATE_CODE_LIST.indexOf(orderItem?.prod_gb)>=0) {
+                if(META_SET_MENU_SEPARATE_CODE_LIST.indexOf(itemDetail[0]?.prod_gb)>=0) {
                     // 선택하부금액 
-                     
+                    itemTotal = itemTotal+Number(itemDetail[0]?.account);
+                    const setItem = orderItem?.set_item;
+                    var setItemPrice = 0;
+                    for(var i=0;i<setItem.length;i++) {
+                        const setItemData = allItems?.filter(el=>el.prod_cd == setItem[i].optItem);
+                        if(setItemData.length>0) {
+                            setItemPrice = Number(setItemPrice)+(Number(setItemData[0]?.account)*Number(setItem[i]?.qty));
+                        }
+                        itemTotal = (Number(itemTotal)+Number(setItemPrice))*Number(orderItem?.qty);
+                    }
+                    qtyTotal = qtyTotal+orderItem?.qty;
+
+                }else {
+                    itemTotal = itemTotal+(Number(itemDetail[0]?.account)*Number(orderItem?.qty));
+                    qtyTotal = qtyTotal+orderItem?.qty;
+                } 
+            }
+            /* orderList.map((orderItem)=>{
+                const itemDetail = allItems?.filter(el=>el.prod_cd == orderItem?.prod_cd);
+                if(META_SET_MENU_SEPARATE_CODE_LIST.indexOf(itemDetail[0]?.prod_gb)>=0) {
+                    // 선택하부금액 
                     itemTotal = Number(itemDetail[0]?.account);
                     const setItem = orderItem?.set_item;
                     var setItemPrice = 0;
@@ -250,47 +270,20 @@ const CartView = () =>{
                         if(setItemData.length>0) {
                             setItemPrice = Number(setItemPrice)+(Number(setItemData[0]?.account)*Number(setItem[i]?.qty));
                         }
-                        itemTotal = (Number(itemTotal)+Number(setItemPrice))*Number(order?.qty);
+                        itemTotal = (Number(itemTotal)+Number(setItemPrice))*Number(orderItem?.qty);
                     }
                     qtyTotal = qtyTotal+orderItem?.qty;
 
                 }else {
+                    console.log(itemTotal,itemDetail[0]?.account, orderItem?.qty);
                     itemTotal = itemTotal+(Number(itemDetail[0]?.account)*Number(orderItem?.qty));
                     qtyTotal = qtyTotal+orderItem?.qty;
                 } 
-            })
+            }) */
             setTotalCnt(qtyTotal)
             setTotalAmt(itemTotal)
-            console.log("itemTotal: ",itemTotal)
-        }
-        /* 
-        let totalAmt = 0;
-        let totalCnt = 0
-        if(orderList) {
-            if(orderList?.length>0) {
-                orderList?.map((el,index)=>{
-                    totalAmt += Number(el.ITEM_AMT);
-                    //totalCnt++;
-                    totalCnt = totalCnt+Number(el?.ITEM_QTY);
-                    for(var i=0;i<el.SETITEM_INFO.length;i++) {
-                        totalAmt += Number(el.SETITEM_INFO[i].AMT)
-                    }
-                })
-            }
-
-            setTotalAmt(totalAmt);
-            setTotalCnt(totalCnt);
-            
-        }else {
-            setTotalAmt(totalAmt);
-            setTotalCnt(totalCnt);
         }
         
-        if(orderList?.length > prevOrderList?.length) {
-            orderListRef?.current?.scrollToOffset({ animated: true, offset: 0 });
-        }
-        setPrevOrderList(orderList);
-         */
     },[orderList])
   
     useEffect(()=>{
