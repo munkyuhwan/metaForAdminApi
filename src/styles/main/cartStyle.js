@@ -25,7 +25,7 @@ export const Handle = styled.View`
     width:28px;
     marginTop:320px;
     position:absolute;
-    left:-28px;
+    left:-27px;
     zIndex:999999;
     borderTopLeftRadius:23px;
     borderBottomLeftRadius:22px;

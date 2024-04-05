@@ -12,7 +12,7 @@ export const SideMenuWrapper = styled.View`
     zIndex:999;
 `
 export const LogoWrapper = styled.View`
-    width:180px;
+    width:210px;
     displaty:flex;
     align-items: center;
     paddingTop:15px;
