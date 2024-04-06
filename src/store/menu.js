@@ -35,10 +35,16 @@ export const getAdminItems = createAsyncThunk("menu/getAdminItems", async(_,{dis
         const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_GOODS}`,{"STORE_ID":`${STORE_IDX}`}, {});
         if(data) {
             if(data?.result==true) {
-                data?.order?.map(async (el)=>{
-                    await fileDownloader(dispatch, `${el.prod_cd}`,`${el.gimg_chg}`).catch("");
-                });
-                return data;
+                const menuData = data?.order.filter(el=> el.is_view == "Y");
+                console.log("menu length: ",menuData.length);
+                if(menuData.length > 0) {
+                    menuData?.map(async (el)=>{
+                        await fileDownloader(dispatch, `${el.prod_cd}`,`${el.gimg_chg}`).catch("");
+                    });
+                    return menuData;
+                }else {
+                    return rejectWithValue("")
+                }
             }else {
                 return rejectWithValue(error.message)
             }
@@ -142,7 +148,7 @@ export const menuSlice = createSlice({
         // 전체 아이템셋
         builder.addCase(getAdminItems.fulfilled,(state, action)=>{
             if(!isEmpty(action.payload)) { 
-                state.allItems = action?.payload.order;
+                state.allItems = action?.payload;
                 state.isMenuLoading = false;
             }
         }) 
