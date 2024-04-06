@@ -6,7 +6,8 @@ import { openPopup } from '../utils/common';
 
 export const initMenuDetail = createAsyncThunk("menuDetail/initMenuDetail", async() =>{
     //return {menuDetailID: null,menuDetail:{},menuOptionGroupCode:"",menuOptionList:[],menuOptionSelected:[],setGroupItem:[]};
-    return { menuDetailID: null,menuDetail:{},menuOptionGroupCode:"",menuOptionList:[],menuOptionSelected:[],setGroupItem:[],menuRecommendItems:[],}
+    //return { menuDetailID: null,menuDetail:{},menuOptionGroupCode:"",menuOptionList:[],menuOptionSelected:[],setGroupItem:[],menuRecommendItems:[],}
+    return {menuDetailID: null,menuDetail:{},menuOptionGroupCode:"",menuOptionList:[],menuOptionSelected:[],setGroupItem:[],menuRecommendItems:[]}
 })
 
 export const setItemDetail = createAsyncThunk("menuDetail/setItemDetail", async({itemID},{dispatch,getState}) =>{

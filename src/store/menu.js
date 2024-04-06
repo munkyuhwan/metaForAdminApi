@@ -141,9 +141,7 @@ export const menuSlice = createSlice({
 
         // 전체 아이템셋
         builder.addCase(getAdminItems.fulfilled,(state, action)=>{
-            console.log("action.payload: ",action.payload.order.length);
             if(!isEmpty(action.payload)) { 
-                console.log("update all items===");
                 state.allItems = action?.payload.order;
                 state.isMenuLoading = false;
             }

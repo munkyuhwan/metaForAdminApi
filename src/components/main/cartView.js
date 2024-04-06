@@ -338,10 +338,10 @@ const CartView = () =>{
                     itemTotal = itemTotal+Number(itemDetail[0]?.account);
                     const setItem = orderItem?.set_item;
                     var setItemPrice = 0;
-                    for(var i=0;i<setItem.length;i++) {
-                        const setItemData = allItems?.filter(el=>el.prod_cd == setItem[i].optItem);
+                    for(var j=0;j<setItem.length;j++) {
+                        const setItemData = allItems?.filter(el=>el.prod_cd == setItem[j].optItem);
                         if(setItemData.length>0) {
-                            setItemPrice = Number(setItemPrice)+(Number(setItemData[0]?.account)*Number(setItem[i]?.qty));
+                            setItemPrice = Number(setItemPrice)+(Number(setItemData[0]?.account)*Number(setItem[j]?.qty));
                         }
                         itemTotal = (Number(itemTotal)+Number(setItemPrice))*Number(orderItem?.qty);
                     }
@@ -352,28 +352,6 @@ const CartView = () =>{
                     qtyTotal = qtyTotal+orderItem?.qty;
                 } 
             }
-            /* orderList.map((orderItem)=>{
-                const itemDetail = allItems?.filter(el=>el.prod_cd == orderItem?.prod_cd);
-                if(META_SET_MENU_SEPARATE_CODE_LIST.indexOf(itemDetail[0]?.prod_gb)>=0) {
-                    // 선택하부금액 
-                    itemTotal = Number(itemDetail[0]?.account);
-                    const setItem = orderItem?.set_item;
-                    var setItemPrice = 0;
-                    for(var i=0;i<setItem.length;i++) {
-                        const setItemData = allItems?.filter(el=>el.prod_cd == setItem[i].optItem);
-                        if(setItemData.length>0) {
-                            setItemPrice = Number(setItemPrice)+(Number(setItemData[0]?.account)*Number(setItem[i]?.qty));
-                        }
-                        itemTotal = (Number(itemTotal)+Number(setItemPrice))*Number(orderItem?.qty);
-                    }
-                    qtyTotal = qtyTotal+orderItem?.qty;
-
-                }else {
-                    console.log(itemTotal,itemDetail[0]?.account, orderItem?.qty);
-                    itemTotal = itemTotal+(Number(itemDetail[0]?.account)*Number(orderItem?.qty));
-                    qtyTotal = qtyTotal+orderItem?.qty;
-                } 
-            }) */
             setTotalCnt(qtyTotal)
             setTotalAmt(itemTotal)
         }

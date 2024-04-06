@@ -27,6 +27,9 @@ export const initOrderList = createAsyncThunk("order/initOrderList", async() =>{
         orderPayData:{},
     };
 })
+export const emptyOrderList = createAsyncThunk("order/emptyOrderList", async() =>{
+    return  {orderList:[]};
+})
 // 주문 데이터 세팅
 export const presetOrderData = createAsyncThunk("order/presetOrderData", async(_,{dispatch, getState,rejectWithValue}) =>{
     const {orderList} = getState().order;
@@ -376,7 +379,6 @@ export const addToOrderList =  createAsyncThunk("order/addToOrderList", async(_,
         qty:0,
         set_item:[]
     };
-
     if( META_SET_MENU_SEPARATE_CODE_LIST.indexOf(item?.prod_gb)>=0) {
         // 메뉴 선택하부금액 
         // 선택한 옵션의 가격이 들어감
@@ -385,11 +387,13 @@ export const addToOrderList =  createAsyncThunk("order/addToOrderList", async(_,
         const duplicatedList = currentOrderList.filter(el=> (el.prod_cd == item?.prod_cd) && ( isEqual(el.set_item,menuOptionSelected) ) );
         // 중복 체크
         if(duplicatedList.length>0) {
+            posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:"testes",MSG2:"testset."});
             for(var i=0;i<orderList.length;i++) {
                 if(orderList[i].prod_cd == item?.prod_cd) {
                     // 옵션도 비교해야함
                     if(isEqual(orderList[i].set_item, menuOptionSelected)) {
                         if(isAdd) {
+                            // 세트 아이템 
                             currentOrderList[i] = Object.assign({},{...currentOrderList[i],...{qty:Number(orderList[i]["qty"])+1}});
                         }else {
                             if(isDelete) {
@@ -407,8 +411,11 @@ export const addToOrderList =  createAsyncThunk("order/addToOrderList", async(_,
             orderItemForm["set_item"] = menuOptionSelected;
             currentOrderList.unshift(orderItemForm);
         }
-        currentOrderList = currentOrderList.filter(el=>el.qty > 0);
-        return({orderList:currentOrderList});
+
+        //currentOrderList = await currentOrderList.filter(el=>el.qty > 0);
+        const finalOrderList = currentOrderList.filter(el=>el.qty > 0);
+        return({orderList:finalOrderList});
+        
     }else {
          // 다른 메뉴들
         // 세트메뉴 경우 그냥 세트 품목들 0원 세트 메인 상품의 가격에 세트메뉴 가격을 추가함
@@ -435,8 +442,8 @@ export const addToOrderList =  createAsyncThunk("order/addToOrderList", async(_,
             orderItemForm["set_item"] = [];
             currentOrderList.unshift(orderItemForm);
         }
-        currentOrderList = currentOrderList.filter(el=>el.qty > 0);
-        return({orderList:currentOrderList});
+        const finalOrderList = currentOrderList.filter(el=>el.qty > 0);
+        return({orderList:finalOrderList});
     }
 })
 // 주문로그 
@@ -590,73 +597,6 @@ export const postToMetaPos =  createAsyncThunk("order/postToPos", async(_,{dispa
         return result;
     }
 })
-/* 
-// 새로 메뉴 등록
-export const postToPos =  createAsyncThunk("order/postToPos", async(_,{dispatch, getState,extra}) =>{
-    const {orderPayData} = getState().order;
-    const {paymentResult, isPrepay} = _;
-    let payData = {
-        "ITEM_SEQ" : 0,
-        "ITEM_CD" : "",
-        "ITEM_NM" : "",
-        "ITEM_QTY" : 0,
-        "ITEM_AMT" : 0,
-        "ITEM_VAT" : 0,
-        "ITEM_DC" : 0,
-        "ITEM_CANCEL_YN" : "N",
-        "ITEM_GB" : "N",
-        "ITEM_MSG" : "",
-        "SETITEM_CNT" : 0,
-        "SETITEM_INFO" : 
-        []
-    }
-    let orderPayList = [];
-    if(isPrepay) {
-        const orderPayItem = {
-            "AUTH_DATE": `20${paymentResult['approval-date']||"" }`, 
-            "AUTH_NO": `${paymentResult['approval-no']||"" }`, 
-            "AUTH_TIME": `${paymentResult['approval-time']||""}`, 
-            "CAN_FLAG": "N", 
-            "CAN_PAY_SEQ": "", 
-            "CARD_ACQHID": `${paymentResult['acquire-info']?.substring(0,4)||""}`, 
-            "CARD_ACQ_NAME": `${paymentResult['acquire-info']?.substring(4,paymentResult['acquire-info'].length-1)||""}`, 
-            "CARD_ACSHID": `${paymentResult['issuer-info']?.substring(0,4)||""}`, 
-            "CARD_MCHTNO": `${paymentResult['merchant-no']||""}`, 
-            "CARD_NO": `${paymentResult['card-no']}`, 
-            "CARD_PAY_TYPE": "I", 
-            "CASH_AUTH_TYPE": "P", 
-            "CRD_HID_NAME": `${paymentResult['issuer-info']?.substring(4,paymentResult['issuer-info']?.length-1)||""}`, 
-            "DDCEDI": "E", 
-            "ISTM_TERM": "01", 
-            "PAY_TYPE": "card", 
-            "SALE_AMT":`${paymentResult['total-amount']||""}`, 
-            "SALE_VAT_AMT": "0", 
-            "SVC_AMT": "0", 
-            "TML_NO":`${paymentResult['cat-id']||""}`,
-        };
-        orderPayList.push(orderPayItem);
-    }
-
-    let submitOrderPayData = Object.assign({},orderPayData);
-    submitOrderPayData['PREPAY_FLAG'] = isPrepay?"Y":"N";
-    submitOrderPayData['ORD_PAY_LIST'] = orderPayList;
-     
-    const lw = new LogWriter();
-    const logPos = `\nPOST POS DATA==================================\ndata:${JSON.stringify(submitOrderPayData)}\n`
-    lw.writeLog(logPos);
-
-    return await postOrderToPos(dispatch, submitOrderPayData)
-    .catch(err=>{
-        //posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:"주문 오류",MSG2:"주문을 진행할 수 없습니다."});
-        console.log("error: ",err)
-        const lw = new LogWriter();
-        const logPos = `\nPOST POS DATA ERROR==================================\ndata:${JSON.stringify(err)}\n`
-        lw.writeLog(logPos);
-    });
-     
-})
- */
-
 // 매뉴 추가 등록
 export const postAddToPos =  createAsyncThunk("order/postAddToPos", async(_,{dispatch, getState,extra}) =>{
     const {orderPayData} = getState().order;
@@ -740,9 +680,8 @@ export const orderSlice = createSlice({
         })
         // 주문 추가
         builder.addCase(addToOrderList.fulfilled,(state, action)=>{
-            //console.log("addToOrderList========",action.payload);
             if(action.payload){
-                state.orderList = action.payload.orderList;
+                state.orderList = Object.assign([], action.payload.orderList);
                 /* 
                 state.orderList = action.payload.orderList;
                 state.grandTotal = action.payload.grandTotal;
@@ -751,6 +690,18 @@ export const orderSlice = createSlice({
                 state.vatTotal = action.payload.vatTotal;
                 */
             }
+        })
+        // 주문 추가
+        builder.addCase(addToOrderList.rejected,(state, action)=>{
+            
+        })
+        // 주문 추가
+        builder.addCase(addToOrderList.pending,(state, action)=>{
+            
+        })
+        // order list empty
+        builder.addCase(emptyOrderList.fulfilled,(state, action)=>{
+            state.orderList = [];
         })
         // 주문 수량 수정
         builder.addCase(resetAmtOrderList.fulfilled,(state, action)=>{

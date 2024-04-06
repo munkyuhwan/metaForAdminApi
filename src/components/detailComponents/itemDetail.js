@@ -161,8 +161,10 @@ const ItemDetail = (props) => {
         }else {
             // 주문 하기
             dispatch(addToOrderList({isAdd:true, isDelete: false, item:menuDetail,menuOptionSelected:optSelected}));
+            //dispatch(addToOrderList({isAdd:true, isDelete: false, item:menuDetail,menuOptionSelected:[]}));
             closeDetail();
         }
+
     }
 
     const closeDetail = () =>{

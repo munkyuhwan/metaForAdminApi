@@ -113,7 +113,7 @@ const CartListItem = (props) => {
                 </CartItemImageTogoWrapper>
                 
                 <CartItemTitlePriceWrapper>
-                    <CartItemTitle numberOfLines={1} ellipsizeMode="tail" >{ItemTitle()||itemDetail.gname_kr}</CartItemTitle>
+                    <CartItemTitle numberOfLines={1} ellipsizeMode="tail" >{ItemTitle()||itemDetail[0]?.gname_kr}</CartItemTitle>
                     <CartItemOpts numberOfLines={2} ellipsizeMode="tail" >
                         {additiveItemList.length>0 &&
                             additiveItemList.map((el,index)=>{
