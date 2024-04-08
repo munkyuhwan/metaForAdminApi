@@ -136,6 +136,7 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
         "STORE_ID":STORE_IDX,
     }
     postOrderData = {...postOrderData,...addData};
+    
     try {
         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
         const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_POST_ORDER}`,postOrderData, {});
@@ -387,7 +388,6 @@ export const addToOrderList =  createAsyncThunk("order/addToOrderList", async(_,
         const duplicatedList = currentOrderList.filter(el=> (el.prod_cd == item?.prod_cd) && ( isEqual(el.set_item,menuOptionSelected) ) );
         // 중복 체크
         if(duplicatedList.length>0) {
-            posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:"testes",MSG2:"testset."});
             for(var i=0;i<orderList.length;i++) {
                 if(orderList[i].prod_cd == item?.prod_cd) {
                     // 옵션도 비교해야함
