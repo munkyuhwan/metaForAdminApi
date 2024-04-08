@@ -52,14 +52,14 @@ export const MenuItemButtonWrapper = styled.View`
 `
 export const MenuItemButtonInnerWrapperRight = styled.View`
     width:100%;
-    flex:1;
+    flex:0.35;
     flexDirection: row;
     justifyContent: flex-start;
     paddingTop:5px;
  `
 export const MenuItemDetailSpicenessWrapper = styled.View`
     width:100%;
-    flex:1;
+    flex:2;
     flexDirection: row;
     justifyContent: flex-start;
 `

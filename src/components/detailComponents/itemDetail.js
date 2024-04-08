@@ -318,6 +318,18 @@ const ItemDetail = (props) => {
                                                     <MenuItemSpiciness source={require('../../assets/icons/spicy_5.png')}/>
                                                 </MenuItemDetailSpicenessWrapper>
                                             }
+                                            {
+                                                menuDetail?.temp == "COLD"  &&
+                                                <MenuItemDetailSpicenessWrapper>
+                                                    <MenuItemSpiciness source={require('../../assets/icons/cold_icon.png')}/>
+                                                </MenuItemDetailSpicenessWrapper>
+                                            }
+                                            {
+                                                menuDetail?.temp == "HOT"  &&
+                                                <MenuItemDetailSpicenessWrapper>
+                                                    <MenuItemSpiciness source={require('../../assets/icons/hot_icon.png')}/>
+                                                </MenuItemDetailSpicenessWrapper>
+                                            }
                                         </DetailItemInfoTitleWrapper>
                                         <DetailItemInfoSource>{ItemWonsanji()}</DetailItemInfoSource>
                                         <DetailPriceMoreWrapper>

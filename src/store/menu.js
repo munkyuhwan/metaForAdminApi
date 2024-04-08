@@ -36,23 +36,28 @@ export const getAdminItems = createAsyncThunk("menu/getAdminItems", async(_,{dis
         if(data) {
             if(data?.result==true) {
                 const menuData = data?.order.filter(el=> el.is_view == "Y");
-                console.log("menu length: ",menuData.length);
+                //console.log("menu length: ",menuData.length);
                 if(menuData.length > 0) {
                     menuData?.map(async (el)=>{
                         await fileDownloader(dispatch, `${el.prod_cd}`,`${el.gimg_chg}`).catch("");
                     });
+                    EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
                     return menuData;
                 }else {
+                    EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
                     return rejectWithValue("")
                 }
             }else {
+                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
                 return rejectWithValue(error.message)
             }
         }else {
+            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
             return rejectWithValue(error.message)
         }
       } catch (error) {
         // 예외 처리
+        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
         return rejectWithValue(error.message)
     }
     
@@ -114,9 +119,9 @@ export const menuUpdateCheck = createAsyncThunk("menu/menuUpdateCheck", async(_,
                     dispatch(setSelectedItems());
 
                 }else {
+                    EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
 
                 }
-                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
                 return data;
             }else {
                 return rejectWithValue(error.message)

@@ -111,6 +111,18 @@ const MenuItem = ({item,index,setDetailShow}) => {
                                     <MenuItemSpiciness source={require('../../assets/icons/spicy_5.png')}/>
                                 </MenuItemButtonInnerWrapperRight>
                             }
+                            {
+                                item.temp == "HOT" &&
+                                <MenuItemButtonInnerWrapperRight>
+                                    <MenuItemSpiciness source={require('../../assets/icons/hot_icon.png')}/>
+                                </MenuItemButtonInnerWrapperRight>
+                            }
+                            {
+                                item.temp == "COLD" &&
+                                <MenuItemButtonInnerWrapperRight>
+                                    <MenuItemSpiciness source={require('../../assets/icons/cold_icon.png')}/>
+                                </MenuItemButtonInnerWrapperRight>
+                            }
                             <TouchableWithoutFeedback onPress={()=>{ if(item?.prod_gb=="09"||item?.prod_gb=="02"){setDetailShow(true);  dispatch(setItemDetail({itemID}));} else { dispatch(addToOrderList({isAdd:true, isDelete: false, item:item,menuOptionSelected:[]}));} }} >
                                 <MenuItemButtonInnerWrapperLeft>
                                     <MenuItemButton source={require('../../assets/icons/add.png')}/>
@@ -127,7 +139,7 @@ const MenuItem = ({item,index,setDetailShow}) => {
 
                 </MenuItemTopWrapper>
                 <MenuItemBottomWRapper>
-                    <MenuItemName>{itemTitle()||item.PROD_NM}</MenuItemName>
+                    <MenuItemName>{itemTitle()||item.gname_kr}</MenuItemName>
                     <MenuItemPrice>{numberWithCommas(itemPrice)}원</MenuItemPrice>
                 </MenuItemBottomWRapper>
             </MenuItemWrapper>

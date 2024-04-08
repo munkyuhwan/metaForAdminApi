@@ -158,7 +158,6 @@ export default function Navigation() {
         }
     },[tableStatus])
  
-    //console.log("render========");
     return (
         <>  
             <NavigationContainer
