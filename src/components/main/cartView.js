@@ -368,7 +368,6 @@ const CartView = () =>{
         } */
     },[orderStatus])
 
-
     return(
         <>  
             <IconWrapper>

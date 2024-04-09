@@ -108,6 +108,9 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
     let addOrderData = {};
     if(!isEmpty(payData)) {
         addOrderData = {
+            TOTAL_AMT:Number(payData?.TrdAmt)+Number(payData?.TaxAmt),
+            TOTAL_VAT:Number(payData?.TaxAmt),
+            TOTAL_DC:Number(payData?.SvcAmt),
             ORDER_STATUS:"3",
             CANCEL_YN:"N",
             PREPAYMENT_YN:"N",
@@ -136,7 +139,8 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
         "STORE_ID":STORE_IDX,
     }
     postOrderData = {...postOrderData,...addData};
-    
+    //console.log("postOrderData========================================================")
+    //console.log(JSON.stringify(postOrderData))
     try {
         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
         const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_POST_ORDER}`,postOrderData, {});

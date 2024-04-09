@@ -14,6 +14,8 @@ import RNFS from 'react-native-fs';
 import { numberWithCommas } from '../../utils/common';
 import { styled } from 'styled-components';
 import { ADMIN_API_BASE_URL } from '../../resources/newApiResource';
+import moment from 'moment';
+import { current } from '@reduxjs/toolkit';
 const height = Dimensions.get('window').height;
 /* 메인메뉴 메뉴 아이템 */
 const MenuItem = ({item,index,setDetailShow}) => {
@@ -49,6 +51,32 @@ const MenuItem = ({item,index,setDetailShow}) => {
         return selTitleLanguage;
     }
     const itemPrice= Number(item.sal_tot_amt);
+
+
+    const isAvailable = (item) => {
+
+        if(item?.use_timea == "" || item?.use_timeaa == "" || item?.use_timeb == "" || item?.use_timebb == "") {
+            return true;
+        }
+        if(item?.use_time1a == "" || item?.use_time1aa == "" || item?.use_time1b == "" || item?.use_time1bb == "") {
+            return true;
+        }
+        const startTimeAm = Number(`${item?.use_timea}${item?.use_timeaa}`);
+        const endTimeAm = Number(`${item?.use_timeb}${item?.use_timebb}`);
+    
+        const startTimePm = Number(`${item?.use_time1a}${item?.use_time1aa}`);
+        const endTimePm = Number(`${item?.use_time1b}${item?.use_time1bb}`);
+        
+        const currentTime = Number(moment().format("HHmm"));
+        const hourNow = Number(moment().format("HH"));
+
+        if(hourNow<12) {
+            return currentTime>startTimeAm && currentTime<endTimeAm
+        }else {
+            return currentTime>startTimePm && currentTime<endTimePm
+        }
+    }
+    
     return(
         <>
             <MenuItemWrapper>
@@ -133,6 +161,12 @@ const MenuItem = ({item,index,setDetailShow}) => {
                     {item?.sale_status=='3'&&// 1:대기, 2: 판매, 3: 매진
                         <SoldOutLayer style={{ width:'100%',height:height*0.28, borderRadius:RADIUS_DOUBLE}}>
                             <SoldOutText>SOLD OUT</SoldOutText>    
+                            <SoldOutDimLayer style={{ width:'100%',height:height*0.28, borderRadius:RADIUS_DOUBLE}}/>
+                        </SoldOutLayer>
+                    }
+                    {(item?.sale_status!='3'&&!isAvailable(item)) &&
+                        <SoldOutLayer style={{ width:'100%',height:height*0.28, borderRadius:RADIUS_DOUBLE}}>
+                            <SoldOutText>준비중</SoldOutText>    
                             <SoldOutDimLayer style={{ width:'100%',height:height*0.28, borderRadius:RADIUS_DOUBLE}}/>
                         </SoldOutLayer>
                     }

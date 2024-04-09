@@ -30,11 +30,13 @@ export const clearAllItems = createAsyncThunk("menu/clearAllItems", async(_,{dis
 // 전체 메뉴 받기
 export const getAdminItems = createAsyncThunk("menu/getAdminItems", async(_,{dispatch,getState, rejectWithValue})=>{
     const {STORE_IDX} = await getStoreID();
-    
     try {
         const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_GOODS}`,{"STORE_ID":`${STORE_IDX}`}, {});
         if(data) {
             if(data?.result==true) {
+                if(data?.order==null || data?.order==undefined) {
+                    return rejectWithValue("메뉴가 없습니다.");
+                }                
                 const menuData = data?.order.filter(el=> el.is_view == "Y");
                 //console.log("menu length: ",menuData.length);
                 if(menuData.length > 0) {

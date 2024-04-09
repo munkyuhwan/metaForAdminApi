@@ -99,7 +99,7 @@ const MenuListView = () => {
                         columnWrapperStyle={{gap:11}}
                         style={{height:'100%', zIndex: 99 }}
                         data={displayMenu}
-                        renderItem={({item, index})=>{console.log("render item ",index,"=========="); return(<MenuItem isDetailShow={isDetailShow} 
+                        renderItem={({item, index})=>{ return(<MenuItem isDetailShow={isDetailShow} 
                         setDetailShow={setDetailShow} item={item} index={index} /> );}}
                         numColumns={numColumns}
                         key={numColumns}
