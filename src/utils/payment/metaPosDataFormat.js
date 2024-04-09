@@ -58,17 +58,17 @@ export const metaPostPayFormat = async (orderList,payData, allItems) => {
         const setItems = orderList[i].set_item;
         // set item 
         var setItemArray = [];
-        var setItem = {
-            "ITEM_SEQ" : 2,
-            "SET_SEQ" : 1,
-            "PROD_I_CD" : "100134",
-            "PROD_I_NM" : "딸기시럽추가",
-            "QTY" : 1,
-            "AMT" : 0,
-            "VAT" : 0,
-        }
         for(var j=0;j<setItems.length;j++) {
             const setItemDetail = allItems?.filter(el=>el.prod_cd == setItems[j]?.optItem);
+            var setItem = {
+                "ITEM_SEQ" : 2,
+                "SET_SEQ" : 1,
+                "PROD_I_CD" : "100134",
+                "PROD_I_NM" : "딸기시럽추가",
+                "QTY" : 1,
+                "AMT" : 0,
+                "VAT" : 0,
+            }
             setItem["ITEM_SEQ"] = i+1;
             setItem["SET_SEQ"] = j+1;
             setItem["PROD_I_CD"] = setItems[j].optItem;

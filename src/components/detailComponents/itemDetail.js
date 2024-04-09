@@ -154,6 +154,23 @@ const ItemDetail = (props) => {
                         isPass = false;
                     }
                 }
+            }else {
+                // 선택한 옵션이 없을 떄
+                // 그룹 리미트 카운트
+                var limitCnt = Number(optGroups[i].limit_count);
+                if(limitCnt > 0) {
+                    // 무한 선택이 아니다
+                    if(optSelected.length<=0) {
+                        // 1. 선택한 옵션이 하나도 없으면 통과 안시킴
+                        isPass = false;
+                    }
+                    
+
+
+
+                }
+
+                
             }
         }
         if(!isPass) {
@@ -161,7 +178,6 @@ const ItemDetail = (props) => {
         }else {
             // 주문 하기
             dispatch(addToOrderList({isAdd:true, isDelete: false, item:menuDetail,menuOptionSelected:optSelected}));
-            //dispatch(addToOrderList({isAdd:true, isDelete: false, item:menuDetail,menuOptionSelected:[]}));
             closeDetail();
         }
 

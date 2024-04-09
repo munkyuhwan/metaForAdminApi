@@ -90,13 +90,18 @@ const CartListItem = (props) => {
             // 선택하부금액 
             var itemTotal = Number(itemDetail[0]?.account);
             const setItem = order?.set_item;
-            var setItemPrice = 0;
-            for(var i=0;i<setItem.length;i++) {
-                const setItemData = allItems?.filter(el=>el.prod_cd == setItem[i].optItem);
-                if(setItemData.length>0) {
-                    setItemPrice = Number(setItemPrice)+(Number(setItemData[0]?.account)*Number(setItem[i]?.qty));
+            if(setItem.length>0) {
+                var setItemPrice = 0;
+                for(var i=0;i<setItem.length;i++) {
+                    const setItemData = allItems?.filter(el=>el.prod_cd == setItem[i].optItem);
+                    if(setItemData.length>0) {
+                        console.log("setItemPrice; ",Number(setItemData[0]?.account),Number(setItem[i]?.qty));
+                        setItemPrice = Number(setItemPrice)+(Number(setItemData[0]?.account)*Number(setItem[i]?.qty));
+                    }
                 }
                 itemTotal = (Number(itemTotal)+Number(setItemPrice))*Number(order?.qty);
+            }else {
+                itemTotal = Number(itemDetail[0]?.account)*Number(order?.qty);
             }
             return itemTotal||0;
         }else {
@@ -117,7 +122,7 @@ const CartListItem = (props) => {
                     <CartItemOpts numberOfLines={2} ellipsizeMode="tail" >
                         {additiveItemList.length>0 &&
                             additiveItemList.map((el,index)=>{
-                                return `${ItemOptionTitle(el.optItem,index)}`+`${el.qty}개`+`${index<(additiveItemList.length-1)?", ":""}`;
+                                return `${ItemOptionTitle(el.optItem,index)}`+`${Number(el.qty)*Number(order?.qty)}개`+`${index<(additiveItemList.length-1)?", ":""}`;
                             })
                         }
                     </CartItemOpts>

@@ -105,13 +105,14 @@ const CartView = () =>{
                     for(var i=0;i<orderData.ITEM_INFO.length;i++) {
                         payAmt = payAmt + (Number(orderData.ITEM_INFO[i].ITEM_AMT) - Number(orderData.ITEM_INFO[i].ITEM_VAT))
                         vatAmt = vatAmt + Number(orderData.ITEM_INFO[i].ITEM_VAT);
-                        for(var j=0;j<orderData.ITEM_INFO[i].SETITEM_INFO.length;j++) {
+                        const setItems = orderData.ITEM_INFO[i].SETITEM_INFO;
+                        for(var j=0;j<setItems.length;j++) {
                             payAmt = payAmt + (Number(orderData.ITEM_INFO[i].SETITEM_INFO[j].AMT) - Number(orderData.ITEM_INFO[i].SETITEM_INFO[j].VAT))
                             vatAmt = vatAmt + Number(orderData.ITEM_INFO[i].SETITEM_INFO[j].VAT)
-                        }
+                        }                        
                     }
                     const amtData = {amt:payAmt, taxAmt:vatAmt, months:monthSelected, bsnNo:bsnNo,termID:tidNo }
-
+                    //console.log("amtData: ",amtData);
                     var kocessAppPay = new KocesAppPay();
                     kocessAppPay.requestKocesPayment(amtData)
                     .then(async (result)=>{ 
@@ -333,24 +334,38 @@ const CartView = () =>{
             for(var i=0;i<orderList.length;i++) {
                 const orderItem = orderList[i];
                 const itemDetail = allItems?.filter(el=>el.prod_cd == orderItem?.prod_cd);
+                
                 if(META_SET_MENU_SEPARATE_CODE_LIST.indexOf(itemDetail[0]?.prod_gb)>=0) {
+                    //itemTotal = itemTotal+Number(itemDetail[0]?.account);
                     // 선택하부금액 
-                    itemTotal = itemTotal+Number(itemDetail[0]?.account);
                     const setItem = orderItem?.set_item;
                     var setItemPrice = 0;
-                    for(var j=0;j<setItem.length;j++) {
-                        const setItemData = allItems?.filter(el=>el.prod_cd == setItem[j].optItem);
-                        if(setItemData.length>0) {
-                            setItemPrice = Number(setItemPrice)+(Number(setItemData[0]?.account)*Number(setItem[j]?.qty));
+                    
+                    if(setItem.length>0) {
+                        // 세트 선택이 있다.
+                        for(var j=0;j<setItem.length;j++) {
+                            const setItemData = allItems?.filter(el=>el.prod_cd == setItem[j].optItem);
+                            if(setItemData.length>0) {
+                                setItemPrice = Number(setItemPrice)+(Number(setItemData[0]?.account)*Number(setItem[j]?.qty));
+                            }
+                            //itemTotal = (Number(itemTotal)+Number(setItemPrice))*Number(orderItem?.qty);
+                            
                         }
-                        itemTotal = (Number(itemTotal)+Number(setItemPrice))*Number(orderItem?.qty);
+                        itemTotal = Number(itemTotal) + ( (Number(setItemPrice)+Number(itemDetail[0]?.account)) *orderItem.qty );
+                    }else {
+                        // 세트 선택이 없다.
+                        //console.log("itemTotal: ",Number(itemDetail[0]?.account),Number(orderItem?.qty));
+                        itemTotal = itemTotal+ (Number(itemDetail[0]?.account)*Number(orderItem?.qty));
                     }
-                    qtyTotal = qtyTotal+orderItem?.qty;
 
+                    qtyTotal = qtyTotal+orderItem?.qty;
+                     
                 }else {
                     itemTotal = itemTotal+(Number(itemDetail[0]?.account)*Number(orderItem?.qty));
                     qtyTotal = qtyTotal+orderItem?.qty;
                 } 
+                
+
             }
             setTotalCnt(qtyTotal)
             setTotalAmt(itemTotal)
