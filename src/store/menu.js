@@ -10,7 +10,7 @@ import { setCallServerList } from './callServer';
 import { DEFAULT_CATEGORY_ALL_CODE } from '../resources/defaults';
 import { getMenuUpdateState, getPosItemsAll, getPosItemsWithCategory, getPosMainCategory, getPosMidCategory, getPosSetGroup, getPosSetGroupItem } from '../utils/api/metaApis';
 import { scanFile } from 'react-native-fs';
-import { setMenuOptionGroupCode } from './menuDetail';
+import { initMenuDetail, setItemDetail, setMenuOptionGroupCode } from './menuDetail';
 import { displayErrorNonClosePopup, displayErrorPopup } from '../utils/errorHandler/metaErrorHandler';
 import { fileDownloader, getStoreID, isNetworkAvailable, openPopup } from '../utils/common';
 import { Alert } from 'react-native';
@@ -119,7 +119,8 @@ export const menuUpdateCheck = createAsyncThunk("menu/menuUpdateCheck", async(_,
                     // 메뉴 받아오기
                     await dispatch(getAdminItems());
                     dispatch(setSelectedItems());
-
+                    //dispatch(setItemDetail({itemID:null}));
+                    dispatch(initMenuDetail());
                 }else {
                     EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
 

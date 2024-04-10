@@ -11,7 +11,7 @@ import { colorWhite } from '../../assets/colors/color';
 import {isEmpty} from 'lodash'
 import RNFetchBlob from 'rn-fetch-blob';
 import RNFS from 'react-native-fs';
-import { numberWithCommas } from '../../utils/common';
+import { isAvailable, numberWithCommas } from '../../utils/common';
 import { styled } from 'styled-components';
 import { ADMIN_API_BASE_URL } from '../../resources/newApiResource';
 import moment from 'moment';
@@ -52,7 +52,7 @@ const MenuItem = ({item,index,setDetailShow}) => {
     }
     const itemPrice= Number(item.sal_tot_amt);
 
-
+/* 
     const isAvailable = (item) => {
 
         if(item?.use_timea == "" || item?.use_timeaa == "" || item?.use_timeb == "" || item?.use_timebb == "") {
@@ -76,7 +76,7 @@ const MenuItem = ({item,index,setDetailShow}) => {
             return currentTime>startTimePm && currentTime<endTimePm
         }
     }
-    
+     */
     return(
         <>
             <MenuItemWrapper>

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { BottomButton, BottomButtonIcon, BottomButtonText, BottomButtonWrapper, ButtonWrapper, DetailInfoWrapper, DetailItemInfoFastImage, DetailItemInfoImage, DetailItemInfoImageWrapper, DetailItemInfoMore, DetailItemInfoPrice, DetailItemInfoPriceWrapper, DetailItemInfoSource, DetailItemInfoTitle, DetailItemInfoTitleEtc, DetailItemInfoTitleWrapper, DetailItemInfoWrapper, DetailPriceMoreWrapper, DetailWhiteWrapper, DetailWrapper, OptList, OptListWrapper, OptRecommendWrapper, OptTitleText } from '../../styles/main/detailStyle';
-import { ActivityIndicator, Animated, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import { ActivityIndicator, Animated, Dimensions, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { colorBlack, colorRed } from '../../assets/colors/color';
 import { LANGUAGE } from '../../resources/strings';
 import OptItem from './optItem';
@@ -9,15 +9,17 @@ import CommonIndicator from '../common/waitIndicator';
 import WaitIndicator from '../common/waitIndicator';
 import RecommendItem from './recommendItem';
 import { initMenuDetail, getSingleMenuFromAllItems, getItemSetGroup, getSingleMenuForRecommend, getSetItems, setMenuOptionSelected } from '../../store/menuDetail';
-import { numberWithCommas, openPopup } from '../../utils/common';
+import { isAvailable, numberWithCommas, openPopup } from '../../utils/common';
 import { MENU_DATA } from '../../resources/menuData';
 import { addToOrderList } from '../../store/order';
-import { MenuImageDefault, MenuItemButtonInnerWrapperRight, MenuItemDetailSpicenessWrapper, MenuItemSpiciness } from '../../styles/main/menuListStyle';
+import { MenuImageDefault, MenuItemButtonInnerWrapperRight, MenuItemDetailSpicenessWrapper, MenuItemSpiciness, SoldOutDimLayer, SoldOutLayer, SoldOutText } from '../../styles/main/menuListStyle';
 import { useFocusEffect } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
-import { RADIUS, RADIUS_DOUBLE } from '../../styles/values';
+import { RADIUS, RADIUS_DOUBLE, RADIUS_SMALL_DOUBLE } from '../../styles/values';
 import {isEmpty} from "lodash";
 import { posErrorHandler } from '../../utils/errorHandler/ErrorHandler';
+const height = Dimensions.get('window').height;
+
 /* 메뉴 상세 */
 const ItemDetail = (props) => {
     const language = props.language;
@@ -288,6 +290,18 @@ const ItemDetail = (props) => {
                                         !menuDetail?.gimg_chg &&
                                             <MenuImageDefault source={require("../../assets/icons/logo.png")} />
                                         }   
+                                        {menuDetail?.sale_status=='3'&&// 1:대기, 2: 판매, 3: 매진
+                                            <SoldOutLayer style={{ width:'100%',height:height*0.332, borderRadius:RADIUS_DOUBLE}}>
+                                                <SoldOutText>SOLD OUT</SoldOutText>    
+                                                <SoldOutDimLayer style={{ width:'100%',height:height*0.332, borderRadius:RADIUS_DOUBLE}}/>
+                                            </SoldOutLayer>
+                                        }
+                                        {(menuDetail?.sale_status!='3'&&!isAvailable(menuDetail)) &&
+                                            <SoldOutLayer style={{ width:'100%',height:height*0.332, borderRadius:RADIUS_DOUBLE}}>
+                                                <SoldOutText>준비중</SoldOutText>    
+                                                <SoldOutDimLayer style={{ width:'100%',height:height*0.332, borderRadius:RADIUS_DOUBLE}}/>
+                                            </SoldOutLayer>
+                                        }
                                     </DetailItemInfoImageWrapper>
                                     <DetailItemInfoWrapper>
                                         <DetailItemInfoTitleWrapper>
@@ -413,6 +427,7 @@ const ItemDetail = (props) => {
                             </ScrollView>
 
                             }   
+                            {(menuDetail?.sale_status!='3'&&isAvailable(menuDetail) ) &&
                             <BottomButtonWrapper>
                                 <TouchableWithoutFeedback onPress={()=>{closeDetail(); }}>
                                     <BottomButton backgroundColor={colorRed} >
@@ -428,6 +443,7 @@ const ItemDetail = (props) => {
                                 </TouchableWithoutFeedback>
 
                             </BottomButtonWrapper>
+                            }
                             </>
                             }
                         </DetailWhiteWrapper>

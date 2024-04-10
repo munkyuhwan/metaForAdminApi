@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Text, TouchableWithoutFeedback, View } from 'react-native';
+import { Dimensions, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { OptItemDim, OptItemFastImage, OptItemImage, OptItemInfoChecked, OptItemInfoPrice, OptItemInfoTitle, OptItemInfoWrapper, OptItemWrapper } from '../../styles/main/detailStyle';
 import { getSetItems, setMenuOptionSelected } from '../../store/menuDetail';
@@ -7,7 +7,11 @@ import FastImage from 'react-native-fast-image';
 import { DetailItemAmtController, DetailItemAmtText,DetailItemAmtWrapper, DetailOperandorText, OperandorText } from '../../styles/main/cartStyle';
 import { posErrorHandler } from '../../utils/errorHandler/ErrorHandler';
 import { max } from 'moment';
+import { RADIUS_SMALL_DOUBLE } from '../../styles/values';
+import { SoldOutDimLayer, SoldOutLayer, SoldOutText } from '../../styles/main/menuListStyle';
+import { isAvailable } from '../../utils/common';
 
+const height = Dimensions.get('window').height;
 
 const OptItem = (props)=>{
     const {language} = useSelector(state=>state.languages);
@@ -131,7 +135,13 @@ const OptItem = (props)=>{
     return(
         <>
             { 
-            <TouchableWithoutFeedback onPress={()=>{ props.onPress(true, itemDetail[0]); }} >
+            <TouchableWithoutFeedback onPress={()=>{
+                if(itemDetail[0]?.sale_status!='3') {
+                    if(isAvailable(itemDetail[0])) {
+                        props.onPress(true, itemDetail[0]); 
+                    }
+                }
+                }} >
                 <View>
 
                     <OptItemWrapper>
@@ -162,6 +172,18 @@ const OptItem = (props)=>{
                                 </DetailItemAmtController>
                             </TouchableWithoutFeedback>
                         </DetailItemAmtWrapper>
+                    }
+                    {itemDetail[0]?.sale_status=='3'&&// 1:대기, 2: 판매, 3: 매진
+                        <SoldOutLayer style={{ width:'97%',height:height*0.150, borderRadius:RADIUS_SMALL_DOUBLE}}>
+                            <SoldOutText>SOLD OUT</SoldOutText>    
+                            <SoldOutDimLayer style={{ width:'97%',height:height*0.150, borderRadius:RADIUS_SMALL_DOUBLE}}/>
+                        </SoldOutLayer>
+                    }
+                    {(itemDetail[0]?.sale_status!='3'&&!isAvailable(itemDetail[0])) &&
+                        <SoldOutLayer style={{ width:'97%',height:height*0.150, borderRadius:RADIUS_SMALL_DOUBLE}}>
+                            <SoldOutText>준비중</SoldOutText>    
+                            <SoldOutDimLayer style={{ width:'97%',height:height*0.150, borderRadius:RADIUS_SMALL_DOUBLE}}/>
+                        </SoldOutLayer>
                     }
                 </View>
             </TouchableWithoutFeedback>

@@ -10,6 +10,7 @@ import { setAdImgs } from '../store/ad';
 import { fetch } from "@react-native-community/netinfo";
 // device info
 import DeviceInfo, { getUniqueId, getManufacturer } from 'react-native-device-info';
+import moment from 'moment';
 
 export function getDeviceInfo () {
     DeviceInfo.getBatteryLevel().then((batteryLevel) => {
@@ -251,6 +252,29 @@ export async function adFileDownloader(dispatch, name,url) {
             reject()
         })
     })
+}
+export const isAvailable = (item) => {
+
+    if(item?.use_timea == "" || item?.use_timeaa == "" || item?.use_timeb == "" || item?.use_timebb == "") {
+        return true;
+    }
+    if(item?.use_time1a == "" || item?.use_time1aa == "" || item?.use_time1b == "" || item?.use_time1bb == "") {
+        return true;
+    }
+    const startTimeAm = Number(`${item?.use_timea}${item?.use_timeaa}`);
+    const endTimeAm = Number(`${item?.use_timeb}${item?.use_timebb}`);
+
+    const startTimePm = Number(`${item?.use_time1a}${item?.use_time1aa}`);
+    const endTimePm = Number(`${item?.use_time1b}${item?.use_time1bb}`);
+    
+    const currentTime = Number(moment().format("HHmm"));
+    const hourNow = Number(moment().format("HH"));
+
+    if(hourNow<12) {
+        return currentTime>startTimeAm && currentTime<endTimeAm
+    }else {
+        return currentTime>startTimePm && currentTime<endTimePm
+    }
 }
 
 // 인터넷 연결 체크

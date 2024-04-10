@@ -95,7 +95,6 @@ const CartListItem = (props) => {
                 for(var i=0;i<setItem.length;i++) {
                     const setItemData = allItems?.filter(el=>el.prod_cd == setItem[i].optItem);
                     if(setItemData.length>0) {
-                        console.log("setItemPrice; ",Number(setItemData[0]?.account),Number(setItem[i]?.qty));
                         setItemPrice = Number(setItemPrice)+(Number(setItemData[0]?.account)*Number(setItem[i]?.qty));
                     }
                 }
