@@ -14,7 +14,7 @@ import { LANGUAGE } from '../../resources/strings';
 import { setCartView, setIconClick } from '../../store/cart';
 import { IconWrapper } from '../../styles/main/topMenuStyle';
 import TopButton from '../menuComponents/topButton';
-import {  getStoreID, isNetworkAvailable, numberWithCommas, openTransperentPopup } from '../../utils/common';
+import {  getStoreID, isNetworkAvailable, itemEnableCheck, numberWithCommas, openTransperentPopup } from '../../utils/common';
 import { adminDataPost, initOrderList, postLog, postOrderToPos, postToMetaPos, presetOrderData } from '../../store/order';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {isEmpty} from 'lodash';
@@ -141,19 +141,26 @@ const CartView = () =>{
             }
          
     }
+    const ItemOptionTitle = (additiveId) =>{
+        let selOptTitleLanguage = "";
+        const selExtra = allItems.filter(el=>el.prod_cd==additiveId);
+        if(language=="korean") {
+            selOptTitleLanguage = selExtra[0]?.gname_kr;
+        }
+        else if(language=="japanese") {
+            selOptTitleLanguage = selExtra[0]?.gname_jp||selExtra[0]?.gname_kr;
+        }
+        else if(language=="chinese") {
+            selOptTitleLanguage = selExtra[0]?.gname_cn||selExtra[0]?.gname_kr;
+        }
+        else if(language=="english") {
+            selOptTitleLanguage = selExtra[0]?.gname_en||selExtra[0]?.gname_kr;
+        }
+        return selOptTitleLanguage;
+    }
 
     const doPayment = async () =>{
-        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"주문 중 입니다."})
-        /* if( tableStatus?.now_later == "선불") {
-            if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
-                dispatch(setMonthPopup({isMonthSelectShow:true}))
-            }else {
-                makePayment();
-            }
-        }else {
-            makePayment();
-        } */
-
+        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"주문 중 입니다."});
         const isPostable = await isNetworkAvailable().catch(()=>{EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); return false;});
         if(!isPostable) {
             displayErrorNonClosePopup(dispatch, "XXXX", "인터넷에 연결할 수 없습니다.");
@@ -161,7 +168,6 @@ const CartView = () =>{
             return;
         }
 
-         
         const storeInfo = await getStoreInfo()
         .catch((err)=>{
             displayErrorNonClosePopup(dispatch, "XXXX", "상점 정보를 가져올 수 없습니다.");
@@ -183,7 +189,30 @@ const CartView = () =>{
                 EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"주문 중 입니다."}) 
                 const {STORE_IDX} = await getStoreID();
                 const lastUpdateDate = await AsyncStorage.getItem("lastUpdate").catch(err=>"");   
-            
+
+                /// 카트메뉴 주문 가능 여부 체크
+                const isItemOrderble = await itemEnableCheck(STORE_IDX,orderList).catch(err=>{ return{isAvailable:false, result:null} } );
+                if(isItemOrderble?.isAvailable == false) {
+                    if(isItemOrderble?.result == null) {
+                        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
+                        displayErrorPopup(dispatch, "XXXX", "수량을 체크할 수 없어 주문을 할 수 없습니다.");
+                    }else {
+                        const itemsUnavailable = isItemOrderble?.result[0]?.unserviceable_items;
+                        var itemString = "";
+                        if(itemsUnavailable?.length>0) {
+                            for(var i=0;i<itemsUnavailable.length;i++) {
+                                var itemName = ItemOptionTitle(itemsUnavailable[i]);
+                                itemString = itemString+itemName+(i<itemsUnavailable.length-1?", ":"")
+                            }
+                            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
+                            displayErrorPopup(dispatch, "XXXX", itemString+"메뉴는 매진되어 주문을 할 수 없습니다.");
+                            return;
+                        }
+                    }
+                }
+                
+                return;
+
                 try {
                     const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_MENU_UPDATE}`,{"STORE_ID":`${STORE_IDX}`,"currentDateTime":lastUpdateDate}, {});
                     if(data) {
@@ -237,7 +266,7 @@ const CartView = () =>{
                             makePayment();
                         }
                     }
-                  } catch (error) {
+                } catch (error) {
                     // 예외 처리
 
                     if( tableStatus?.now_later == "선불") {
@@ -248,70 +277,8 @@ const CartView = () =>{
                         }
                     }else {
                         makePayment();
-                    }
-                    
+                    }   
                 }
-
-
-                /*
-                const resultData = await getMenuUpdateState(dispatch).catch(err=>{EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); return [];});
-                if(!resultData) {
-                    EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
-                }else {
-                    EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
-                    const isUpdated = resultData?.ERROR_CD == "E0000" ;
-                    const updateDateTime = resultData?.UPD_DT;
-                    const msg = resultData?.ERROR_MSG;
-
-                    if(isUpdated) {
-                        // 날짜 기준 메뉴 업트가 있으면 새로 받아 온다.
-                        const lastUpdateDate = await AsyncStorage.getItem("lastUpdate");      
-                        const currentDate = moment(lastUpdateDate).format("x");
-                        const updateDate = moment(updateDateTime).format("x");
-                        if(updateDate>currentDate) {
-                            Alert.alert(
-                                "업데이트",
-                                "메뉴 업데이트가 되었습니다. 업데이트 후 주문하실 수 있습니다.",
-                                [{
-                                    text:'확인',
-                                }]
-                            );
-                            // 카테고리 받기
-                            dispatch(getAdminCategories());
-                            // 메뉴 받아오기
-                            dispatch(getAdminItems());
-                            const saveDate = moment().format("YYYY-MM-DD HH:mm:ss");
-                            AsyncStorage.setItem("lastUpdate",saveDate);
-                            dispatch(setCartView(false));
-                            dispatch(initOrderList());
-                        }else { 
-                    
-                            if( tableStatus?.now_later == "선불") {
-                                if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
-                                    dispatch(setMonthPopup({isMonthSelectShow:true}))
-                                }else {
-                                    makePayment();
-                                }
-                            }else {
-                                makePayment();
-                            }
-                            //dispatch(postToMetaPos());
-                            
-                       }
-            
-                    }else {
-                        if( tableStatus?.now_later == "선불") {
-                            if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
-                                dispatch(setMonthPopup({isMonthSelectShow:true}))
-                            }else {
-                                makePayment();
-                            }
-                        }else {
-                            makePayment();
-                        }
-                    } 
-                }
-                */
             }
         }
         

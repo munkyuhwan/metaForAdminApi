@@ -168,8 +168,6 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
         return rejectWithValue(error.message)
     }
-
-
 })
 
 // 포스로 데이터 전송

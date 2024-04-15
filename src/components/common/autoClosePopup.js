@@ -12,7 +12,7 @@ const AutoClosePopup = () => {
             clearInterval(to);
             to=null;
             openPopup(dispatch,{innerView:"", isPopupVisible:false});
-        }, 3000);
+        }, 7000);
     },[])
 
     return(

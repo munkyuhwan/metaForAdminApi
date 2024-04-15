@@ -11,6 +11,8 @@ import { fetch } from "@react-native-community/netinfo";
 // device info
 import DeviceInfo, { getUniqueId, getManufacturer } from 'react-native-device-info';
 import moment from 'moment';
+import { ADMIN_API_BASE_URL, ADMIN_API_MENU_CHECK } from '../resources/newApiResource';
+import { callApiWithExceptionHandling } from './api/apiRequest';
 
 export function getDeviceInfo () {
     DeviceInfo.getBatteryLevel().then((batteryLevel) => {
@@ -296,5 +298,66 @@ export const isNetworkAvailable = async () => {
         })
         ;
     } )
+}
+
+// 주문 가능 여부 체크
+export const itemEnableCheck = async (STORE_IDX, items) => {
+    var checkItemList = [];
+    const rearrangeList = (checkItem) =>{
+        const duplicated = checkItemList.filter(el=>el.prod_cd == checkItem.prod_cd);
+        var excepted = checkItemList.filter(el=>el.prod_cd != checkItem.prod_cd);
+        if(duplicated?.length>0) {
+            // 중복이 있으면 카운트를 올린다.
+            // duplicated[0]?.qty 앞에 저장된 수량, items[i].qty 추가될 수량
+            const qtyChanged = {prod_cd:checkItem.prod_cd, qty:Number(duplicated[0]?.qty)+Number(checkItem.qty)};
+            excepted.push(qtyChanged);
+            checkItemList = Object.assign([],excepted);
+        }else {
+            // 중복이 없으면 그냥 배열에 추가
+            checkItemList.push(checkItem);
+        }
+
+    }
+    for(var i=0;i<items.length;i++) {
+        const itemSet = {prod_cd:items[i].prod_cd,qty:items[i].qty};
+        // 이미 있는지 확인
+        rearrangeList(itemSet);
+        const setItems = items[i].set_item;
+        for(var j=0;j<setItems.length;j++) {
+            const setItemSet = {prod_cd:setItems[j].optItem,qty:setItems[j].qty};
+            rearrangeList(setItemSet);
+        }
+    }
+    //console.log("==============================================================================");
+    //console.log("checkItemList: ",checkItemList);
+
+    return new Promise((resolve,reject)=>{
+        callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_MENU_CHECK}`,{"STORE_ID":`${STORE_IDX}`,"order":checkItemList}, {})
+        .then((response)=>{
+            if(response) {
+                if(response?.result == true) {
+                    if(response?.data?.length> 0) {
+                        const data = response?.data[0];
+                        const unserviceableItems = data?.unserviceable_items;
+                        if(unserviceableItems?.length>0) {
+                            resolve({isAvailable:false, result:response?.data});
+                        }else {
+                            reject();
+                        }
+                    }else {
+                        reject();
+                    }
+                }else {
+                    reject();
+                }
+            }else {
+                reject();
+            }
+        })
+        .catch(err=>{
+            reject();
+        })
+    }) 
+    
 
 }
