@@ -103,39 +103,53 @@ export const initMenu = createAsyncThunk("menu/initMenu", async(_,{dispatch,getS
 export const menuUpdateCheck = createAsyncThunk("menu/menuUpdateCheck", async(_,{dispatch,getState}) =>{
     const {STORE_IDX} = await getStoreID();
     const lastUpdateDate = await AsyncStorage.getItem("lastUpdate").catch(err=>"");   
-    const {allCategories} = getState().categories;
+    
+    // 오전에서 오후 넘어갈 때 한번 메뉴 업데이트를 한다.
+    if(Number(moment().format("HHmmss")) <= 120010 && Number(moment().format("HHmmss")) > 120000) {
+        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"메뉴 업데이트 중입니다."})
+        dispatch(setCartView(false));
+        dispatch(initOrderList());
+        // 카테고리 받기
+        await dispatch(getAdminCategories());
+        // 메뉴 받아오기
+        await dispatch(getAdminItems());
+        dispatch(setSelectedItems());
+        //dispatch(setItemDetail({itemID:null}));
+        dispatch(initMenuDetail());
+        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
+    }else {
+        try {
+            const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_MENU_UPDATE}`,{"STORE_ID":`${STORE_IDX}`,"currentDateTime":lastUpdateDate}, {});
+            if(data) {
+                if(data?.result==true) {
+                    EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"메뉴 업데이트 중입니다."})
+                    if(data?.isUpdated == "true") {
+                        AsyncStorage.setItem("lastUpdate",data?.updateDateTime);
+                        dispatch(setCartView(false));
+                        dispatch(initOrderList());
+                        // 카테고리 받기
+                        await dispatch(getAdminCategories());
+                        // 메뉴 받아오기
+                        await dispatch(getAdminItems());
+                        dispatch(setSelectedItems());
+                        //dispatch(setItemDetail({itemID:null}));
+                        dispatch(initMenuDetail());
+                    }else {
+                        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
 
-    try {
-        const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_MENU_UPDATE}`,{"STORE_ID":`${STORE_IDX}`,"currentDateTime":lastUpdateDate}, {});
-        if(data) {
-            if(data?.result==true) {
-                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"메뉴 업데이트 중입니다."})
-                if(data?.isUpdated == "true") {
-                    AsyncStorage.setItem("lastUpdate",data?.updateDateTime);
-                    dispatch(setCartView(false));
-                    dispatch(initOrderList());
-                    // 카테고리 받기
-                    await dispatch(getAdminCategories());
-                    // 메뉴 받아오기
-                    await dispatch(getAdminItems());
-                    dispatch(setSelectedItems());
-                    //dispatch(setItemDetail({itemID:null}));
-                    dispatch(initMenuDetail());
+                    }
+                    return data;
                 }else {
-                    EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
-
+                    return rejectWithValue(error.message)
                 }
-                return data;
             }else {
                 return rejectWithValue(error.message)
             }
-        }else {
+        } catch (error) {
+            // 예외 처리
             return rejectWithValue(error.message)
-        }
-      } catch (error) {
-        // 예외 처리
-        return rejectWithValue(error.message)
 
+        }
     }
 })
 

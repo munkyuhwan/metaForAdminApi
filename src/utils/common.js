@@ -255,11 +255,15 @@ export async function adFileDownloader(dispatch, name,url) {
 }
 export const isAvailable = (item) => {
 
-    if(item?.use_timea == "" || item?.use_timeaa == "" || item?.use_timeb == "" || item?.use_timebb == "") {
-        return true;
+    if(Number(moment().format("HHmmss")) < 120000) {
+        if(item?.use_timea == "" || item?.use_timeaa == "" || item?.use_timeb == "" || item?.use_timebb == "") {
+            return true;
+        }
     }
-    if(item?.use_time1a == "" || item?.use_time1aa == "" || item?.use_time1b == "" || item?.use_time1bb == "") {
-        return true;
+    if(Number(moment().format("HHmmss")) >= 120000) {
+        if(item?.use_time1a == "" || item?.use_time1aa == "" || item?.use_time1b == "" || item?.use_time1bb == "") {
+           return true;
+        }
     }
     const startTimeAm = Number(`${item?.use_timea}${item?.use_timeaa}`);
     const endTimeAm = Number(`${item?.use_timeb}${item?.use_timebb}`);
