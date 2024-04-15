@@ -14,6 +14,7 @@ import OrderListPopup from '../popups/orderListPopup';
 import ErrorPopup from './errorPopup';
 import OrderCompletePopup from './orderCompletePopup';
 import OrderFailListPopup from '../popups/orderFailList';
+import CameraView from './cemeraViewPopup';
 
 const TransparentPopUp = (props) =>{
     
@@ -96,6 +97,9 @@ const TransparentPopUp = (props) =>{
                     }
                     {innerTransView=="OrderComplete"&&
                         <OrderCompletePopup/>
+                    }
+                    {innerTransView=="CameraView"&&
+                        <CameraView/>
                     }
             </Animated.View>
         </>
