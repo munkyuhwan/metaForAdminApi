@@ -24,23 +24,9 @@ const SettingPopup = () =>{
 
     const dispatch = useDispatch();
     const pickerRef = useRef();
-    const functionPickerRef = useRef();
-    const functionTestPickerRef = useRef();
-    const functionPaymentPickerRef = useRef();
-
     const [spinnerText, setSpinnerText] = React.useState("")
     const {tableList,tableInfo} = useSelector(state=>state.tableInfo);
-    const [isTableSettingShow, setTableSettingShow] = useState(false);
     
-    //const selectedFunction = useSharedValue("");
-    //const selectedFunctionTest = useSharedValue("");
-    const [selectedFunction, setSelectedFunction] = useState("");
-    const [selectedFunctionTest, setSelectedFunctionTest] = useState("");
-    const [paymentType, setPaymentType] = useState("");
-    const paymentAmount = useSharedValue(0);
-    const paymentApprovalNo = useSharedValue("");
-    const paymentApprovalDate = useSharedValue("");
-    const [lastPayData, setLastPayData] = useState("");
     // store id, service id
     const [ipText, setIpText] = useState("");
     const [tableNo, setTableNo] = useState("");
@@ -50,94 +36,6 @@ const SettingPopup = () =>{
     const [tidNo, setTidNo] = useState("");
     const [serialNo, setSerialNo] = useState("");
 
-
-    const getIndicateAvailableDeviceInfo = () =>{
-        serviceIndicate()
-        .then((result)=>{
-            const jsonResult=JSON.parse(result);
-            displayOnAlert("사용가능 디바이스 정보",jsonResult);
-        })
-        .catch((error)=>{
-            console.log("error: ",error)
-        })
-    }
-    const smartroServiceSetting = () =>{
-        serviceSetting()
-        .then((result)=>{
-            const jsonResult=JSON.parse(result);
-            displayOnAlert("디바이스 설정",jsonResult);
-        })
-        .catch((error)=>{
-            console.log("error: ",error)
-        })
-    }
-    const smartroServiceGetting = () =>{
-        serviceGetting()
-        .then((result)=>{
-            const jsonResult=JSON.parse(result);
-            displayOnAlert("디바이스 설정값",jsonResult);
-        })
-        .catch((error)=>{
-            console.log("error: ",error)
-        })
-    }
-    const smartroServiceFunction = () => {
-        const data = {};
-        data[selectedFunction] = selectedFunctionTest;
-        serviceFunction(data)
-        .then((result)=>{
-            const jsonResult=JSON.parse(result);
-            displayOnAlert("서비스 기능",jsonResult);
-        })
-        .catch((error)=>{
-            console.log("error: ",error)
-        })
-    }
-    const smartroServicePayment = (paymentData) => {
-        servicePayment(dispatch, paymentData)
-        .then((result)=>{
-            const jsonResult=JSON.parse(result);
-            displayOnAlert("서비스 기능",jsonResult);
-        })
-        .catch((error)=>{
-            console.log("error: ",error)
-        })
-    }
-    const smartroGetLastPaymentData = () =>{
-        getLastPaymentData(dispatch)
-        .then((result)=>{
-            const jsonResult=JSON.parse(result);
-            const objKeys = Object.keys(jsonResult)
-            var str = "";
-            for(var i=0; i<objKeys.length; i++) {
-                str += `${objKeys[i]}: ${jsonResult[objKeys[i]]}\n`;
-            }
-            setLastPayData(str);
-        })
-        .catch((error)=>{
-            console.log("error: ",error)
-        })
-    }
-
-    const uploadLog = () => {
-
-    }
-    const initTable = () => {
-        AsyncStorage.removeItem("orderResult")
-        AsyncStorage.getItem("orderResult").then(result=>console.log("Resutl: ",result))
-    }
-
-    // 여러가지 테스트
-    const variousTest = () => {
-        varivariTest()
-        .then((result)=>{
-            const jsonResult=JSON.parse(result);
-            displayOnAlert("여러가지 결제 결과",jsonResult);
-        })
-        .catch((error)=>{
-            console.log("error: ",error)
-        })
-    }
 
     const displayOnAlert = (title, jsonResult) => {
         const objKeys = Object.keys(jsonResult)
@@ -251,68 +149,6 @@ const SettingPopup = () =>{
             </SelectWrapper>
         );
     };
-
-    const PaymentDropdown = () => {
-        return (
-            <SelectWrapperColumn>
-                <Picker
-                    ref={functionPaymentPickerRef}
-                    key={"paymentPicker"}
-                    mode='dialog'
-                    onValueChange = {(itemValue, itemIndex) => {
-                        setPaymentType(itemValue);
-                    }}
-                    selectedValue={paymentType}
-                    style = {{
-                        width: 200,
-                        height: 50,
-                        flex:1
-                    }}>
-                    <Picker.Item key={"none"} label = {"미선택"} value ={{}} />
-                    <Picker.Item key={"approval"} label = {"결제"} value ={"approval"} />
-                    <Picker.Item key={"cancellation"} label = {"취소"} value ={"cancellation"} />
-                </Picker>
-                
-                <PaymentTextWrapper>
-                    <PaymentTextLabel>금액:</PaymentTextLabel>
-                    <PaymentTextInput keyboardType='numeric' defaultValue={paymentAmount.value} onChangeText={(val)=>{paymentAmount.value=val; }} />
-                </PaymentTextWrapper>
-                {paymentType=="cancellation" &&
-                    <>
-                        <PaymentTextWrapper>
-                            <PaymentTextLabel>승인번호:</PaymentTextLabel>
-                            <PaymentTextInput keyboardType='numeric' defaultValue={paymentApprovalNo.value} onChangeText={(val)=>{paymentApprovalNo.value=val;}} />
-                        </PaymentTextWrapper>
-                        <PaymentTextWrapper>
-                            <PaymentTextLabel>승인일자(YYMMDD):</PaymentTextLabel>
-                            <PaymentTextInput keyboardType='numeric' maxLength={6} defaultValue={paymentApprovalDate.value}  onChangeText={(val)=>{paymentApprovalDate.value=val}} />
-                        </PaymentTextWrapper>
-                    </>
-                }
-                <TouchableWithoutFeedback onPress={()=>{
-                    if(paymentType == "approval") {
-                        smartroServicePayment({"deal":paymentType,"total-amount":paymentAmount.value});
-                    }
-                    else if(paymentType == "cancellation"){
-                        smartroServicePayment({"deal":paymentType,"total-amount":paymentAmount.value,"approval-no":paymentApprovalNo.value,"approval-date":paymentApprovalDate.value});
-                    }
-                    
-                    }}>
-                    <SelectCancelWrapper>
-                        <SelectCancelText>실행</SelectCancelText>
-                    </SelectCancelWrapper>
-                </TouchableWithoutFeedback>
-                <PaymentTextWrapper>
-                    <PaymentTextLabel>{lastPayData}</PaymentTextLabel>
-                </PaymentTextWrapper>
-                <TouchableWithoutFeedback onPress={()=>{smartroGetLastPaymentData();}}>
-                    <SelectCancelWrapper>
-                        <SelectCancelText>마지막 결제 정보</SelectCancelText>
-                    </SelectCancelWrapper>
-                </TouchableWithoutFeedback>
-            </SelectWrapperColumn>
-        );
-    }
 
     useEffect(()=>{
         AsyncStorage.getItem("POS_IP")
