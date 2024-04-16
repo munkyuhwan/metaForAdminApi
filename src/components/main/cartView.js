@@ -196,6 +196,7 @@ const CartView = () =>{
                     if(isItemOrderble?.result == null) {
                         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
                         displayErrorPopup(dispatch, "XXXX", "수량을 체크할 수 없어 주문을 할 수 없습니다.");
+                        return;
                     }else {
                         const itemsUnavailable = isItemOrderble?.result[0]?.unserviceable_items;
                         var itemString = "";
@@ -211,8 +212,6 @@ const CartView = () =>{
                     }
                 }
                 
-                return;
-
                 try {
                     const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_MENU_UPDATE}`,{"STORE_ID":`${STORE_IDX}`,"currentDateTime":lastUpdateDate}, {});
                     if(data) {
