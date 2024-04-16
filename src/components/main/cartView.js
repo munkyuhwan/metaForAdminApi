@@ -225,8 +225,6 @@ const CartView = () =>{
                                         text:'확인',
                                     }]
                                 );
-
-            
                             }else {
             
                                 if( tableStatus?.now_later == "선불") {
@@ -240,9 +238,7 @@ const CartView = () =>{
                                 }
                             }
                             EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
-
                         }else {
-
                             if( tableStatus?.now_later == "선불") {
                                 if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
                                     dispatch(setMonthPopup({isMonthSelectShow:true}))
@@ -254,7 +250,6 @@ const CartView = () =>{
                             }
                         }
                     }else {
-
                         if( tableStatus?.now_later == "선불") {
                             if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
                                 dispatch(setMonthPopup({isMonthSelectShow:true}))
@@ -267,7 +262,6 @@ const CartView = () =>{
                     }
                 } catch (error) {
                     // 예외 처리
-
                     if( tableStatus?.now_later == "선불") {
                         if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
                             dispatch(setMonthPopup({isMonthSelectShow:true}))
