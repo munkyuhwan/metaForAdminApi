@@ -159,7 +159,8 @@ const SettingPopup = () =>{
     const checkUpdate =  async() =>{
         CodePush
             const update = await CodePush.checkForUpdate(CODE_PUSH_PRODUCTION)
-            .catch(err=>{console.log(err);
+            .catch(err=>{
+                console.log(err);
                 Alert.alert(
                 "업데이트",
                 "업데이트를 진행할 수 없습니다.",
@@ -182,10 +183,14 @@ const SettingPopup = () =>{
                 })
                 .then((newPackage)=>{
                     setSpinnerText("");
-
+                    
                     newPackage
                     .install(CodePush.InstallMode.IMMEDIATE)
                     .then(()=>{CodePush.restartApp()});
+                })
+                .catch((err)=>{
+                    console.log("download error-======================================================");
+                    console.log(err)
                 })
 
             }else {
@@ -556,7 +561,7 @@ const SettingPopup = () =>{
                                 <SettingButtonText isMargin={true} >화면 업데이트</SettingButtonText>
                             </TouchableWithoutFeedback>
                             <TouchableWithoutFeedback onPress={()=>{checkUpdate();}} >
-                                <SettingButtonText isMargin={true} >앱 업데이트 ver 2.0.21</SettingButtonText>
+                                <SettingButtonText isMargin={true} >앱 업데이트 ver 2.0.27</SettingButtonText>
                             </TouchableWithoutFeedback> 
                         </SettingButtonWrapper>
                     </SettingScrollView>
