@@ -329,7 +329,7 @@ export const itemEnableCheck = async (STORE_IDX, items) => {
         }
     }
     //console.log("==============================================================================");
-    //console.log("checkItemList: ",checkItemList);
+    //console.log("checkItemList: ",{"STORE_ID":`${STORE_IDX}`,"order":checkItemList});
 
     return new Promise((resolve,reject)=>{
         callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_MENU_CHECK}`,{"STORE_ID":`${STORE_IDX}`,"order":checkItemList}, {})
@@ -342,7 +342,7 @@ export const itemEnableCheck = async (STORE_IDX, items) => {
                         if(unserviceableItems?.length>0) {
                             resolve({isAvailable:false, result:response?.data});
                         }else {
-                            reject();
+                            resolve({isAvailable:true, result:response?.data});
                         }
                     }else {
                         reject();

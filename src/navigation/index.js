@@ -14,7 +14,7 @@ import { getAdminCategories, setSelectedMainCategory, setSubCategories } from '.
 import FullSizePopup from '../components/common/fullsizePopup'
 import { getAdminItems, menuUpdateCheck, setSelectedItems } from '../store/menu'
 import _ from 'lodash';
-import {  getTableStatus } from '../store/tableInfo'
+import {  getStoreInfo, getTableStatus } from '../store/tableInfo'
 import { EventRegister } from 'react-native-event-listeners'
 import {isEmpty} from 'lodash';
 import StatusScreen from '../screens/StatusScreen'
@@ -26,6 +26,7 @@ import ADScreenPopup from '../components/popups/adPopup'
 import MonthSelectPopup from '../components/popups/monthSelectPopup'
 import PopupIndicatorNonCancel from '../components/common/popupIndicatoreNonCancel'
 import { setErrorData } from '../store/error'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const Stack = createStackNavigator()
 var statusInterval;
@@ -37,7 +38,7 @@ export default function Navigation() {
     const [spinnerText, setSpinnerText] = React.useState("")
     const [spinnerTextNonCancel, setSpinnerTextNonCancel] = React.useState("")
 
-    const {tableStatus} = useSelector(state=>state.tableInfo);
+    const {tableStatus,cardDeviceInfo,orderHistory,posIP} = useSelector(state=>state.tableInfo);
     const {allItems,isMenuLoading, menuError} = useSelector(state=>state.menu);
     const {selectedMainCategory, selectedSubCategory, allCategories} = useSelector(state=>state.categories);
     const {isShow} = useSelector(state=>state.ads);
@@ -98,6 +99,7 @@ export default function Navigation() {
                 //console.log("status interval")
                 // 광고 받기
                 //dispatch(getAD()); 
+                dispatch(getStoreInfo());
                 dispatch(getTableStatus());
                 dispatch(menuUpdateCheck());
             }, DEFAULT_TABLE_STATUS_UPDATE_TIME);
@@ -156,7 +158,23 @@ export default function Navigation() {
                 break;
             }
         }
-    },[tableStatus])
+        if(!isEmpty(cardDeviceInfo)) {
+            const bsnNo = cardDeviceInfo?.business_no;
+            const tidNo = cardDeviceInfo?.terminal_id;
+            const serialNo = cardDeviceInfo?.serial_no;
+            AsyncStorage.setItem("BSN_NO", bsnNo);   
+            AsyncStorage.setItem("TID_NO", tidNo);   
+            AsyncStorage.setItem("SERIAL_NO", serialNo);   
+        }
+        if(!isEmpty(orderHistory)) {
+            console.log("orderHistory: ",orderHistory);
+        }
+        if(!isEmpty(posIP)) {
+            AsyncStorage.setItem("POS_IP", posIP);   
+
+        }
+            
+    },[tableStatus,cardDeviceInfo,orderHistory,posIP])
  
     return (
         <>  

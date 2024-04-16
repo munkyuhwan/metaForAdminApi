@@ -15,7 +15,6 @@ import { useSharedValue } from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initOrderList } from '../../store/order';
 import { setCartView } from '../../store/cart';
-import { getStoreInfo } from '../../utils/api/metaApis';
 import { getAdminItems, initMenu } from '../../store/menu';
 import { CODE_PUSH_PRODUCTION, CODE_PUSH_SECRET } from '../../resources/apiResources';
 import { KocesAppPay } from '../../utils/payment/kocesPay';
@@ -44,7 +43,6 @@ const SettingPopup = () =>{
     const [lastPayData, setLastPayData] = useState("");
     // store id, service id
     const [ipText, setIpText] = useState("");
-    const [floor, setFloor] = useState(0);
     const [tableNo, setTableNo] = useState("");
     const [storeIdx, setStoreIdx] = useState("");
     // pay data
@@ -207,65 +205,7 @@ const SettingPopup = () =>{
         dispatch(clearTableInfo());
     }
 
-    const ServiceDropDown = () => {
-        return (
-            <SelectWrapper>
-                <Picker
-                    ref={functionPickerRef}
-                    key={"functionPicker"}
-                    mode='dialog'
-                    onValueChange = {(itemValue, itemIndex) => {
-                        //selectedFunction.value = itemValue;
-                        setSelectedFunction(itemValue);
-                    }}
-                    selectedValue={selectedFunction}
-                    style = {{
-                        width: 200,
-                        height: 50,
-                        flex:1
-                    }}>
-                        <Picker.Item key={"none"} label = {"미선택"} value ={{}} />
-                    {
-                        SMARTRO_FUNCTION.map((el,index)=>{
-                            return(
-                                <Picker.Item key={index+"_"+el.key}  label = {el.label} value ={el.key} />
-                            )
-                        })
-                    }
-                </Picker>
-                <Picker
-                    ref={functionTestPickerRef}
-                    key={"functionPicker2"}
-                    mode='dialog'
-                    onValueChange = {(itemValue, itemIndex) => {
-                        //selectedFunctionTest.value = (itemValue);
-                        setSelectedFunctionTest(itemValue);
-                    }}
-                    selectedValue={selectedFunctionTest}
-                    style = {{
-                        width: 200,
-                        height: 50,
-                        flex:1
-                    }}>
-                        <Picker.Item key={"none"} label = {"미선택"} value ={{}} />
-                    {
-                        SMARTRO_FUNCTION.filter(el=>el.key==selectedFunction)[0]?.data?.map((el,index)=>{
-                            return(
-                                <Picker.Item key={index+"_"+el.value}  label = {el.label} value ={el.value} />
-                            )
-                        })
-                    }
-                </Picker>
-                <TouchableWithoutFeedback onPress={()=>{smartroServiceFunction();}}>
-                    <SelectCancelWrapper>
-                        <SelectCancelText>확인</SelectCancelText>
-                    </SelectCancelWrapper>
-                </TouchableWithoutFeedback>
-            </SelectWrapper>
-        );
-    }
-
-    const setTableInfo = (itemValue, itemNM) =>{
+    const setTableInfo = (itemValue, itemNM, floor) =>{
         AsyncStorage.setItem("TABLE_INFO", itemValue);   
         AsyncStorage.setItem("TABLE_NM", itemNM);   
         AsyncStorage.setItem("TABLE_FLOOR",floor);
@@ -273,7 +213,6 @@ const SettingPopup = () =>{
         displayOnAlert("테이블이 설정되었습니다.",{});
     }
     const Dropdown = () => {
-
         return (
             <SelectWrapper>
                 <Picker
@@ -281,15 +220,16 @@ const SettingPopup = () =>{
                     key={"tablePicker"}
                     mode='dialog'
                     onValueChange = {(itemValue, itemIndex) => {
-                            const filteredItem = tableList.filter(el=>el.TBL_NO == itemValue);
-                            const itemNM = filteredItem[0]?.TBL_NM;
-                            setTableInfo(itemValue, itemNM)
+                            const filteredItem = tableList.filter(el=>el.t_num == itemValue);
+                            const itemNM = filteredItem[0]?.t_name;
+                            const floor = filteredItem[0]?.floor;
+                            setTableInfo(itemValue, itemNM,floor)
                             dispatch(initOrderList());
                             dispatch(setCartView(false));
                             displayOnAlert("수정되었습니다.",[]);
                         
                     }}
-                    selectedValue={tableInfo}
+                    selectedValue={tableInfo.tableNo}
                     style = {{
                         width: 200,
                         height: 50,
@@ -298,9 +238,8 @@ const SettingPopup = () =>{
                         <Picker.Item key={"none"} label = {"미선택"} value ={{}} />
                     {tableList?.map(el=>{
                         return(
-                            <Picker.Item key={"_"+el.TBL_NO}  label = {el.FLOOR_NM+" "+el.TBL_NM} value ={el.TBL_NO} />
+                            <Picker.Item key={"_"+el.t_num}  label = {el.floor+"층 "+el.t_name} value ={el.t_num} />
                         )
-                         
                     })
                     }
                 </Picker>
@@ -401,49 +340,7 @@ const SettingPopup = () =>{
             setSerialNo(value);
         })
     },[])
-    useEffect(()=>{
-        dispatch(getTableList({floor:floor}));
 
-    },[floor])
-
-
-    const setStoreInfo = () =>{
-        AsyncStorage.setItem("POS_IP", ipText);   
-        displayOnAlert("설정되었습니다.",{});
-    }
-
-    const setPayData = async () => {
-        await AsyncStorage.setItem("BSN_NO", bsnNo);   
-        await AsyncStorage.setItem("TID_NO", tidNo);   
-        await AsyncStorage.setItem("SERIAL_NO", serialNo);   
-        displayOnAlert("설정되었습니다.",{});
-    }
-
-    const getStoreID = () => {
-        getStoreInfo()
-        .then(result=>{
-            displayOnAlert(`${result}`,{});
-            if(result) {
-                const STORE_IDX = result.STORE_IDX;
-                AsyncStorage.getItem("STORE_IDX")
-                .then((storeInfo)=>{
-                    //if(storeInfo==null) {
-                        setStoreIdx(STORE_IDX);
-                        AsyncStorage.setItem("STORE_IDX",STORE_IDX);
-                        displayOnAlert("스토어 아이디가 설정되었습니다.",{});
-                    //}
-                })
-                .catch(err=>{
-                    displayOnAlert("저장값 오류.",{});
-
-                })
-
-            }
-        })
-        .catch((err)=>{
-            displayOnAlert("스토어 아이디를 받아올 수 없습니다."+err,{});
-        })
-    }
 
     const setStoreID = () => {
         AsyncStorage.setItem("STORE_IDX",storeIdx);
@@ -473,6 +370,7 @@ const SettingPopup = () =>{
 
     return (
         <>
+            {tableInfo &&
             <KeyboardAvoidingView behavior="padding" enabled style={{width:'100%', height:'100%'}} >
                 <SettingWrapper>
                     <TouchableWithoutFeedback onPress={()=>{ openFullSizePopup(dispatch,{innerFullView:"", isFullPopupVisible:false}); }}>
@@ -489,15 +387,9 @@ const SettingPopup = () =>{
                                 <SelectWrapper style={{marginRight:'auto', marginLeft:'auto', paddingBottom:20}} >
                                     {/* <StoreIDTextLabel style={{fontSize:30, fontWeight:"bold"}} >{storeIdx}</StoreIDTextLabel> */}
                                     <StoreIDTextInput  defaultValue={storeIdx} onChangeText={(val)=>{ setStoreIdx(val); }} />
-
-                                    <TouchableWithoutFeedback onPress={()=>{getStoreID();}}>
-                                        <SelectCancelWrapper>
-                                            <SelectCancelText>스토어 ID받기</SelectCancelText>
-                                        </SelectCancelWrapper>
-                                    </TouchableWithoutFeedback>
                                     <TouchableWithoutFeedback onPress={()=>{setStoreID();}}>
                                         <SelectCancelWrapper>
-                                            <SelectCancelText>스토어 ID 직접입력</SelectCancelText>
+                                            <SelectCancelText>스토어 ID 저장</SelectCancelText>
                                         </SelectCancelWrapper>
                                     </TouchableWithoutFeedback>
                                 </SelectWrapper>
@@ -506,40 +398,25 @@ const SettingPopup = () =>{
 
                             <SettingItemWrapper>
                                 <TouchableWithoutFeedback onPress={()=>{ }} >
-                                    <SettingButtonText isMargin={false} >아이피 설정</SettingButtonText>
+                                    <SettingButtonText isMargin={false} >아이피 정보</SettingButtonText>
                                 </TouchableWithoutFeedback> 
                                 <SelectWrapper style={{marginRight:'auto', marginLeft:'auto', paddingBottom:20}} >
-                                    <StoreIDTextLabel>IP:</StoreIDTextLabel>
-                                    <StoreIDTextInput keyboardType='numeric'  defaultValue={ipText} onChangeText={(val)=>{ setIpText(val); }} />
-                                    <TouchableWithoutFeedback onPress={()=>{setStoreInfo();}}>
-                                        <SelectCancelWrapper>
-                                            <SelectCancelText>설정하기</SelectCancelText>
-                                        </SelectCancelWrapper>
-                                    </TouchableWithoutFeedback>
+                                    <StoreIDTextLabel>IP:{ipText}</StoreIDTextLabel>
                                 </SelectWrapper>
                             </SettingItemWrapper>
                             <SettingItemWrapper>
                                 <TouchableWithoutFeedback onPress={()=>{ }} >
-                                    <SettingButtonText isMargin={false} > 결제 설정</SettingButtonText>
+                                    <SettingButtonText isMargin={false} >카드 단말기 정보</SettingButtonText>
                                 </TouchableWithoutFeedback> 
                                 <SelectWrapper style={{marginRight:'auto', marginLeft:'auto', paddingBottom:20, flexDirection:'column'}} >
                                     <View style={{flexDirection:'row', width:'100%'}}>
-                                        <StoreIDTextLabel>사업자 번호:</StoreIDTextLabel>
-                                        <StoreIDTextInput   defaultValue={bsnNo} onChangeText={(val)=>{ setBsnNo(val); }} />
-                                       
+                                        <StoreIDTextLabel>사업자 번호: {bsnNo}</StoreIDTextLabel>                                       
                                     </View>
                                     <View style={{flexDirection:'row', width:'100%'}}>
-                                        <StoreIDTextLabel>TID:</StoreIDTextLabel>
-                                        <StoreIDTextInput   defaultValue={tidNo} onChangeText={(val)=>{ setTidNo(val); }} />
+                                        <StoreIDTextLabel>TID: {tidNo}</StoreIDTextLabel>
                                     </View>
                                     <View style={{flexDirection:'row', width:'100%'}}>
-                                        <StoreIDTextLabel>serialNo:</StoreIDTextLabel>
-                                        <StoreIDTextInput   defaultValue={serialNo} onChangeText={(val)=>{ setSerialNo(val); }} />
-                                        <TouchableWithoutFeedback onPress={()=>{ setPayData(); }}>
-                                            <SelectCancelWrapper>
-                                                <SelectCancelText>설정하기</SelectCancelText>
-                                            </SelectCancelWrapper>
-                                        </TouchableWithoutFeedback>
+                                        <StoreIDTextLabel>serialNo: {serialNo}</StoreIDTextLabel>
                                     </View>
                                 </SelectWrapper>
                             </SettingItemWrapper>
@@ -551,14 +428,11 @@ const SettingPopup = () =>{
                                 <TouchableWithoutFeedback onPress={()=>{ }} >
                                     <SettingButtonText isMargin={false} >테이블 세팅</SettingButtonText>
                                 </TouchableWithoutFeedback> 
-                                <SelectWrapper>
-                                    <StoreIDTextLabel>층 입력:</StoreIDTextLabel><StoreIDTextInput keyboardType='numeric'  defaultValue={floor} onChangeText={(val)=>{ setFloor(val); }} />
-                                </SelectWrapper>
-                                    <Dropdown/>
+                                <Dropdown/>
                             </SettingItemWrapper>
                             
                             <TouchableWithoutFeedback onPress={()=>{updateMenuCateogires()}} >
-                                <SettingButtonText isMargin={true} >화면 업데이트</SettingButtonText>
+                                <SettingButtonText isMargin={true} >메뉴 갱신</SettingButtonText>
                             </TouchableWithoutFeedback>
                             <TouchableWithoutFeedback onPress={()=>{checkUpdate();}} >
                                 <SettingButtonText isMargin={true} >앱 업데이트 ver 2.0.27</SettingButtonText>
@@ -576,6 +450,7 @@ const SettingPopup = () =>{
                     </PopupIndicatorWrapper>
                 }
             </KeyboardAvoidingView>
+            }
         </>
     )
 }

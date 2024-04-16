@@ -361,6 +361,7 @@ export const getTableListInfo = async(dispatch, data) =>{
     }) 
 }
 // 매장 정보 요청
+/*
 export const getStoreInfo = async(dispatch, data) =>{
     const {POS_IP} = await getIP()
     .catch((err)=>{
@@ -396,6 +397,8 @@ export const getStoreInfo = async(dispatch, data) =>{
         });
     }) 
 }
+*/
+
 // 메뉴 업데이트 체크
 export const  getMenuUpdateState = async (dispatch) =>{
     const {POS_IP} = await getIP()

@@ -124,8 +124,9 @@ export const PaymentTextLabel = styled.Text`
 `
 export const StoreIDTextLabel = styled.Text`
     color:${colorBlack};
-    fontSize:15px;
-    marginRight:10px
+    fontSize:25px;
+    marginRight:10px;
+    fontWeight:bold;
 `
 export const PaymentTextInput = styled.TextInput`
     flex:1;
