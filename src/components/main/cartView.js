@@ -23,7 +23,7 @@ import { KocesAppPay } from '../../utils/payment/kocesPay';
 import { displayErrorNonClosePopup, displayErrorPopup } from '../../utils/errorHandler/metaErrorHandler';
 import { setMonthPopup, setSelectedMonth } from '../../store/monthPopup';
 import { EventRegister } from 'react-native-event-listeners';
-import { getMenuUpdateState, getStoreInfo, getTableAvailability } from '../../utils/api/metaApis';
+import { getMenuUpdateState, getPosStoreInfo, getTableAvailability } from '../../utils/api/metaApis';
 import { initMenu, menuUpdateCheck } from '../../store/menu';
 import { META_SET_MENU_SEPARATE_CODE_LIST, PAY_SEPRATE_AMT_LIMIT } from '../../resources/defaults';
 import moment from 'moment';
@@ -168,13 +168,12 @@ const CartView = () =>{
             return;
         }
 
-        const storeInfo = await getStoreInfo()
+        const storeInfo = await getPosStoreInfo()
         .catch((err)=>{
             displayErrorNonClosePopup(dispatch, "XXXX", "상점 정보를 가져올 수 없습니다.");
             EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); 
             return;
         })
-        
         // 개점정보 확인
         if(!storeInfo?.SAL_YMD) {
             EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
@@ -240,6 +239,7 @@ const CartView = () =>{
                             EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
                         }else {
                             if( tableStatus?.now_later == "선불") {
+                                console.log("주문하기1111");
                                 if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
                                     dispatch(setMonthPopup({isMonthSelectShow:true}))
                                 }else {
@@ -251,6 +251,7 @@ const CartView = () =>{
                         }
                     }else {
                         if( tableStatus?.now_later == "선불") {
+                            console.log("주문하기2222");
                             if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
                                 dispatch(setMonthPopup({isMonthSelectShow:true}))
                             }else {

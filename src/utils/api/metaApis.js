@@ -320,7 +320,42 @@ export const getTableOrderList = async(dispatch, data) =>{
         });
     }) 
 }
+// 매장 정보 요청
+export const getPosStoreInfo = async(dispatch, data) =>{
+    const {POS_IP} = await getIP()
+    .catch((err)=>{
+        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});      
+        posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:'포스 IP 가져오기 실패.',MSG2:""})
+    }
+    )
+    if(isEmpty(POS_IP)) {
+        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:'포스 IP를 입력 해 주세요.',MSG2:""})
+        return;
+    }
+    return await new Promise(function(resolve, reject){
+        axios.post(
+            `${POS_BASE_URL(POS_IP)}`,
+            {
+                "VERSION" : POS_VERSION_CODE,
+                "WORK_CD" : POS_WORK_CD_REQ_STORE_INFO,
+                "ACCESS_CODE" : "NICE"
 
+            },
+            posOrderHeader,
+        ) 
+        .then((response => {
+            if(metaErrorHandler(dispatch, response?.data)) {
+                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});  
+                resolve(response?.data)
+            }    
+        })) 
+        .catch(error=>{
+            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});   
+            displayErrorPopup(dispatch,"XXXX",`포스에 연동할 수 없습니다.`);
+            reject(error.response.data)
+        });
+    }) 
+}
 // 테이블 주문 목록 받기
 export const getTableListInfo = async(dispatch, data) =>{
     const {POS_IP} = await getIP()
@@ -360,45 +395,6 @@ export const getTableListInfo = async(dispatch, data) =>{
         });
     }) 
 }
-// 매장 정보 요청
-/*
-export const getStoreInfo = async(dispatch, data) =>{
-    const {POS_IP} = await getIP()
-    .catch((err)=>{
-        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});      
-        posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:'포스 IP 가져오기 실패.',MSG2:""})
-    }
-    )
-    if(isEmpty(POS_IP)) {
-        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:'포스 IP를 입력 해 주세요.',MSG2:""})
-        return;
-    }
-    return await new Promise(function(resolve, reject){
-        axios.post(
-            `${POS_BASE_URL(POS_IP)}`,
-            {
-                "VERSION" : POS_VERSION_CODE,
-                "WORK_CD" : POS_WORK_CD_REQ_STORE_INFO,
-                "ACCESS_CODE" : "NICE"
-
-            },
-            posOrderHeader,
-        ) 
-        .then((response => {
-            if(metaErrorHandler(dispatch, response?.data)) {
-                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});  
-                resolve(response?.data)
-            }    
-        })) 
-        .catch(error=>{
-            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});   
-            displayErrorPopup(dispatch,"XXXX",`포스에 연동할 수 없습니다.`);
-            reject(error.response.data)
-        });
-    }) 
-}
-*/
-
 // 메뉴 업데이트 체크
 export const  getMenuUpdateState = async (dispatch) =>{
     const {POS_IP} = await getIP()

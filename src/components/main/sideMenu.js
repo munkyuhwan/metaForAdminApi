@@ -45,11 +45,9 @@ const SideMenu = () =>{
     return(
         <>
             <SideMenuWrapper>
-                <TouchableWithoutFeedback onPress={()=>{ countDown(); onSettingPress();} } style={{position:'absolute',  top:0,left:0, zIndex:999999999}}>
-                    <LogoWrapper>
-                        <LogoTop source={require("../../assets/icons/logo.png")}  />
-                    </LogoWrapper>
-                </TouchableWithoutFeedback>
+                <LogoWrapper>
+                    <LogoTop source={require("../../assets/icons/logo.png")}  />
+                </LogoWrapper>
                 <SideMenuScrollView showsVerticalScrollIndicator={false} >
                     <SideMenuItemWrapper>
                         {allCategories &&
