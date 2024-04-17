@@ -19,7 +19,7 @@ import { EventRegister } from 'react-native-event-listeners'
 import {isEmpty} from 'lodash';
 import StatusScreen from '../screens/StatusScreen'
 import { initOrderList } from '../store/order'
-import {  DEFAULT_TABLE_STATUS_UPDATE_TIME } from '../resources/defaults'
+import {  DEFAULT_FIVE_MIN_STATUS_UPDATE_TIME, DEFAULT_TABLE_STATUS_UPDATE_TIME } from '../resources/defaults'
 import {  getDeviceInfo, openPopup } from '../utils/common'
 import { getAD } from '../store/ad'
 import ADScreenPopup from '../components/popups/adPopup'
@@ -30,9 +30,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const Stack = createStackNavigator()
 var statusInterval;
-
+var fiveInterval;
 export default function Navigation() {
-    var statusInterval;
     const dispatch = useDispatch();
 
     const [spinnerText, setSpinnerText] = React.useState("")
@@ -103,6 +102,12 @@ export default function Navigation() {
                 dispatch(getTableStatus());
                 dispatch(menuUpdateCheck());
             }, DEFAULT_TABLE_STATUS_UPDATE_TIME);
+
+            fiveInterval = setInterval(() => {
+                //console.log("status interval")
+                // 광고 받기
+                //dispatch(getAD()); 
+            }, DEFAULT_FIVE_MIN_STATUS_UPDATE_TIME);
         //}
     },[])
 

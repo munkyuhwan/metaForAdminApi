@@ -14,6 +14,19 @@ export const OrderListPopupWrapper = styled.View`
     paddingBottom:15px;
     borderRadius:${RADIUS};
 `
+
+export const OrderPayPopupWrapper = styled.View`
+    width:90%;
+    height:90%;
+    backgroundColor:${colorWhite};
+    margin:auto;
+    paddingTop:15px;
+    paddingLeft:10px;
+    paddingRight:10px;
+    paddingBottom:15px;
+    borderRadius:${RADIUS};
+`
+
 // 제목 뤠퍼
 export const OrdrListTopWrapper = styled.View`
     flexDirection:row;
@@ -86,6 +99,14 @@ export const OrderListTableItemName = styled.Text`
     marginTop:auto;
     marginBottom:auto;
     marginLeft:18px;
+`
+export const OrderListOptionWrapper = styled.View`
+    flexDirection:column;
+`
+export const OrderListOptionTitle = styled.Text`
+    paddingLeft:20px;
+    color:${colorBlack};
+    fontSize:15px;
 `
 export const OrderListTableItemAmt = styled.Text`
     color:${colorBlack};
@@ -160,3 +181,33 @@ export const OrderListTotalAmount = styled.Text`
     textAlign:right;
 `
 
+// 결제하기 탭
+export const OrderPayTabWrapper = styled.View`
+    flexDirection:row;
+    position:absolute;
+    right:0;
+    bottom:-22;
+`
+export const OrderPayTab = styled.View`
+    width:175px;
+    height:65px;
+    ${(props)=>{ 
+        if(props.isOn) {
+            return `backgroundColor:${colorRed};`
+        }else {
+            return `backgroundColor:${colorGrey};`
+        }
+    }}
+    marginLeft:10px;
+    borderTopLeftRadius:${RADIUS};
+    borderTopRightRadius:${RADIUS};
+`
+export const OrderPayTabTitle = styled.Text`
+    
+    ${(props)=>{return props?.isOn?`color:${colorWhite};`:`color:${colorBlack};`}}
+    fontWeight:bold;
+    fontSize:28px;
+    textAlign:center;
+    marginTop:auto;
+    marginBottom:auto;
+`

@@ -229,8 +229,8 @@ export const BottomButtonWrapper = styled.View`
     justifyContent:center;
 `
 export const BottomButton = styled.View`
-    width:194px;
-    height:79px;
+    width:180px;
+    height:59px;
     backgroundColor:${(props)=>props.backgroundColor};
     flexDirection:row;
     justifyContent:center;

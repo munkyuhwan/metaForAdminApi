@@ -12,6 +12,7 @@ import { TransparentPopupWrapper } from '../../styles/common/popup';
 import CallServerPopup from '../popups/callServerPopup';
 import OrderListPopup from '../popups/orderListPopup';
 import SettingPopup from '../popups/settingPopup';
+import OrderPayPopup from '../popups/orderPayPopup';
 
 const FullSizePopup = (props) =>{
     
@@ -78,7 +79,7 @@ const FullSizePopup = (props) =>{
     return(
         <>
             <Animated.View  style={[{...PopStyle.animatedPop,...boxWidthStyle,...{zIndex:popupZIndex, width:size, height:size}} ]} >   
-                <TouchableWithoutFeedback onPress={()=>{openFullSizePopup(dispatch, {innerView:"", isPopupVisible:false});} }>
+                <TouchableWithoutFeedback onPress={()=>{openFullSizePopup(dispatch, {innerView:"", isFullPopupVisible:false});} }>
                 <FullsizePopupWrapper/>
                 </TouchableWithoutFeedback>
                     {innerFullView=="CallServer"&&
@@ -86,6 +87,9 @@ const FullSizePopup = (props) =>{
                     }
                     {(innerFullView=="Setting") &&
                         <SettingPopup/>
+                    }
+                    {(innerFullView=="OrderPay") &&
+                        <OrderPayPopup/>
                     }
                     
             </Animated.View>

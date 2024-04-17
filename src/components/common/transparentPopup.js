@@ -15,6 +15,7 @@ import ErrorPopup from './errorPopup';
 import OrderCompletePopup from './orderCompletePopup';
 import OrderFailListPopup from '../popups/orderFailList';
 import CameraView from './cemeraViewPopup';
+import OrderPayPopup from '../popups/orderPayPopup';
 
 const TransparentPopUp = (props) =>{
     
@@ -88,6 +89,9 @@ const TransparentPopUp = (props) =>{
                     }
                      {(innerTransView=="OrderList") &&
                         <OrderListPopup/>
+                    }
+                    {innerTransView=="OrderPay"&&
+                        <OrderPayPopup/>
                     }
                      {(innerTransView=="OrderFailList") &&
                         <OrderFailListPopup param={param} />

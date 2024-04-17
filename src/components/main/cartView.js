@@ -14,7 +14,7 @@ import { LANGUAGE } from '../../resources/strings';
 import { setCartView, setIconClick } from '../../store/cart';
 import { IconWrapper } from '../../styles/main/topMenuStyle';
 import TopButton from '../menuComponents/topButton';
-import {  getStoreID, isNetworkAvailable, itemEnableCheck, numberWithCommas, openTransperentPopup } from '../../utils/common';
+import {  getStoreID, isNetworkAvailable, itemEnableCheck, numberWithCommas, openFullSizePopup, openTransperentPopup } from '../../utils/common';
 import { adminDataPost, initOrderList, postLog, postOrderToPos, postToMetaPos, presetOrderData } from '../../store/order';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {isEmpty} from 'lodash';
@@ -230,10 +230,12 @@ const CartView = () =>{
                                     if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
                                         dispatch(setMonthPopup({isMonthSelectShow:true}))
                                     }else {
-                                        makePayment();
+                                        openTransperentPopup(dispatch, {innerView:"OrderPay", isPopupVisible:true});
+                                        //makePayment();
                                     }
                                 }else {
-                                    makePayment();
+                                    openTransperentPopup(dispatch, {innerView:"OrderPay", isPopupVisible:true});
+                                    //makePayment();
                                 }
                             }
                             EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
@@ -243,22 +245,25 @@ const CartView = () =>{
                                 if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
                                     dispatch(setMonthPopup({isMonthSelectShow:true}))
                                 }else {
-                                    makePayment();
+                                    openTransperentPopup(dispatch, {innerView:"OrderPay", isPopupVisible:true});
+                                    //makePayment();
                                 }
                             }else {
-                                makePayment();
+                                openTransperentPopup(dispatch, {innerView:"OrderPay", isPopupVisible:true});
+                                //makePayment();
                             }
                         }
                     }else {
                         if( tableStatus?.now_later == "선불") {
-                            console.log("주문하기2222");
                             if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
                                 dispatch(setMonthPopup({isMonthSelectShow:true}))
                             }else {
-                                makePayment();
+                                openTransperentPopup(dispatch, {innerView:"OrderPay", isPopupVisible:true});
+                                //makePayment();
                             }
                         }else {
-                            makePayment();
+                            openTransperentPopup(dispatch, {innerView:"OrderPay", isPopupVisible:true});
+                            //makePayment();
                         }
                     }
                 } catch (error) {
@@ -267,10 +272,12 @@ const CartView = () =>{
                         if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
                             dispatch(setMonthPopup({isMonthSelectShow:true}))
                         }else {
-                            makePayment();
+                            openTransperentPopup(dispatch, {innerView:"OrderPay", isPopupVisible:true});
+                            //makePayment();
                         }
                     }else {
-                        makePayment();
+                        openTransperentPopup(dispatch, {innerView:"OrderPay", isPopupVisible:true});
+                        //makePayment();
                     }   
                 }
             }
@@ -391,7 +398,7 @@ const CartView = () =>{
                             <PayAmtUnit> {LANGUAGE[language]?.cartView.totalAmtUnit}</PayAmtUnit>
                         </PayAmtWrapper>
                     </PayWrapper>
-                    <TouchableWithoutFeedback onPress={()=>{ doPayment();  }} >
+                    <TouchableWithoutFeedback onPress={()=>{openFullSizePopup(dispatch, {innerFullView:"OrderPay", isFullPopupVisible:true}); /* doPayment(); */ }} >
                         <PayBtn>
                             {
                                 !isPrepay&&
