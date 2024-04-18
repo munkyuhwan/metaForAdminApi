@@ -49,7 +49,7 @@ export const LANGUAGE = {
             orderListSubtitle:"주문하신 내역입니다.",
 
             orderPayTitle:"결제내역",
-            orderListSubtitle:"결제하실 내역입니다.",
+            orderPaySubtitle:"결제하실 내역입니다.",
 
             orderFailListSubtitle:"결제는 되었으나 주문에 실패 했습니다. 직원을 호출 해 주세요.",
             tableColName:"메뉴명",
@@ -115,7 +115,7 @@ export const LANGUAGE = {
             orderListSubtitle:"注文したお支払い履歴です。",
 
             orderPayTitle:"決済履歴",
-            orderListSubtitle:"お支払いいただく履歴です。",
+            orderPaySubtitle:"お支払いいただく履歴です。",
 
             orderFailListSubtitle:"お支払いは行われましたが、注文に失敗しました。 スタッフを呼び出してください。.",
             tableColName:"メニュー名",
@@ -181,7 +181,7 @@ export const LANGUAGE = {
             orderListSubtitle:"这是您订单的付款详细信息。",
 
             orderPayTitle:"付款详情",
-            orderListSubtitle:"这是付款详细信息。",
+            orderPaySubtitle:"这是付款详细信息。",
 
             orderFailListSubtitle:"已付款，但订单失败。 请致电工作人员。",
             tableColName:"菜单名称",
@@ -246,7 +246,7 @@ export const LANGUAGE = {
             orderListSubtitle:"This is the payment details for your order.",
 
             orderPayTitle:"Payment details",
-            orderListSubtitle:"This is the payment details.",
+            orderPaySubtitle:"This is the payment details.",
 
             orderFailListSubtitle:"Payment was made, but the order failed. Please call a staff member.",
             tableColName:"Menu Name",

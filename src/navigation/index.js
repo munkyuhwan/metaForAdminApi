@@ -166,7 +166,7 @@ export default function Navigation() {
             AsyncStorage.setItem("SERIAL_NO", serialNo);   
         }
         if(!isEmpty(orderHistory)) {
-            console.log("orderHistory: ",orderHistory);
+      
         }
         if(!isEmpty(posIP)) {
             AsyncStorage.setItem("POS_IP", posIP);   

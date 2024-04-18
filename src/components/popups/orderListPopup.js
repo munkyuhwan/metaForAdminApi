@@ -17,6 +17,7 @@ const OrderListPopup = () =>{
     const dispatch = useDispatch();
     const {language} = useSelector(state=>state.languages);
     const {orderStatus} = useSelector(state=>state.order);    
+    const { tableInfo, tableStatus, orderHistory } = useSelector(state=>state.tableInfo);
     const [orderTotalAmt, setOrderTotalAmt] = useState(0);
     const {param} = useSelector(state=>state.popup);
     useEffect(()=>{
@@ -37,12 +38,12 @@ const OrderListPopup = () =>{
 
  
     useEffect(()=>{
-        if(isEmpty(orderStatus)) {
+        if(isEmpty(orderHistory)) {
             setOrderTotalAmt(0);
         }
-        if(orderStatus){
+        if(orderHistory){
             let tmpPrice = 0;
-            orderStatus.map(el=>{
+            orderHistory.map(el=>{
                 tmpPrice += Number(el.ITEM_AMT);
                 for(var i=0;i<el.SETITEM_INFO.length; i++) {
                     tmpPrice += Number(el.SETITEM_INFO[i].AMT)
@@ -50,7 +51,7 @@ const OrderListPopup = () =>{
             })
             setOrderTotalAmt(tmpPrice);
         }
-    },[orderStatus])
+    },[orderHistory])
 
     return(
         <>
@@ -71,7 +72,7 @@ const OrderListPopup = () =>{
                         </OrderListTableColumnNameWrapper>
                        {orderStatus &&
                             <OrderListTableList
-                                data={orderStatus}
+                                data={orderHistory}
                                 renderItem={(item)=>{return <OrderListItem order={item} />}}
                             />
                         }

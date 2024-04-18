@@ -119,7 +119,8 @@ const CartListItem = (props) => {
                 <CartItemTitlePriceWrapper>
                     <CartItemTitle numberOfLines={1} ellipsizeMode="tail" >{ItemTitle()||itemDetail[0]?.gname_kr}</CartItemTitle>
                     <CartItemOpts numberOfLines={2} ellipsizeMode="tail" >
-                        {additiveItemList.length>0 &&
+                        {
+                            additiveItemList.length>0 &&
                             additiveItemList.map((el,index)=>{
                                 return `${ItemOptionTitle(el.optItem,index)}`+`${Number(el.qty)*Number(order?.qty)}개`+`${index<(additiveItemList.length-1)?", ":""}`;
                             })

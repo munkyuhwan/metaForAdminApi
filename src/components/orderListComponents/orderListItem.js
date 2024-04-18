@@ -36,9 +36,9 @@ const OrderListItem = (props) => {
     const individualItem = () =>{
         let setItemPrice = 0;
         for(var i=0;i<item.SETITEM_INFO.length;i++) {
-            setItemPrice += item.SETITEM_INFO[i].AMT
+            setItemPrice += Number(item.SETITEM_INFO[i].AMT)
         }
-        return setItemPrice+item?.ITEM_AMT;
+        return Number(setItemPrice)+Number(item?.ITEM_AMT);
     }
     return(
         <>

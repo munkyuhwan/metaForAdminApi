@@ -328,15 +328,6 @@ const CartView = () =>{
         
     },[orderList])
   
-    useEffect(()=>{
-        /* if(orderStatus){
-            let tmpPrice = 0;
-            orderStatus.map(el=>{
-                tmpPrice = tmpPrice+Number(el?.ITEM_QTY);
-            })
-            setCartCnt(tmpPrice);
-        } */
-    },[orderStatus])
 
     return(
         <>  
