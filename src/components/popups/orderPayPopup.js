@@ -90,7 +90,7 @@ const OrderPayPopup = () =>{
                     <OrderPayTabWrapper>
                         <TouchableWithoutFeedback onPress={()=>{onTap(true)}} >
                             <OrderPayTab isOn={isDivided} >
-                                <OrderPayTabTitle isOn={isDivided} >1/n결제</OrderPayTabTitle>
+                                <OrderPayTabTitle isOn={isDivided} >1/N 결제</OrderPayTabTitle>
                             </OrderPayTab>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={()=>{onTap(false)}} >

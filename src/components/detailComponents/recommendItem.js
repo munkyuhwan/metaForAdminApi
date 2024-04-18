@@ -4,9 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RecommendItemDim, RecommendItemImage, RecommendItemImageWrapper, RecommendItemInfoChecked, RecommendItemInfoPrice, RecommendItemInfoTitle, RecommendItemInfoWrapper, RecommendItemWrapper } from '../../styles/main/detailStyle';
 import { MENU_DATA } from '../../resources/menuData';
 import {isEmpty} from "lodash";
-import { getSingleMenu, getSingleMenuFromAllItems, initMenuDetail, setItemDetail } from '../../store/menuDetail';
+import { initMenuDetail, setItemDetail } from '../../store/menuDetail';
 import { addToOrderList } from '../../store/order';
-import { getPosItemsWithCategory } from '../../utils/api/metaApis';
 import FastImage from 'react-native-fast-image';
 import { posErrorHandler } from '../../utils/errorHandler/ErrorHandler';
 import { isAvailable, openTransperentPopup } from '../../utils/common';
@@ -40,12 +39,6 @@ const RecommendItem = (props) => {
         const filtered = allItems.filter(el=>el.prod_cd == recommentItemID);
         setMenuDetail(filtered[0]);
 
-        /* getPosItemsWithCategory(dispatch, {selectedMainCategory,selectedSubCategory,menuDetailID:recommentItemID})
-        //getPosItemsWithCategory(dispatch, {selectedMainCategory,selectedSubCategory,menuDetailID:"900050"})
-        .then(result=>{
-            setItemDetail(result);
-        })
-        .catch */
     },[])
     
     //if(isEmpty(itemDetail)) return(<></>)

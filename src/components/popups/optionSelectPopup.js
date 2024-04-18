@@ -4,11 +4,10 @@ import OptItem from "../detailComponents/optItem";
 import RadioGroup from 'react-native-radio-buttons-group';
 import { useEffect, useMemo, useState } from "react";
 import _ from 'lodash';
-import { getSetItems, setMenuOptionSelected } from "../../store/menuDetail";
+import {  setMenuOptionSelected } from "../../store/menuDetail";
 import FastImage from "react-native-fast-image";
 import { ScrollView, Text, TouchableWithoutFeedback, View } from "react-native";
 import { openPopup } from "../../utils/common";
-import { getPosItemsWithCategory } from "../../utils/api/metaApis";
 
 const OptionSelectPopup = () =>{
     const {language} = useSelector(state=>state.languages);
@@ -62,15 +61,6 @@ const OptionSelectPopup = () =>{
             openPopup(dispatch,{innerView:"", isPopupVisible:false}); 
         }
     },[selectedId])
-    const deleteOption = (selectedItem) => {
-
-    }
-    
-    useEffect(()=>{
-        //dispatch(getSetItems());
-    },[menuOptionGroupCode])
-
-    
 
     return( 
         <>

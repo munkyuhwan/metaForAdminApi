@@ -1,15 +1,8 @@
 import { createAsyncThunk, createSlice, isRejectedWithValue } from '@reduxjs/toolkit'
-import { MENU_DATA } from '../resources/menuData';
-import { stat } from 'react-native-fs';
-import { getPosMainCategory, getPosMidCategory } from '../utils/api/metaApis';
-import { getAdminMainCategory } from '../utils/api/adminApi';
-import { setMenuCategories } from './menuExtra';
-import { getCategories } from '../utils/api/newApi';
 import { callApiWithExceptionHandling } from '../utils/api/apiRequest';
 import { ADMIN_API_BASE_URL, ADMIN_API_CATEGORY, TMP_STORE_DATA } from '../resources/newApiResource';
 import {isEmpty} from 'lodash';
 import { getStoreID } from '../utils/common';
-import { EventRegister } from 'react-native-event-listeners';
 
 export const setCategories = createAsyncThunk("categories/setCategories", async(data) =>{
     return data;

@@ -8,7 +8,7 @@ import OptItem from './optItem';
 import CommonIndicator from '../common/waitIndicator';
 import WaitIndicator from '../common/waitIndicator';
 import RecommendItem from './recommendItem';
-import { initMenuDetail, getSingleMenuFromAllItems, getItemSetGroup, getSingleMenuForRecommend, getSetItems, setMenuOptionSelected } from '../../store/menuDetail';
+import { initMenuDetail } from '../../store/menuDetail';
 import { isAvailable, numberWithCommas, openPopup } from '../../utils/common';
 import { MENU_DATA } from '../../resources/menuData';
 import { addToOrderList } from '../../store/order';
@@ -200,14 +200,6 @@ const ItemDetail = (props) => {
         if(isDetailShow) {
             setDetailZIndex(999)
             onSelectHandleAnimation(1);
-            //dispatch(getItemSetGroup());
-            /* 
-            var tmpAdditiveList = [];ㄴ
-            if(menuDetail?.ADDITIVE_GROUP_LIST) {
-                tmpAdditiveList = menuDetail?.ADDITIVE_GROUP_LIST.filter(el=>el.ADDITIVE_GROUP_USE_FLAG=="N");
-            }
-            setAdditiveGroupList(tmpAdditiveList);
-             */
         }
     },[isDetailShow])
 //console.log("menu: ",menu[0].ITEM_LIST);

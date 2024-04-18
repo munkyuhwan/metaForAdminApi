@@ -8,14 +8,14 @@ import {
     View
 } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux';
-import { ArrowImage, CartFlatList, CartScrollView, CartViewWrapper, Handle, OrderWrapper, PayAmtNumber, PayAmtTitle, PayAmtUnit, PayAmtWrapper, PayBtn, PayIcon, PayTitle, PayWrapper } from '../../styles/main/cartStyle';
+import { ArrowImage, CartFlatList, CartScrollView, CartViewWrapper, Handle, OrderWrapper, PayAmtNumber, PayAmtTitle, PayAmtUnit, PayAmtWrapper, PayBtn, PayBtnWrapper, PayIcon, PayTitle, PayWrapper } from '../../styles/main/cartStyle';
 import CartListItem from '../cartComponents/cartListItem';
 import { LANGUAGE } from '../../resources/strings';
 import { setCartView, setIconClick } from '../../store/cart';
 import { IconWrapper } from '../../styles/main/topMenuStyle';
 import TopButton from '../menuComponents/topButton';
 import {  getStoreID, isNetworkAvailable, itemEnableCheck, numberWithCommas, openFullSizePopup, openTransperentPopup } from '../../utils/common';
-import { adminDataPost, initOrderList, postLog, postOrderToPos, postToMetaPos, presetOrderData } from '../../store/order';
+import { adminDataPost, initOrderList, postLog, postOrderToPos, presetOrderData } from '../../store/order';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {isEmpty} from 'lodash';
 import LogWriter from '../../utils/logWriter';
@@ -89,7 +89,6 @@ const CartView = () =>{
 
     },[isMonthSelectShow,monthSelected])
     const makePayment = async () =>{
-        //dispatch(postToMetaPos({payData:{}}));
             if( tableStatus?.now_later == "선불") {
                 const bsnNo = await AsyncStorage.getItem("BSN_NO");
                 const tidNo = await AsyncStorage.getItem("TID_NO");
@@ -117,9 +116,6 @@ const CartView = () =>{
                     kocessAppPay.requestKocesPayment(amtData)
                     .then(async (result)=>{ 
                         
-                        //dispatch(postToMetaPos({payData:result}));
-                        //const result = {"AnsCode": "0000", "AnswerTrdNo": "null", "AuNo": "36263593", "AuthType": "null", "BillNo": "", "CardKind": "1", "CardNo": "94119400", "ChargeAmt": "null", "DDCYn": "1", "DisAmt": "null", "EDCYn": "0", "GiftAmt": "", "InpCd": "1107", "InpNm": "신한카드", "Keydate": "", "MchData": "wooriorder", "MchNo": "22101257", "Message": "000005923065                            ", "Month": "", "OrdCd": "1107", "OrdNm": "개인신용", "PcCard": "null", "PcCoupon": "null", "PcKind": "null", "PcPoint": "null", "QrKind": "null", "RefundAmt": "null", "SvcAmt": "0", "TaxAmt": "91", "TaxFreeAmt": "0", "TermID": "0710000900", "TradeNo": "000005923065", "TrdAmt": "913", "TrdDate": "240329225017", "TrdType": "A15"}
-                        //const result = {"AnsCode": "0000", "AnswerTrdNo": "null", "AuNo": "48104019", "AuthType": "null", "BillNo": "", "CardKind": "1", "CardNo": "94119400", "ChargeAmt": "null", "DDCYn": "1", "DisAmt": "null", "EDCYn": "0", "GiftAmt": "", "InpCd": "1107", "InpNm": "신한카드", "Keydate": "", "MchData": "wooriorder", "MchNo": "22101257", "Message": "000005791029                            ", "Month": "", "OrdCd": "1107", "OrdNm": "개인신용", "PcCard": "null", "PcCoupon": "null", "PcKind": "null", "PcPoint": "null", "QrKind": "null", "RefundAmt": "null", "SvcAmt": "0", "TaxAmt": "91", "TaxFreeAmt": "0", "TermID": "0710000900", "TradeNo": "000005791029", "TrdAmt": "913", "TrdDate": "240330202942", "TrdType": "A15"}
                         console.log("result: ",result);
                         const orderData = await metaPostPayFormat(orderList,result, allItems);
                         dispatch(postOrderToPos({payData:result,orderData:orderData}));
@@ -134,7 +130,6 @@ const CartView = () =>{
                 }
             }else {
                 EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
-                //dispatch(postToMetaPos({payData:{}}));
                 const orderData = await metaPostPayFormat(orderList,{}, allItems);
                 dispatch(adminDataPost({payData:null,orderData:orderData}));
                 dispatch(postOrderToPos({payData:null,orderData:orderData}));
@@ -230,12 +225,10 @@ const CartView = () =>{
                                     if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
                                         dispatch(setMonthPopup({isMonthSelectShow:true}))
                                     }else {
-                                        openTransperentPopup(dispatch, {innerView:"OrderPay", isPopupVisible:true});
-                                        //makePayment();
+                                        makePayment();
                                     }
                                 }else {
-                                    openTransperentPopup(dispatch, {innerView:"OrderPay", isPopupVisible:true});
-                                    //makePayment();
+                                    makePayment();
                                 }
                             }
                             EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
@@ -245,12 +238,10 @@ const CartView = () =>{
                                 if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
                                     dispatch(setMonthPopup({isMonthSelectShow:true}))
                                 }else {
-                                    openTransperentPopup(dispatch, {innerView:"OrderPay", isPopupVisible:true});
-                                    //makePayment();
+                                    makePayment();
                                 }
                             }else {
-                                openTransperentPopup(dispatch, {innerView:"OrderPay", isPopupVisible:true});
-                                //makePayment();
+                                makePayment();
                             }
                         }
                     }else {
@@ -258,12 +249,10 @@ const CartView = () =>{
                             if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
                                 dispatch(setMonthPopup({isMonthSelectShow:true}))
                             }else {
-                                openTransperentPopup(dispatch, {innerView:"OrderPay", isPopupVisible:true});
-                                //makePayment();
+                                makePayment();
                             }
                         }else {
-                            openTransperentPopup(dispatch, {innerView:"OrderPay", isPopupVisible:true});
-                            //makePayment();
+                            makePayment();
                         }
                     }
                 } catch (error) {
@@ -272,12 +261,10 @@ const CartView = () =>{
                         if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
                             dispatch(setMonthPopup({isMonthSelectShow:true}))
                         }else {
-                            openTransperentPopup(dispatch, {innerView:"OrderPay", isPopupVisible:true});
-                            //makePayment();
+                            makePayment();
                         }
                     }else {
-                        openTransperentPopup(dispatch, {innerView:"OrderPay", isPopupVisible:true});
-                        //makePayment();
+                        makePayment();
                     }   
                 }
             }
@@ -398,19 +385,42 @@ const CartView = () =>{
                             <PayAmtUnit> {LANGUAGE[language]?.cartView.totalAmtUnit}</PayAmtUnit>
                         </PayAmtWrapper>
                     </PayWrapper>
-                    <TouchableWithoutFeedback onPress={()=>{openFullSizePopup(dispatch, {innerFullView:"OrderPay", isFullPopupVisible:true}); /* doPayment(); */ }} >
-                        <PayBtn>
-                            {
-                                !isPrepay&&
-                                <PayTitle>{LANGUAGE[language]?.cartView.makeOrder}</PayTitle>
-                            }
-                            {
-                                isPrepay&&
-                                <PayTitle>{LANGUAGE[language]?.cartView.payOrder}</PayTitle>
-                            }
-                            <PayIcon source={require("../../assets/icons/order.png")} />
-                        </PayBtn>
-                     </TouchableWithoutFeedback>
+                    <PayBtnWrapper>
+
+                        {!isPrepay&&
+                            <TouchableWithoutFeedback onPress={()=>{doPayment();}} >
+                                <PayBtn isFull={true} >
+                                    <PayTitle>{LANGUAGE[language]?.cartView.makeOrder}</PayTitle>
+                                    <PayIcon source={require("../../assets/icons/order.png")} />
+                                </PayBtn>
+                            </TouchableWithoutFeedback>
+                        }
+                        {isPrepay&&
+                            <TouchableWithoutFeedback onPress={()=>{doPayment();}} >
+                                <PayBtn isFull={true} >
+                                    <PayTitle>{LANGUAGE[language]?.cartView.payOrder}</PayTitle>
+                                    <PayIcon source={require("../../assets/icons/order.png")} />
+                                </PayBtn>
+                            </TouchableWithoutFeedback>
+                        }
+                        {/*isPrepay&&
+                            <>
+                            <TouchableWithoutFeedback onPress={()=>{doPayment();}} >
+                                <PayBtn isFull={false} isGap={true} >    
+                                    <PayTitle>{LANGUAGE[language]?.cartView.payOrder}</PayTitle>
+                                    
+                                </PayBtn>
+                            </TouchableWithoutFeedback>
+                            <TouchableWithoutFeedback onPress={()=>{openFullSizePopup(dispatch, {innerFullView:"OrderPay", isFullPopupVisible:true}); }} >
+                                <PayBtn isFull={false}  isGap={true} >
+                                        <PayTitle>{LANGUAGE[language]?.cartView.payDutch}</PayTitle>
+                                </PayBtn>
+                            </TouchableWithoutFeedback>
+                            </>
+                        */}
+
+                    </PayBtnWrapper>
+
                 </OrderWrapper>
             </CartViewWrapper>  
            

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Dimensions, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { OptItemDim, OptItemFastImage, OptItemImage, OptItemInfoChecked, OptItemInfoPrice, OptItemInfoTitle, OptItemInfoWrapper, OptItemWrapper } from '../../styles/main/detailStyle';
-import { getSetItems, setMenuOptionSelected } from '../../store/menuDetail';
+import {  setMenuOptionSelected } from '../../store/menuDetail';
 import FastImage from 'react-native-fast-image';
 import { DetailItemAmtController, DetailItemAmtText,DetailItemAmtWrapper, DetailOperandorText, OperandorText } from '../../styles/main/cartStyle';
 import { posErrorHandler } from '../../utils/errorHandler/ErrorHandler';

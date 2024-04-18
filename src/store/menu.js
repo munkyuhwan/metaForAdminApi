@@ -1,19 +1,10 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { useSelector } from 'react-redux';
-import { MENU_DATA } from '../resources/menuData';
-import axios, { all } from 'axios';
 import { getAdminCategories, getAdminCategoryData, getMainCategories, setAllCategories, setSelectedMainCategory } from './categories';
 import { EventRegister } from 'react-native-event-listeners';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CALL_SERVICE_GROUP_CODE } from '../resources/apiResources';
-import { setCallServerList } from './callServer';
-import { DEFAULT_CATEGORY_ALL_CODE } from '../resources/defaults';
-import { getMenuUpdateState, getPosItemsAll, getPosItemsWithCategory, getPosMainCategory, getPosMidCategory, getPosSetGroup, getPosSetGroupItem } from '../utils/api/metaApis';
-import { scanFile } from 'react-native-fs';
 import { initMenuDetail, setItemDetail, setMenuOptionGroupCode } from './menuDetail';
 import { displayErrorNonClosePopup, displayErrorPopup } from '../utils/errorHandler/metaErrorHandler';
 import { fileDownloader, getStoreID, isNetworkAvailable, openPopup } from '../utils/common';
-import { Alert } from 'react-native';
 import moment from 'moment';
 import 'moment/locale/ko';
 import { setCartView } from './cart';

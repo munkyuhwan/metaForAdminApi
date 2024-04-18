@@ -30,7 +30,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const Stack = createStackNavigator()
 var statusInterval;
-var fiveInterval;
 export default function Navigation() {
     const dispatch = useDispatch();
 
@@ -103,11 +102,6 @@ export default function Navigation() {
                 dispatch(menuUpdateCheck());
             }, DEFAULT_TABLE_STATUS_UPDATE_TIME);
 
-            fiveInterval = setInterval(() => {
-                //console.log("status interval")
-                // 광고 받기
-                //dispatch(getAD()); 
-            }, DEFAULT_FIVE_MIN_STATUS_UPDATE_TIME);
         //}
     },[])
 

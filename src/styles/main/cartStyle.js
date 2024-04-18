@@ -260,23 +260,27 @@ export const PayAmtUnit = styled.Text`
     fontSize:20px;
     color:${colorBlack};
 `
+export const PayBtnWrapper = styled.View`
+    flexDirection:row;
+`
 export const PayBtn = styled.View`
-    width:100%;
-    height:40%;
+    width: ${(props)=>{ return props?.isFull? "100%" :  "48%" }};
+    ${(props)=>{ return props?.isGap?"marginLeft:4px; marginRight:4px;":"" }}
     backgroundColor:${colorRed};
     flexDirection:row;
     textAlign:center;
     justifyContent:center;
     borderRadius:${RADIUS};
     marginTop:10px;
+    paddingTop:7px;
+    paddingBottom:7px;
 `
 export const PayTitle = styled.Text`
     color:${colorWhite};
-    fontSize:25px;
+    fontSize:32px;
     fontWeight:bold;
     marginTop:auto;
     marginBottom:auto;
-    marginRight:7px;
 `
 export const PayIcon = styled.Image`
     marginTop:auto;

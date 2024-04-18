@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { useSelector } from 'react-redux';
-import { getPosItemsWithCategory, getPosSetGroup, getPosSetGroupItem } from '../utils/api/metaApis';
 import { posErrorHandler } from '../utils/errorHandler/ErrorHandler';
 import { openPopup } from '../utils/common';
 
@@ -45,18 +44,6 @@ export const getSingleMenu = createAsyncThunk("menuDetail/getSingleMenu", async(
     const selectedMenuDetail = displayMenu.filter(el=>el.ITEM_ID == itemID);
     return selectedMenuDetail[0];
 });
-export const getSingleMenuFromAllItems = createAsyncThunk("menuDetail/getSingleMenuFromAllItems", async(itemID,{dispatch, getState}) =>{
-    const {selectedMainCategory,selectedSubCategory} = getState().categories
-    const {menuDetailID} = getState().menuDetail;
-    if(selectedMainCategory == "0" || selectedMainCategory == undefined ) {
-        return
-    }
-    if(selectedSubCategory == "0" || selectedSubCategory == undefined ) {
-        return
-    } 
-    const singleItemResult = await getPosItemsWithCategory(dispatch, {selectedMainCategory,selectedSubCategory,menuDetailID});
-    return singleItemResult[0];
-});
 // 추천 메뉴를 위한 단일 메뉴 받기
 
 export const getSingleMenuForRecommend = createAsyncThunk("menuDetail/getSingleMenuForRecommend", async(_,{dispatch, getState}) =>{
@@ -69,53 +56,8 @@ export const getSingleMenuForRecommend = createAsyncThunk("menuDetail/getSingleM
     if(selectedSubCategory == "0" || selectedSubCategory == undefined ) {
         return
     } 
-    //const singleItemResult = await getPosItemsWithCategory(dispatch, {selectedMainCategory,selectedSubCategory,menuDetailID});
-    //return singleItemResult[0];
-    //const {allItems} = getState().menu;
-    //const selectedMenuDetail = allItems.filter(el=>el.ITEM_ID == itemID);
-    //return selectedMenuDetail[0];
 });
 
-// 세트 그룹 받기
-export const getItemSetGroup = createAsyncThunk("menuDetail/getItemSetGroup", async(data,{dispatch,getState}) =>{
-    const {menuDetailID} = getState().menuDetail;
-    const setGroup = await getPosSetGroup(dispatch,{menuDetailID} );
-    return setGroup;
-});
-// 세트 그룹 아이템 받기
-export const getSetItems = createAsyncThunk("menuDetail/getSetItems", async(data,{dispatch,getState}) =>{
-    const{allItems} = getState().menu;
-    const {setGroup} = data;
-    const setGroupItem = await getPosSetGroupItem(dispatch,{menuOptionGroupCode:setGroup.GROUP_NO}).catch(err=>{ posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:"통신",MSG2:"아이템을 받아올 수 없습니다."}); return;});
-    //console.log(setGroupItem);
-    const displaySetItem = [];
-    if(setGroupItem) {
-        if(setGroupItem.length > 0) {
-            for(var i=0;i<setGroupItem.length;i++) {
-                const groupItemDetail = await getPosItemsWithCategory(dispatch,{selectedMainCategory:"",selectedSubCategory:"",menuDetailID:setGroupItem[i].PROD_I_CD});
-                displaySetItem.push(groupItemDetail[0]);
-            }
-        }
-    }
-   /*  for(var i=0;i<setGroupItem.length;i++) {
-        let selectedItem = allItems.filter(el=>el.PROD_CD == setGroupItem[i].PROD_I_CD );
-        displaySetItem.push(selectedItem[0]);
-    } */
-    return displaySetItem;
-  
-    /* const setGroupItem = await getPosSetGroupItem(dispatch,{menuOptionGroupCode}).catch(err=>{ posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:"통신",MSG2:"아이템을 받아올 수 없습니다."}); return;});
-    //const setGroup = await getPosSetGroup(dispatch,{menuDetailID} );
-    const displaySetItem = [];
-    if(setGroupItem) {
-        if(setGroupItem.length > 0) {
-            for(var i=0;i<setGroupItem.length;i++) {
-                const groupItemDetail = await getPosItemsWithCategory(dispatch,{selectedMainCategory:"",selectedSubCategory:"",menuDetailID:setGroupItem[i].PROD_I_CD});
-                displaySetItem.push(groupItemDetail[0]);
-            }
-        }
-    } */
-    //return displaySetItem;
-});
 
 export const setMenuOptionSelect = createAsyncThunk("menuDetail/setMenuOptionSelect", async(data) =>{
     return data;
@@ -166,10 +108,6 @@ export const menuDetailSlice = createSlice({
         builder.addCase(getSingleMenu.fulfilled,(state, action)=>{
             state.menuDetail = action.payload;
         })
-        // 메뉴 상세 받기 전체 메 스테이트에서
-        builder.addCase(getSingleMenuFromAllItems.fulfilled,(state, action)=>{
-            state.menuDetail = action.payload;
-        })
         // 메뉴 옵션 셋
         builder.addCase(setMenuOptionSelect.fulfilled,(state, action)=>{
             state.menuOptionList = action.payload;
@@ -186,21 +124,6 @@ export const menuDetailSlice = createSlice({
         // 메뉴 옵션 그룹
         builder.addCase(setMenuOptionGroupCode.fulfilled,(state, action)=>{
             state.menuOptionGroupCode = action.payload;
-        })
-
-        // 메뉴 세트 그룹 
-        builder.addCase(getItemSetGroup.fulfilled,(state, action)=>{
-            state.menuOptionList = action.payload;
-        })
-        // 메뉴 세트 그룹 아이템 
-        builder.addCase(getSetItems.fulfilled,(state, action)=>{
-            let currentItems = Object.assign([],state.setGroupItem);
-            //let itemsToSet = [...currentItems,...action.payload];
-            currentItems.push(action.payload);
-            /* const itemResult = itemsToSet.filter(function(elem, pos) {
-                return itemsToSet.indexOf(elem) == pos;
-            }); */ 
-            state.setGroupItem = currentItems;
         })
         // 추천 메뉴
         builder.addCase(getSingleMenuForRecommend.fulfilled,(state, action)=>{

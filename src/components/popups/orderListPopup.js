@@ -60,7 +60,6 @@ const OrderListPopup = () =>{
                     <TouchableWithoutFeedback onPress={()=>{dispatch(getOrderStatus({}));}} >
                         <OrderListTopSubtitle>{LANGUAGE[language]?.orderListPopup.orderListSubtitle}</OrderListTopSubtitle>
                     </TouchableWithoutFeedback>
-
                 </OrdrListTopWrapper>
                 <OrderListWrapper>
                     <OrderListTableWrapper>
