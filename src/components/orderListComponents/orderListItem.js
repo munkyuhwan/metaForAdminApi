@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { OrderListTableItemAmt, OrderListTableItemImage, OrderListTableItemImageNameWrapper, OrderListTableItemName, OrderListTableItemOperander, OrderListTableItemPrice, OrderListTableItemTotal, OrderListTableItemWrapper } from '../../styles/popup/orderListPopupStyle';
+import { OrderListOptionTitle, OrderListOptionWrapper, OrderListTableItemAmt, OrderListTableItemImage, OrderListTableItemImageNameWrapper, OrderListTableItemName, OrderListTableItemOperander, OrderListTableItemPrice, OrderListTableItemTotal, OrderListTableItemWrapper } from '../../styles/popup/orderListPopupStyle';
 import { numberWithCommas } from '../../utils/common';
 
 const OrderListItem = (props) => {
@@ -40,12 +40,38 @@ const OrderListItem = (props) => {
         }
         return Number(setItemPrice)+Number(item?.ITEM_AMT);
     }
+    const ItemOptionTitle = (additiveId,index) =>{
+        let selOptTitleLanguage = "";
+        const selExtra = allItems.filter(el=>el.prod_cd==additiveId);
+        if(language=="korean") {
+            selOptTitleLanguage = selExtra[0]?.gname_kr;
+        }
+        else if(language=="japanese") {
+            selOptTitleLanguage = selExtra[0]?.gname_jp||selExtra[0]?.gname_kr;
+        }
+        else if(language=="chinese") {
+            selOptTitleLanguage = selExtra[0]?.gname_cn||selExtra[0]?.gname_kr;
+        }
+        else if(language=="english") {
+            selOptTitleLanguage = selExtra[0]?.gname_en||selExtra[0]?.gname_kr;
+        }
+        return selOptTitleLanguage;
+    }
     return(
         <>
             <OrderListTableItemWrapper>
                 <OrderListTableItemImageNameWrapper flex={0.85}>
                     <OrderListTableItemImage source={{uri:imgUrl}} />
-                    <OrderListTableItemName>{ItemTitle()||item.ITEM_NM}</OrderListTableItemName>
+                    <OrderListOptionWrapper>
+                        <OrderListTableItemName>{ItemTitle()||item.ITEM_NM}</OrderListTableItemName>
+                        <OrderListOptionTitle>
+                            {item?.SETITEM_INFO?.length>0 &&
+                                item?.SETITEM_INFO?.map((el,index)=>{
+                                return `- ${ItemOptionTitle(el.PROD_I_CD,index)}`+`${Number(el.QTY)}개`+`${index<(item?.SETITEM_INFO?.length-1)?", ":""}`;
+                                })
+                            }
+                        </OrderListOptionTitle>
+                    </OrderListOptionWrapper>
                 </OrderListTableItemImageNameWrapper>
                 <OrderListTableItemAmt flex={0.1}>{item?.ITEM_QTY}</OrderListTableItemAmt>
                 <OrderListTableItemOperander flex={0.03} >X</OrderListTableItemOperander>
