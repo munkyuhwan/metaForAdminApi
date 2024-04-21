@@ -8,6 +8,7 @@ import { openFullSizePopup, openPopup, openTransperentPopup } from '../../utils/
 import LeftMenuList from '../menuComponents/leftMenuList'
 import { LANGUAGE } from '../../resources/strings';
 import { DEFAULT_CATEGORY_ALL_CODE } from '../../resources/defaults';
+import { setAdScreen } from '../../store/ad';
 
 const SideMenu = () =>{
     const dispatch = useDispatch();
@@ -19,9 +20,11 @@ const SideMenu = () =>{
     if(allCategories.length <=0) {
         return (
             <SideMenuWrapper>
+                <TouchableWithoutFeedback onPress={()=>{ console.log("press logo"); dispatch(setAdScreen({isShow:true,isMain:true}));}}>
                     <LogoWrapper>
                         <LogoTop source={require("../../assets/icons/logo.png")}  />
                     </LogoWrapper>
+                </TouchableWithoutFeedback>
                 
                 <SideBottomWrapper>
                     <TouchableWithoutFeedback>
@@ -45,9 +48,11 @@ const SideMenu = () =>{
     return(
         <>
             <SideMenuWrapper>
-                <LogoWrapper>
-                    <LogoTop source={require("../../assets/icons/logo.png")}  />
-                </LogoWrapper>
+                <TouchableWithoutFeedback onPress={()=>{ dispatch(setAdScreen({isShow:true,isMain:true}));}}>
+                    <LogoWrapper>
+                        <LogoTop source={require("../../assets/icons/logo.png")}  />
+                    </LogoWrapper>
+                </TouchableWithoutFeedback>
                 <SideMenuScrollView showsVerticalScrollIndicator={false} >
                     <SideMenuItemWrapper>
                         {allCategories &&

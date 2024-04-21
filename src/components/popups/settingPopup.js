@@ -19,6 +19,8 @@ import { getAdminItems, initMenu } from '../../store/menu';
 import { CODE_PUSH_PRODUCTION, CODE_PUSH_SECRET } from '../../resources/apiResources';
 import { KocesAppPay } from '../../utils/payment/kocesPay';
 import { getAdminCategories } from '../../store/categories';
+import { CURRENT_VERSION } from '../../resources/strings';
+import { releaseNote } from '../../resources/releaseNote';
 
 const SettingPopup = () =>{
 
@@ -270,9 +272,18 @@ const SettingPopup = () =>{
                             <TouchableWithoutFeedback onPress={()=>{updateMenuCateogires()}} >
                                 <SettingButtonText isMargin={true} >메뉴 갱신</SettingButtonText>
                             </TouchableWithoutFeedback>
-                            <TouchableWithoutFeedback onPress={()=>{checkUpdate();}} >
-                                <SettingButtonText isMargin={true} >앱 업데이트 ver 2.0.27</SettingButtonText>
-                            </TouchableWithoutFeedback> 
+
+                            <SettingItemWrapper>
+                                <TouchableWithoutFeedback onPress={()=>{checkUpdate();}} >
+                                    <SettingButtonText>앱 업데이트 하기</SettingButtonText>
+                                </TouchableWithoutFeedback> 
+                                <SelectWrapper style={{marginRight:'auto', marginLeft:'auto', paddingBottom:20, flexDirection:'column'}} >
+                                    <View style={{flexDirection:'row', width:'100%'}}>
+                                        <StoreIDTextLabel>{`ver ${CURRENT_VERSION} 수정내역\n${releaseNote[CURRENT_VERSION]}`}</StoreIDTextLabel>                                       
+                                    </View>
+                                </SelectWrapper>
+                            </SettingItemWrapper>
+
                         </SettingButtonWrapper>
                     </SettingScrollView>
                 </SettingWrapper>

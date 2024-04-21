@@ -174,7 +174,6 @@ export default function Navigation() {
         }
             
     },[tableStatus,cardDeviceInfo,orderHistory,posIP])
- 
     return (
         <>  
             <NavigationContainer
