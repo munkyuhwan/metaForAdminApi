@@ -127,6 +127,7 @@ export const tableInfoSlice = createSlice({
             const payload = action.payload;
             if(!isEmpty(payload)) {
                 state.posIP = payload.ip;
+                //state.posIP = "192.168.35.95";
                 state.tableList = payload.table_list;
             }
         })
