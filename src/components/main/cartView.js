@@ -234,7 +234,6 @@ const CartView = () =>{
                             EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
                         }else {
                             if( tableStatus?.now_later == "선불") {
-                                console.log("주문하기1111");
                                 if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
                                     dispatch(setMonthPopup({isMonthSelectShow:true}))
                                 }else {
