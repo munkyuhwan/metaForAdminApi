@@ -1,4 +1,10 @@
+
+export const CURRENT_VERSION = "2.0.29";
 export const releaseNote = {
+    "2.0.29":`
+        - 직원호출 제거
+    `,
+
     "2.0.28":`
         - 주문내역 admin api로 변경
         - 주문전 수량체크해서 주문 가능여부 확인

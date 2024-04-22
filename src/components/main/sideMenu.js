@@ -65,6 +65,7 @@ const SideMenu = () =>{
                     </SideMenuItemWrapper>
                 </SideMenuScrollView>
                 <SideBottomWrapper>
+                    {/* 
                     <TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={()=>{openFullSizePopup(dispatch, {innerFullView:"CallServer", isFullPopupVisible:true}); }} >
                             <SideBottomButton bg={"red"} borderColor={colorRed} >
@@ -73,7 +74,7 @@ const SideMenu = () =>{
                             </SideBottomButton>
                         </TouchableWithoutFeedback>
                     </TouchableWithoutFeedback>
-
+                    */}
                     <TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={()=>{openPopup(dispatch, {innerView:"LanguageSelectPopup", isPopupVisible:true}); }} >
                             <SideBottomButton borderColor={colorWhite} >

@@ -1,7 +1,6 @@
 export const LANGUAGE_LIST = [
     "korean","japanese","chinese","english"
 ]
-export const CURRENT_VERSION = "2.0.28";
 
 export const LANGUAGE = {
     korean:{

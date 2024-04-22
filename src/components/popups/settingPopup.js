@@ -19,8 +19,7 @@ import { getAdminItems, initMenu } from '../../store/menu';
 import { CODE_PUSH_PRODUCTION, CODE_PUSH_SECRET } from '../../resources/apiResources';
 import { KocesAppPay } from '../../utils/payment/kocesPay';
 import { getAdminCategories } from '../../store/categories';
-import { CURRENT_VERSION } from '../../resources/strings';
-import { releaseNote } from '../../resources/releaseNote';
+import { CURRENT_VERSION, releaseNote } from '../../resources/releaseNote';
 
 const SettingPopup = () =>{
 
