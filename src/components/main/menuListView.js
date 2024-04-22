@@ -40,22 +40,22 @@ const MenuListView = () => {
 
 
     const toNextCaterogy = () =>{
-        const selectedCat = allCategories.filter(e => e.PROD_L1_CD==selectedMainCategory);
+        const selectedCat = allCategories.filter(e => e.cate_code1==selectedMainCategory);
         const selectedIndex = allCategories.indexOf(selectedCat[0]);
         var nextPage = 0;
         nextPage = selectedIndex+1;
         if(nextPage>allCategories.length-1) nextPage=allCategories.length-1;
-        dispatch(setSelectedMainCategory(allCategories[nextPage].PROD_L1_CD)); 
+        dispatch(setSelectedMainCategory(allCategories[nextPage].cate_code1)); 
         dispatch(setSelectedSubCategory("0000"))
     }
     const toPrevCaterogy = () =>{
-        const selectedCat = allCategories.filter(e => e.PROD_L1_CD==selectedMainCategory);
+        const selectedCat = allCategories.filter(e => e.cate_code1==selectedMainCategory);
         const selectedIndex = allCategories.indexOf(selectedCat[0]);
         var nextPage = 0;
         nextPage = selectedIndex-1;
         if(nextPage<0) nextPage=0;
         if(nextPage>allCategories.length-1) nextPage=allCategories.length-1;
-        dispatch(setSelectedMainCategory(allCategories[nextPage].PROD_L1_CD)); 
+        dispatch(setSelectedMainCategory(allCategories[nextPage].cate_code1)); 
         dispatch(setSelectedSubCategory("0000"))        
     }
     useEffect(()=>{

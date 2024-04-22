@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.0.29";
+export const CURRENT_VERSION = "2.0.30";
 export const releaseNote = {
+    "2.0.30":`
+        - 스크롤 다음 페지지/이전 페이지 이동 동작 수정
+    `,
+
     "2.0.29":`
         - 직원호출 제거
     `,
