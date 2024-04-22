@@ -99,22 +99,22 @@ const PopUp = (props) =>{
                         <TogoPopup param={param}/>
                     }
                    
-                    {(innerView=="OrderList") &&
+                    {/*(innerView=="OrderList") &&
                         <OrderListPopup/>
-                    }
+                */}
 
                     {(innerView=="OrderFailList") &&
                         <OrderFailListPopup param={param} />
                     }
-                    {( innerView=="OrderList") &&
+                    {/*( innerView=="OrderList") &&
                         <PopupBottomButtonWrapper>
-                            <TouchableWithoutFeedback onPress={()=>{openPopup(dispatch,{innerView:"", isPopupVisible:false});  /* dispatch(setPopupVisibility({isPopupVisible:false})); */ }}>
+                            <TouchableWithoutFeedback onPress={()=>{openPopup(dispatch,{innerView:"", isPopupVisible:false}); }}>
                                 <PopupBottomButtonBlack>
                                     <PopupBottomButtonText>{LANGUAGE[language]?.popup.closeTitle}</PopupBottomButtonText>
                                 </PopupBottomButtonBlack>
                             </TouchableWithoutFeedback>
                         </PopupBottomButtonWrapper>
-                    }
+                    */}
                     {(innerView=="Setting") &&
                         <SettingPopup/>
                     }

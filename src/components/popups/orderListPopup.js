@@ -36,7 +36,7 @@ const OrderListPopup = () =>{
         }
     },[param])
 
- 
+ /* admin에서 받아오는 주문 목록
     useEffect(()=>{
         if(isEmpty(orderHistory)) {
             setOrderTotalAmt(0);
@@ -51,8 +51,24 @@ const OrderListPopup = () =>{
             })
             setOrderTotalAmt(tmpPrice);
         }
-    },[orderHistory])
+    },[orderHistory]) */
 
+ // 포스에서 받아오는 주문 목록
+    useEffect(()=>{
+        if(isEmpty(orderStatus)) {
+            setOrderTotalAmt(0);
+        }
+        if(orderStatus){
+            let tmpPrice = 0;
+            orderStatus.map(el=>{
+                tmpPrice += Number(el.ITEM_AMT);
+                for(var i=0;i<el.SETITEM_INFO.length; i++) {
+                    tmpPrice += Number(el.SETITEM_INFO[i].AMT)
+                }
+            })
+            setOrderTotalAmt(tmpPrice);
+        }
+    },[orderStatus])
     return(
         <>
             <OrderListPopupWrapper>
@@ -70,9 +86,16 @@ const OrderListPopup = () =>{
                             <OrderListTableColumnName flex={0.4} >{LANGUAGE[language]?.orderListPopup.tableColPrice}</OrderListTableColumnName>
                             <OrderListTableColumnName flex={0.3} >{LANGUAGE[language]?.orderListPopup.tableColTotal}</OrderListTableColumnName>
                         </OrderListTableColumnNameWrapper>
-                       {orderStatus &&
+                        {/* admin에서 받아오는 주문목록
+                        orderStatus &&
                             <OrderListTableList
                                 data={orderHistory}
+                                renderItem={(item)=>{return <OrderListItem order={item} />}}
+                            />
+                        */}
+                        {orderStatus &&
+                            <OrderListTableList
+                                data={orderStatus}
                                 renderItem={(item)=>{return <OrderListItem order={item} />}}
                             />
                         }
