@@ -1,6 +1,9 @@
 
-export const CURRENT_VERSION = "2.0.31";
+export const CURRENT_VERSION = "2.0.32";
 export const releaseNote = {
+    "2.0.32":`
+        - 고객용 영수증 프린트 안함.
+    `,
     "2.0.31":`
         - 주문내역 포스에서 받아오도록 수정.
     `,
