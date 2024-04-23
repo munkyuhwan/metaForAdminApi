@@ -99,7 +99,7 @@ export const metaPostPayFormat = async (orderList,payData, allItems) => {
         "ORDER_NO" : orderNo,
         "TBL_NO" : `${tableNo.TABLE_INFO}`, 
         "PRINT_YN" : "Y",
-        "USER_PRINT_YN" : "Y",
+        "USER_PRINT_YN" : "N",
         "PRINT_ORDER_NO" : orderNo, 
         "TOT_INWON" : 4,
         "ITEM_CNT" : orderList.length,
