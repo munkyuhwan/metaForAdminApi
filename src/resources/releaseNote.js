@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.0.33";
+export const CURRENT_VERSION = "2.0.34";
 export const releaseNote = {
+    "2.0.34": //2024.04.23
+    `
+        - 주문중입니다 스피너 수정.
+    `,
     "2.0.33":`
         - 원격시 얼럿 계속 열리는 버그 수정.
     `,

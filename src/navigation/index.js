@@ -43,6 +43,7 @@ export default function Navigation() {
     const {isMonthSelectShow} = useSelector(state=>state.monthSelect);
 
     const navigate = useRef();
+
     const handleEventListener = () => {
         //리스너 중복방지를 위해 한번 삭제
         DeviceEventEmitter.removeAllListeners("onPending");
@@ -65,7 +66,7 @@ export default function Navigation() {
                 setSpinnerText("");
             }
         })
-        EventRegister.addEventListener("showSpinnerNonCancel",(data)=>{            
+        EventRegister.addEventListener("showSpinnerNonCancel",(data)=>{   
             if(data?.isSpinnerShowNonCancel) { 
                 setSpinnerTextNonCancel(data?.msg)
             }else {

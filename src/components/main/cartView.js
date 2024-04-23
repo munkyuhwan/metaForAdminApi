@@ -156,7 +156,11 @@ const CartView = () =>{
 
     const doPayment = async () =>{
         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"주문 중 입니다."});
-        const isPostable = await isNetworkAvailable().catch(()=>{EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); return false;});
+        const isPostable = await isNetworkAvailable()
+        .catch(()=>{
+            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
+            return false;
+        });
         if(!isPostable) {
             displayErrorNonClosePopup(dispatch, "XXXX", "인터넷에 연결할 수 없습니다.");
             EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
@@ -174,16 +178,17 @@ const CartView = () =>{
             EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
             displayErrorPopup(dispatch, "XXXX", "개점이 되지않아 주문을 할 수 없습니다.");
         }else {
-            //테이블 주문 가능한지 체크
-            
-            const tableAvail = await getTableAvailability(dispatch).catch(()=>{EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); return [];});
+            //테이블 주문 가능한지 체크            
+            const tableAvail = await getTableAvailability(dispatch)
+            .catch(()=>{
+                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
+                return [];
+            });
             if(!tableAvail) {
                 EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
             }else {
-                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"주문 중 입니다."}) 
                 const {STORE_IDX} = await getStoreID();
                 const lastUpdateDate = await AsyncStorage.getItem("lastUpdate").catch(err=>"");   
-
                 /// 카트메뉴 주문 가능 여부 체크
                 const isItemOrderble = await itemEnableCheck(STORE_IDX,orderList).catch(err=>{ return{isAvailable:false, result:null} } );
                 if(isItemOrderble?.isAvailable == false) {
@@ -204,13 +209,11 @@ const CartView = () =>{
                             return;
                         }
                     }
-                }
-                
+                }                
                 try {
                     const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_MENU_UPDATE}`,{"STORE_ID":`${STORE_IDX}`,"currentDateTime":lastUpdateDate}, {});
                     if(data) {
                         if(data?.result==true) {
-                            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"메뉴 업데이트 중입니다."})
                             if(data?.isUpdated == "true") {
                                 Alert.alert(
                                     "업데이트",
@@ -219,6 +222,7 @@ const CartView = () =>{
                                         text:'확인',
                                     }]
                                 );
+                                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
                             }else {
             
                                 if( tableStatus?.now_later == "선불") {
@@ -231,7 +235,6 @@ const CartView = () =>{
                                     makePayment();
                                 }
                             }
-                            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
                         }else {
                             if( tableStatus?.now_later == "선불") {
                                 if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {

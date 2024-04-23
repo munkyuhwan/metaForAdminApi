@@ -173,7 +173,6 @@ export const getPosStoreInfo = async(dispatch, data) =>{
         ) 
         .then((response => {
             if(metaErrorHandler(dispatch, response?.data)) {
-                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});  
                 resolve(response?.data)
             }    
         })) 
@@ -312,8 +311,7 @@ export const getTableAvailability = async(dispatch) =>{
         ) 
         .then((response => {
             if(metaErrorHandler(dispatch, response?.data)) {
-                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
-                EventRegister.emit("showSpinner",{isSpinnerShow:false, msg:""});
+                
                 resolve(response?.data)
             } else {
                 EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});

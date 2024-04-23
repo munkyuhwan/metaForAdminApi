@@ -34,23 +34,18 @@ export const getAdminItems = createAsyncThunk("menu/getAdminItems", async(_,{dis
                     menuData?.map(async (el)=>{
                         await fileDownloader(dispatch, `${el.prod_cd}`,`${el.gimg_chg}`).catch("");
                     });
-                    EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
                     return menuData;
                 }else {
-                    EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
                     return rejectWithValue("")
                 }
             }else {
-                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
                 return rejectWithValue(error.message)
             }
         }else {
-            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
             return rejectWithValue(error.message)
         }
       } catch (error) {
         // 예외 처리
-        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
         return rejectWithValue(error.message)
     }
     
@@ -73,20 +68,17 @@ export const initMenu = createAsyncThunk("menu/initMenu", async(_,{dispatch,getS
     EventRegister.emit("showSpinner",{isSpinnerShow:true, msg:"메뉴 업데이트 중입니다. "})
     const isPostable = await isNetworkAvailable().catch(()=>{
         EventRegister.emit("showSpinner",{isSpinnerShow:false, msg:""});
-        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); 
         return false;
     });
     if(!isPostable) {
         EventRegister.emit("showSpinner",{isSpinnerShow:false, msg:""});
         displayErrorNonClosePopup(dispatch, "XXXX", "인터넷에 연결할 수 없습니다.");
-        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
         return [];
     }
     // 카테고리 받기
     dispatch(getAdminCategories());
     // 메뉴 받아오기
     dispatch(getAdminItems());
-    EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
 })
 
 // menu update check
@@ -113,8 +105,8 @@ export const menuUpdateCheck = createAsyncThunk("menu/menuUpdateCheck", async(_,
             const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_MENU_UPDATE}`,{"STORE_ID":`${STORE_IDX}`,"currentDateTime":lastUpdateDate}, {});
             if(data) {
                 if(data?.result==true) {
-                    EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"메뉴 업데이트 중입니다."})
                     if(data?.isUpdated == "true") {
+                        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"메뉴 업데이트 중입니다."})
                         AsyncStorage.setItem("lastUpdate",data?.updateDateTime);
                         dispatch(setCartView(false));
                         dispatch(initOrderList());
@@ -126,7 +118,7 @@ export const menuUpdateCheck = createAsyncThunk("menu/menuUpdateCheck", async(_,
                         //dispatch(setItemDetail({itemID:null}));
                         dispatch(initMenuDetail());
                     }else {
-                        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
+                        //EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
 
                     }
                     return data;
