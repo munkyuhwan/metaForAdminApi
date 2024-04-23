@@ -389,15 +389,15 @@ const CartView = () =>{
                                 </PayBtn>
                             </TouchableWithoutFeedback>
                         }
-                        {isPrepay&&
+                        {/*isPrepay&&
                             <TouchableWithoutFeedback onPress={()=>{doPayment();}} >
                                 <PayBtn isFull={true} >
                                     <PayTitle>{LANGUAGE[language]?.cartView.payOrder}</PayTitle>
                                     <PayIcon source={require("../../assets/icons/order.png")} />
                                 </PayBtn>
                             </TouchableWithoutFeedback>
-                        }
-                        {/*isPrepay&&
+                        */}
+                        {isPrepay&&
                             <>
                             <TouchableWithoutFeedback onPress={()=>{doPayment();}} >
                                 <PayBtn isFull={false} isGap={true} >    
@@ -411,7 +411,7 @@ const CartView = () =>{
                                 </PayBtn>
                             </TouchableWithoutFeedback>
                             </>
-                        */}
+                        }
 
                     </PayBtnWrapper>
 

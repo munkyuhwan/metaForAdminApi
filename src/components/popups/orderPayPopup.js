@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Text, TouchableWithoutFeedback } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux'
-import { OrderListWrapper, OrderListPopupWrapper, OrderListTopSubtitle, OrderListTopTitle, OrdrListTopWrapper, OrderListTableWrapper, OrderListTableColumnNameWrapper, OrderListTableColumnName, OrderListTableList, OrderListTalbleGrandTotal, OrderListTalbleGrandTotalWrapper, OrderListTotalTitle, OrderListTotalAmount, OrderPayPopupWrapper, OrderPayTab, OrderPayTabTitle, OrderPayTabWrapper } from '../../styles/popup/orderListPopupStyle';
+import { OrderListWrapper, OrderListPopupWrapper, OrderListTopSubtitle, OrderListTopTitle, OrdrListTopWrapper, OrderListTableWrapper, OrderListTableColumnNameWrapper, OrderListTableColumnName, OrderListTableList, OrderListTalbleGrandTotal, OrderListTalbleGrandTotalWrapper, OrderListTotalTitle, OrderListTotalAmount, OrderPayPopupWrapper, OrderPayTab, OrderPayTabTitle, OrderPayTabWrapper, OrderPayAmtWrapper, OrderPayTitle, OrderPayAmtRow, OrderPayAmtTitle } from '../../styles/popup/orderListPopupStyle';
 import { PopupBottomButtonBlack, PopupBottomButtonText, PopupBottomButtonWrapper } from '../../styles/common/coreStyle';
 import { LANGUAGE } from '../../resources/strings';
 import { BottomButton, BottomButtonIcon, BottomButtonText, BottomButtonWrapper } from '../../styles/main/detailStyle';
@@ -14,6 +14,7 @@ import { checkTableOrder } from '../../utils/apis';
 import {isEmpty} from 'lodash';
 import OrderPayItem from '../orderListComponents/orderPayItem';
 import CheckBox from 'react-native-check-box';
+import { KocesAppPay } from '../../utils/payment/kocesPay';
 
 const OrderPayPopup = () =>{
     const dispatch = useDispatch();
@@ -24,6 +25,8 @@ const OrderPayPopup = () =>{
     const {orderList} = useSelector((state)=>state.order);
     const [isDivided, setDivided] = useState(false);
     const [checkedItemList, setCheckedItemList] = useState([]);
+    const [checkOutAmt, setCheckAmt] = useState(0);
+    const [checkOutVatAmt, setCheckVatAmt] = useState(0);
 
     if(isEmpty(orderList)) {
         //return(<></>)
@@ -53,6 +56,49 @@ const OrderPayPopup = () =>{
             setOrderTotalAmt(totalPrice);
         }
     },[orderList])
+    useEffect(()=>{
+        if(checkedItemList.length>0) {
+            var selectedAmt = 0;
+            var selectedVat = 0;
+            checkedItemList.map((el)=>{
+                const itemInfo = allItems.filter(item=>item.prod_cd == el);
+                const orderInfo = orderList.filter(ol=>ol.prod_cd == el);
+
+                if(itemInfo.length>0) {
+                    //console.log("itemInfo[0]: ",itemInfo[0]);
+                    var salAmt = Number(itemInfo[0].sal_amt);
+                    var salVat = Number(itemInfo[0].sal_vat);
+                    var itemQty = Number(orderInfo[0].qty);
+
+                    selectedAmt = selectedAmt + (salAmt*itemQty);
+                    selectedVat = selectedVat + (salVat*itemQty);
+
+                    const setItem = orderInfo[0].set_item;
+                    var setAmt = 0;
+                    var setVat = 0;
+                    // 세트메뉴 계산
+                    for(var i=0;i<setItem.length;i++) {
+                        const setItemInfo = allItems.filter(el=>el.prod_cd == setItem[i].optItem);
+                        if(setItemInfo.length > 0) {
+                            const setSalAmt = Number(setItemInfo[0].sal_amt);
+                            const setSalVat = Number(setItemInfo[0].sal_vat);
+
+                            setAmt = setAmt + (setSalAmt*Number(setItem[i].qty));
+                            setVat = setVat + (setSalVat*Number(setItem[i].qty));
+                        }
+                    }
+                    selectedAmt = selectedAmt + setAmt;
+                    selectedVat = selectedVat + setVat;
+                } 
+            });
+            setCheckAmt(selectedAmt); 
+            setCheckVatAmt(selectedVat); 
+        }else {
+            setCheckAmt(0);
+            setCheckVatAmt(0); 
+        }
+
+    },[checkedItemList])
     const onTap = (setType) =>{
         setDivided(setType);
         setCheckedItemList([]);
@@ -77,6 +123,28 @@ const OrderPayPopup = () =>{
         }else {
             setCheckedItemList([]);
         }
+    }
+    const doPay = async () =>{
+        const bsnNo = await AsyncStorage.getItem("BSN_NO");
+        const tidNo = await AsyncStorage.getItem("TID_NO");
+        const serialNo = await AsyncStorage.getItem("SERIAL_NO");
+        if( isEmpty(bsnNo) || isEmpty(tidNo) || isEmpty(serialNo) ) {
+            displayErrorPopup(dispatch, "XXXX", "결제정보 입력 후 이용 해 주세요.");
+            return;
+        }
+
+        const amtData = {amt:checkOutAmt, taxAmt:checkOutVatAmt, months:"00", bsnNo:bsnNo,termID:tidNo }
+        var kocessAppPay = new KocesAppPay();
+        kocessAppPay.requestKocesPayment(amtData)
+        .then(async (result)=>{ 
+            
+            console.log("result: ",result);
+            
+        })
+        .catch((err)=>{
+            console.log("error: ",err)
+            
+        })
     }
     return(
         <>
@@ -140,13 +208,30 @@ const OrderPayPopup = () =>{
                         <OrderListTotalAmount>{numberWithCommas(orderTotalAmt)}{LANGUAGE[language]?.orderListPopup.totalAmtUnit}</OrderListTotalAmount>
                     </OrderListTalbleGrandTotalWrapper>
                 </OrderListWrapper>
+
+                <OrderPayAmtWrapper>
+                    <OrderPayAmtRow>
+                        <OrderPayTitle>{LANGUAGE[language]?.orderPay.payAmtToPay}</OrderPayTitle>
+                        <OrderPayAmtTitle>{`${numberWithCommas(checkOutAmt+checkOutVatAmt)}`+LANGUAGE[language]?.orderPay.payAmtUnit}</OrderPayAmtTitle>
+                    </OrderPayAmtRow>
+                    <OrderPayAmtRow>
+                        <OrderPayTitle>{LANGUAGE[language]?.orderPay.payAmtTitle}</OrderPayTitle>
+                        <OrderPayAmtTitle>{LANGUAGE[language]?.orderPay.payAmtUnit}</OrderPayAmtTitle>
+                    </OrderPayAmtRow>
+                    <OrderPayAmtRow>
+                        <OrderPayTitle>{LANGUAGE[language]?.orderPay.payRestAmtTitle}</OrderPayTitle>
+                        <OrderPayAmtTitle>{LANGUAGE[language]?.orderPay.payAmtUnit}</OrderPayAmtTitle>
+                    </OrderPayAmtRow>
+                </OrderPayAmtWrapper>
+                
                 <BottomButtonWrapper>
                     <TouchableWithoutFeedback onPress={()=>{ openFullSizePopup(dispatch, {innerFullView:"", isPopupVisible:false}); }} >
                         <BottomButton backgroundColor={colorBlack} >
                             <BottomButtonText>{LANGUAGE[language]?.orderListPopup.orderListCancel}</BottomButtonText>
                             <BottomButtonIcon source={require("../../assets/icons/cancel.png")} />
                         </BottomButton>
-                    </TouchableWithoutFeedback><TouchableWithoutFeedback onPress={()=>{ console.log("결제하기"); }} >
+                    </TouchableWithoutFeedback>
+                    <TouchableWithoutFeedback onPress={()=>{ console.log("결제하기"); doPay();}} >
                         <BottomButton backgroundColor={colorRed} >
                             <BottomButtonText>{LANGUAGE[language]?.orderListPopup.orderListPay}</BottomButtonText>
                             <BottomButtonIcon source={require("../../assets/icons/order.png")} />

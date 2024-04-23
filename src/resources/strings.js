@@ -65,11 +65,22 @@ export const LANGUAGE = {
         },
         adSCreen:{
             letsOrder:"주문하기",
+        },
+        orderPay:{
+            payAmtToPay:"선택금액",
+            payAmtTitle:"결제금액",
+            payRestAmtTitle:"남은금액",
+            payAmtUnit:'원',
         }
     },
 
 
     japanese:{
+        orderPay:{
+            payAmtTitle:"결제금액",
+            payRestAmtTitle:"남은금액",
+            payAmtUnit:'円',
+        },
         sideMenu:{
             languageSelect:"言語選択",
             callServer:"従業員呼び出し"

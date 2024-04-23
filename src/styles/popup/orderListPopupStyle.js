@@ -47,7 +47,7 @@ export const OrderListTopSubtitle = styled.Text`
 // 메뉴 리스트 뤠퍼
 export const OrderListWrapper = styled.View`
     flex:1;
-    paddingBottom:30px;
+    paddingBottom:10px;
     paddingTop:20px;
 `
 export const OrderListTableWrapper = styled.View`
@@ -180,7 +180,7 @@ export const OrderListTotalAmount = styled.Text`
     fontWeight:bold;
     textAlign:right;
 `
-
+// 분할결제 추가 ui
 // 결제하기 탭
 export const OrderPayTabWrapper = styled.View`
     flexDirection:row;
@@ -210,4 +210,29 @@ export const OrderPayTabTitle = styled.Text`
     textAlign:center;
     marginTop:auto;
     marginBottom:auto;
+`
+export const OrderPayAmtWrapper = styled.View`
+    width:100%;
+    backgroundColor:${colorGrey};
+    marginBottom:15px;
+`
+export const OrderPayAmtRow = styled.View`
+    paddingTop:7px;
+    paddingBottom:7px;
+    paddingLeft:230px;
+    paddingRight:45px;
+    flexDirection:row;
+`
+export const OrderPayTitle = styled.Text`
+    fontSize:24px;
+    fontWeight:bold;
+    color:${colorBlack};
+    flex:1;
+`
+export const OrderPayAmtTitle = styled.Text`
+    fontSize:24px;
+    fontWeight:bold;
+    color:${colorRed};
+    flex:1;
+    textAlign:right;
 `
