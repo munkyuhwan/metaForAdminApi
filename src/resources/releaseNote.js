@@ -1,6 +1,9 @@
 
-export const CURRENT_VERSION = "2.0.32";
+export const CURRENT_VERSION = "2.0.33";
 export const releaseNote = {
+    "2.0.33":`
+        - 원격시 얼럿 계속 열리는 버그 수정.
+    `,
     "2.0.32":`
         - 고객용 영수증 프린트 안함.
     `,

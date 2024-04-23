@@ -20,6 +20,7 @@ import { CODE_PUSH_PRODUCTION, CODE_PUSH_SECRET } from '../../resources/apiResou
 import { KocesAppPay } from '../../utils/payment/kocesPay';
 import { getAdminCategories } from '../../store/categories';
 import { CURRENT_VERSION, releaseNote } from '../../resources/releaseNote';
+import { isEmpty } from 'lodash'
 
 const SettingPopup = () =>{
 
@@ -122,11 +123,14 @@ const SettingPopup = () =>{
                             const filteredItem = tableList.filter(el=>el.t_num == itemValue);
                             const itemNM = filteredItem[0]?.t_name;
                             const floor = filteredItem[0]?.floor;
-                            setTableInfo(itemValue, itemNM,floor)
-                            dispatch(initOrderList());
-                            dispatch(setCartView(false));
-                            displayOnAlert("수정되었습니다.",[]);
-                        
+                            //console.log("item changed:",itemValue)
+                             
+                            if(!isEmpty(itemValue)){
+                                setTableInfo(itemValue, itemNM,floor)
+                                dispatch(initOrderList());
+                                dispatch(setCartView(false));        
+                            }                
+                            
                     }}
                     selectedValue={tableInfo.tableNo}
                     style = {{
