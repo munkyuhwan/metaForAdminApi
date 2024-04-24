@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import styled, {css} from 'styled-components/native';
-import { colorBlack, colorGrey, colorRed, colorWhite } from '../../assets/colors/color';
+import { colorBlack, colorBrown, colorCardEnd, colorCardStart, colorGrey, colorRed, colorWhite } from '../../assets/colors/color';
 import { RADIUS, RADIUS_SMALL } from '../values';
+import { ScrollView } from 'react-native';
 
 export const OrderListPopupWrapper = styled.View`
     width:90%;
@@ -182,6 +183,15 @@ export const OrderListTotalAmount = styled.Text`
 `
 // 분할결제 추가 ui
 // 결제하기 탭
+
+export const OrderPayDimWrapper = styled.View`
+    width:100%;
+    height:120%;
+    position:absolute;
+    zIndex:9999999;
+    backgroundColor:rgba(225,225,225,0.7);
+`
+
 export const OrderPayTabWrapper = styled.View`
     flexDirection:row;
     position:absolute;
@@ -216,9 +226,8 @@ export const OrderPayBottomWrapper = styled.View`
     flexDirection:row;
 `
 
-export const OrderPayAmtWrapper = styled.View`
+export const OrderPayAmtWrapper = styled(ScrollView)`
     width:50%;
-    backgroundColor:${colorGrey};
     marginBottom:15px;
 `
 export const OrderPayAmtRow = styled.View`
@@ -240,4 +249,42 @@ export const OrderPayAmtTitle = styled.Text`
     color:${colorRed};
     flex:1;
     textAlign:right;
+`
+export const OrderPayCardWrapper = styled.View`
+    flex:1;
+    flexDirection:row;
+`
+export const OrderPayCardShape = styled.View`
+    backgroundColor:${colorCardStart};
+    paddingTop:6px;
+    paddingBottom:8px;
+    paddingRight:12px;
+    paddingLeft:12px;
+    marginRight:15px;
+    borderRadius:${RADIUS};
+`
+export const OrderPayCardText = styled.Text`
+    color:${colorWhite};
+    fontSize:23px;
+    fontWeight:bold;
+    marginTop:auto;
+    marginBottom:auto;
+`
+export const OrderPayCardScollWrapper = styled.View`
+    flexDirection:row;
+    flex:1;
+`
+export const CancleBtn = styled.View`
+    backgroundColor:${colorGrey};
+    paddingTop:4px;
+    paddingBottom:4px;
+    marginTop:12px;
+    borderRadius:40px;
+`
+export const CancelText = styled.Text`
+    color:${colorBlack};
+    fontSize:22px;
+    fontWeight:bold;
+    width:100%;
+    textAlign:center;
 `

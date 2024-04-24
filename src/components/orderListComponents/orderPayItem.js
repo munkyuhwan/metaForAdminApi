@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { OrderListOptionTitle, OrderListOptionWrapper, OrderListTableItemAmt, OrderListTableItemImage, OrderListTableItemImageNameWrapper, OrderListTableItemName, OrderListTableItemOperander, OrderListTableItemPrice, OrderListTableItemTotal, OrderListTableItemWrapper } from '../../styles/popup/orderListPopupStyle';
+import { OrderListOptionTitle, OrderListOptionWrapper, OrderListTableItemAmt, OrderListTableItemImage, OrderListTableItemImageNameWrapper, OrderListTableItemName, OrderListTableItemOperander, OrderListTableItemPrice, OrderListTableItemTotal, OrderListTableItemWrapper, OrderPayDimWrapper } from '../../styles/popup/orderListPopupStyle';
 import { numberWithCommas } from '../../utils/common';
 import CheckBox from 'react-native-check-box';
 import { colorGrey, colorRed } from '../../assets/colors/color';
+import {isEmpty, isEqual} from 'lodash';
 
 const OrderPayItem = (props) => {
     const item = props?.order.item;
     const isDivided = props?.isDivided;
     const checkedItemList = props?.checkedItemList;
-
+    const isPaid = props?.isPaid;
+    
     const {language} = useSelector(state=>state.languages);
     const {allItems} = useSelector((state)=>state.menu);
     // 이미지 찾기
@@ -63,15 +65,21 @@ const OrderPayItem = (props) => {
         }
         return selOptTitleLanguage;
     }
+    
+    //const itemCheck = checkedItemList.filter(el=>isEqual(el,{index:idx, prod_cd:prodCD}))
+    //checkedItemList.indexOf(item?.prod_cd)
 
     return(
         <>
             <OrderListTableItemWrapper>
+                {isPaid &&           
+                    <OrderPayDimWrapper/>
+                }
                 <OrderListTableItemImageNameWrapper flex={0.9}>
                     {!isDivided &&
                         <CheckBox
                             disabled={false}
-                            isChecked={checkedItemList.indexOf(item?.prod_cd)>=0}
+                            isChecked={ checkedItemList.filter(el=> isEqual(el,{index:props?.order?.index, prod_cd:item?.prod_cd})).length > 0}
                             style={{ marginTop:'auto',marginBottom:'auto', marginLeft:7, marginRight:8}}
                             onClick={()=>{props?.onCheck(item?.prod_cd);}}
                             checkBoxColor={colorRed}
@@ -89,13 +97,15 @@ const OrderPayItem = (props) => {
                     <OrderListTableItemImage source={{uri:imgUrl}} />
                     <OrderListOptionWrapper>
                         <OrderListTableItemName>{ItemTitle()||itemExtra[0].gname_kr}</OrderListTableItemName>
-                        <OrderListOptionTitle>
-                            {item?.set_item?.length>0 &&
-                                item?.set_item?.map((el,index)=>{
-                                return `- ${ItemOptionTitle(el.optItem,index)}`+`${Number(el.qty)}개`+`${index<(item?.set_item?.length-1)?", ":""}`;
-                                })
-                            }
-                        </OrderListOptionTitle>
+                        {item?.set_item?.length>0 &&
+                            <OrderListOptionTitle>
+                                {
+                                    item?.set_item?.map((el,index)=>{
+                                    return `- ${ItemOptionTitle(el.optItem,index)}`+`${Number(el.qty)}개`+`${index<(item?.set_item?.length-1)?", ":""}`;
+                                    })
+                                }
+                            </OrderListOptionTitle>
+                        }
                     </OrderListOptionWrapper>
                 </OrderListTableItemImageNameWrapper>
                 <OrderListTableItemAmt flex={0.2}>{item?.qty}</OrderListTableItemAmt>

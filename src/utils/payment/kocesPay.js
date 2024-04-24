@@ -55,8 +55,9 @@ KocesAppPay.prototype.makePayment = async function ({amt,taxAmt,months}) {
 } 
 
 // 취소 요청
-KocesAppPay.prototype.cancelPayment = function ({amt,taxAmt,auDate,auNo,tradeNo}) {
-    this.data = {
+KocesAppPay.prototype.cancelPayment = async function ({amt,taxAmt,auDate,auNo,tradeNo}) {
+    const {KocesPay} = NativeModules;
+    const payData = {
         TrdType:'A20',
         TermID: TID, 
         Audate:`${auDate}`,
@@ -79,6 +80,20 @@ KocesAppPay.prototype.cancelPayment = function ({amt,taxAmt,auDate,auNo,tradeNo}
         CashNum:"",
         BillNo:"",
     };
+    return await new Promise((resolve, reject)=>{
+        KocesPay.prepareKocesPay(
+            payData,
+            (error)=>{
+                //console.log("error msg: ",error);
+                reject(JSON.parse(error));
+            },
+            (msg)=>{
+                //console.log("success msg: ",msg);
+                resolve(JSON.parse(msg));
+            }
+        );
+    });
+
 } 
 
 // 결제요청 하기

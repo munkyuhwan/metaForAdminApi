@@ -71,6 +71,7 @@ export const LANGUAGE = {
             payAmtTitle:"결제금액",
             payRestAmtTitle:"남은금액",
             payAmtUnit:'원',
+            payAmCancel:'결제취소',
         }
     },
 

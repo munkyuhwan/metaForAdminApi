@@ -117,8 +117,8 @@ export const menuUpdateCheck = createAsyncThunk("menu/menuUpdateCheck", async(_,
                         dispatch(setSelectedItems());
                         //dispatch(setItemDetail({itemID:null}));
                         dispatch(initMenuDetail());
+                        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
                     }else {
-                        //EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
 
                     }
                     return data;
