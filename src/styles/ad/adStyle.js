@@ -1,5 +1,5 @@
 import { styled } from "styled-components";
-import { colorRed, colorWhite } from "../../assets/colors/color";
+import { colorBlack, colorRed, colorWhite } from "../../assets/colors/color";
 import { RADIUS, RADIUS_SMALL } from "../values";
 import FastImage from "react-native-fast-image";
 import Video from "react-native-video";
@@ -8,6 +8,7 @@ export const ADWrapper = styled.View`
     width:100%;
     height:100%;
     alignItems:center;
+    backgroundColor:${colorBlack};
 `
 export const ADOrderBtnWrapper = styled.View`
     backgroundColor:${colorRed};
