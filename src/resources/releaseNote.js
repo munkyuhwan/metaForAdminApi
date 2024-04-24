@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.0.34";
+export const CURRENT_VERSION = "2.0.35";
 export const releaseNote = {
+    "2.0.35": //2024.04.23
+    `
+        - 광고화면 깜빡거림 수정.
+    `,
     "2.0.34": //2024.04.23
     `
         - 주문중입니다 스피너 수정.
