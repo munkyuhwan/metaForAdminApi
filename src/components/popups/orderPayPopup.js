@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Text, TouchableWithoutFeedback } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux'
-import { OrderListWrapper, OrderListPopupWrapper, OrderListTopSubtitle, OrderListTopTitle, OrdrListTopWrapper, OrderListTableWrapper, OrderListTableColumnNameWrapper, OrderListTableColumnName, OrderListTableList, OrderListTalbleGrandTotal, OrderListTalbleGrandTotalWrapper, OrderListTotalTitle, OrderListTotalAmount, OrderPayPopupWrapper, OrderPayTab, OrderPayTabTitle, OrderPayTabWrapper, OrderPayAmtWrapper, OrderPayTitle, OrderPayAmtRow, OrderPayAmtTitle } from '../../styles/popup/orderListPopupStyle';
+import { OrderListWrapper, OrderListPopupWrapper, OrderListTopSubtitle, OrderListTopTitle, OrdrListTopWrapper, OrderListTableWrapper, OrderListTableColumnNameWrapper, OrderListTableColumnName, OrderListTableList, OrderListTalbleGrandTotal, OrderListTalbleGrandTotalWrapper, OrderListTotalTitle, OrderListTotalAmount, OrderPayPopupWrapper, OrderPayTab, OrderPayTabTitle, OrderPayTabWrapper, OrderPayAmtWrapper, OrderPayTitle, OrderPayAmtRow, OrderPayAmtTitle, OrderPayBottomWrapper } from '../../styles/popup/orderListPopupStyle';
 import { PopupBottomButtonBlack, PopupBottomButtonText, PopupBottomButtonWrapper } from '../../styles/common/coreStyle';
 import { LANGUAGE } from '../../resources/strings';
 import { BottomButton, BottomButtonIcon, BottomButtonText, BottomButtonWrapper } from '../../styles/main/detailStyle';
@@ -27,6 +27,7 @@ const OrderPayPopup = () =>{
     const [checkedItemList, setCheckedItemList] = useState([]);
     const [checkOutAmt, setCheckAmt] = useState(0);
     const [checkOutVatAmt, setCheckVatAmt] = useState(0);
+    const [paidList, setPaidList] = useState([]);
 
     if(isEmpty(orderList)) {
         //return(<></>)
@@ -139,6 +140,8 @@ const OrderPayPopup = () =>{
         .then(async (result)=>{ 
             
             console.log("result: ",result);
+            const newPaidList = Object.assign([],paidList,result);
+            setPaidList(newPaidList);
             
         })
         .catch((err)=>{
@@ -209,20 +212,32 @@ const OrderPayPopup = () =>{
                     </OrderListTalbleGrandTotalWrapper>
                 </OrderListWrapper>
 
-                <OrderPayAmtWrapper>
-                    <OrderPayAmtRow>
-                        <OrderPayTitle>{LANGUAGE[language]?.orderPay.payAmtToPay}</OrderPayTitle>
-                        <OrderPayAmtTitle>{`${numberWithCommas(checkOutAmt+checkOutVatAmt)}`+LANGUAGE[language]?.orderPay.payAmtUnit}</OrderPayAmtTitle>
-                    </OrderPayAmtRow>
-                    <OrderPayAmtRow>
-                        <OrderPayTitle>{LANGUAGE[language]?.orderPay.payAmtTitle}</OrderPayTitle>
-                        <OrderPayAmtTitle>{LANGUAGE[language]?.orderPay.payAmtUnit}</OrderPayAmtTitle>
-                    </OrderPayAmtRow>
-                    <OrderPayAmtRow>
-                        <OrderPayTitle>{LANGUAGE[language]?.orderPay.payRestAmtTitle}</OrderPayTitle>
-                        <OrderPayAmtTitle>{LANGUAGE[language]?.orderPay.payAmtUnit}</OrderPayAmtTitle>
-                    </OrderPayAmtRow>
-                </OrderPayAmtWrapper>
+                <OrderPayBottomWrapper>
+                    <OrderPayAmtWrapper>
+                        {paidList.length> 0 &&
+                            paidList.map((el)=>{
+                                return(
+                                    <OrderPayTitle>{el}</OrderPayTitle>
+                                )
+                            })
+
+                        }
+                    </OrderPayAmtWrapper>
+                    <OrderPayAmtWrapper>
+                        <OrderPayAmtRow>
+                            <OrderPayTitle>{LANGUAGE[language]?.orderPay.payAmtToPay}</OrderPayTitle>
+                            <OrderPayAmtTitle>{`${numberWithCommas(checkOutAmt+checkOutVatAmt)}`+LANGUAGE[language]?.orderPay.payAmtUnit}</OrderPayAmtTitle>
+                        </OrderPayAmtRow>
+                        <OrderPayAmtRow>
+                            <OrderPayTitle>{LANGUAGE[language]?.orderPay.payAmtTitle}</OrderPayTitle>
+                            <OrderPayAmtTitle>{LANGUAGE[language]?.orderPay.payAmtUnit}</OrderPayAmtTitle>
+                        </OrderPayAmtRow>
+                        <OrderPayAmtRow>
+                            <OrderPayTitle>{LANGUAGE[language]?.orderPay.payRestAmtTitle}</OrderPayTitle>
+                            <OrderPayAmtTitle>{LANGUAGE[language]?.orderPay.payAmtUnit}</OrderPayAmtTitle>
+                        </OrderPayAmtRow>
+                    </OrderPayAmtWrapper>
+                </OrderPayBottomWrapper>
                 
                 <BottomButtonWrapper>
                     <TouchableWithoutFeedback onPress={()=>{ openFullSizePopup(dispatch, {innerFullView:"", isPopupVisible:false}); }} >

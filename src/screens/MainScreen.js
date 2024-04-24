@@ -33,7 +33,7 @@ const MainScreen = () =>{
         clearInterval(timeoutSet);
         timeoutSet=null;
         timeoutSet = setInterval(()=>{
-                dispatch(setAdScreen({isShow:true,isMain:true}))
+                //dispatch(setAdScreen({isShow:true,isMain:true}))
         },SCREEN_TIMEOUT)
         
     } 

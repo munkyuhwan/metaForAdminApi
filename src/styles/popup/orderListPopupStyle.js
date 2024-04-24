@@ -211,15 +211,20 @@ export const OrderPayTabTitle = styled.Text`
     marginTop:auto;
     marginBottom:auto;
 `
+
+export const OrderPayBottomWrapper = styled.View`
+    flexDirection:row;
+`
+
 export const OrderPayAmtWrapper = styled.View`
-    width:100%;
+    width:50%;
     backgroundColor:${colorGrey};
     marginBottom:15px;
 `
 export const OrderPayAmtRow = styled.View`
     paddingTop:7px;
     paddingBottom:7px;
-    paddingLeft:230px;
+    paddingLeft:10px;
     paddingRight:45px;
     flexDirection:row;
 `
