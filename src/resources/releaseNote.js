@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.0.35";
+export const CURRENT_VERSION = "2.1.0-1";
 export const releaseNote = {
+    "2.1.0-1": //2024.04.25
+    `
+        - 상품별 결제 진행 중.
+    `,
     "2.0.35": //2024.04.23
     `
         - 광고화면 깜빡거림 수정.

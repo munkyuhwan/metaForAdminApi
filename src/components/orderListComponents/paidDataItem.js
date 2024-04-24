@@ -39,7 +39,7 @@ const PaidDataItem = (props) =>{
             <OrderPayCardWrapper>
                 <OrderPayCardShape>
                     <OrderPayCardText>{paidData}</OrderPayCardText>
-                    <TouchableWithoutFeedback onPress={()=>{ console.log("cancel!!!!"); requestCancel(); }} >
+                    <TouchableWithoutFeedback onPress={()=>{ requestCancel(); }} >
                         <CancleBtn>
                             <CancelText>{LANGUAGE[language]?.orderPay.payAmCancel}</CancelText>
                         </CancleBtn>
