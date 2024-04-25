@@ -121,7 +121,7 @@ const SettingPopup = () =>{
                     mode='dialog'
                     onValueChange = {(itemValue, itemIndex) => {
                         if(!isEmpty(tableList)){
-                            if(tableList.length>0) {
+                            if(tableList?.length>0) {
                                 const filteredItem = tableList.filter(el=>el.t_num == itemValue);
                                 const itemNM = filteredItem[0]?.t_name;
                                 const floor = filteredItem[0]?.floor;
@@ -133,7 +133,7 @@ const SettingPopup = () =>{
                                     dispatch(setCartView(false));        
                                 }                
                             }
-                        }
+                        }              
                     }}
                     selectedValue={tableInfo.tableNo}
                     style = {{
