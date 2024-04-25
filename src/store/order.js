@@ -189,6 +189,43 @@ export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{
     // 결제시 추가 결제 결과 데이터
     let addOrderData = {};
     if(!isEmpty(payData)) {
+        // 결제 데이터 만들기
+        var totalAmt = 0;
+        var totalVat = 0;
+        var totalDC = 0;
+        var paymentInfo = [];
+        for(var i=0; i<payData.length;i++) {
+            totalAmt = totalAmt + Number(payData[i]?.TrdAmt) + Number(payData[i]?.TaxAmt);
+            totalVat = totalVat + Number(payData[i]?.TaxAmt);
+            totalDC = totalDC + Number(payData[i]?.SvcAmt)
+            const payData = {
+                PAY_SEQ:i+1,
+                PAY_KIND:"2",
+                PAY_AMT:Number(payData[i]?.TrdAmt)+Number(payData[i]?.TaxAmt),
+                PAY_VAT:Number(payData[i]?.TaxAmt),
+                PAY_APV_NO:`${payData[i]?.AuNo}`,
+                PAY_APV_DATE:`20${payData[i]?.TrdDate?.substr(0,6)}`,
+                PAY_CARD_NO:`${payData[i]?.CardNo}********`,
+                PAY_UPD_DT:`20${payData[i]?.TrdDate}`,
+                PAY_CANCEL_YN:"N",
+                PAY_CARD_TYPE:`${payData[i]?.InpNm}`,
+                PAY_CARD_MONTH:`${payData[i]?.Month}`
+            };
+            paymentInfo.push(payData);
+        }
+        addOrderData = {
+            TOTAL_AMT:Number(totalAmt),
+            TOTAL_VAT:Number(totalVat),
+            TOTAL_DC:Number(totalDC),
+            ORDER_STATUS:"3",
+            CANCEL_YN:"N",
+            PREPAYMENT_YN:"N",
+            CUST_CARD_NO:``,
+            CUST_NM:``,
+            PAYMENT_CNT:1,
+            PAYMENT_INFO:paymentInfo
+        };
+        /* 
         addOrderData = {
             TOTAL_AMT:Number(payData?.TrdAmt)+Number(payData?.TaxAmt),
             TOTAL_VAT:Number(payData?.TaxAmt),
@@ -196,7 +233,7 @@ export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{
             ORDER_STATUS:"3",
             CANCEL_YN:"N",
             PREPAYMENT_YN:"N",
-            CUST_CARD_NO:`${payData?.CardNo}`,
+            CUST_CARD_NO:``,
             CUST_NM:``,
             PAYMENT_CNT:1,
             PAYMENT_INFO:[{
@@ -213,6 +250,7 @@ export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{
                 PAY_CARD_MONTH:`${payData?.Month}`
             }]
         };
+         */
         postOrderData = {...postOrderData,...addOrderData};
     }  
     //console.log("orderData: ",orderList);

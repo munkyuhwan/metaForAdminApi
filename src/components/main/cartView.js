@@ -118,8 +118,8 @@ const CartView = () =>{
                         
                         console.log("result: ",result);
                         const orderData = await metaPostPayFormat(orderList,result, allItems);
-                        dispatch(postOrderToPos({payData:result,orderData:orderData}));
-                        dispatch(adminDataPost({payData:result,orderData:orderData}));
+                        dispatch(postOrderToPos({payData:[result],orderData:orderData}));
+                        dispatch(adminDataPost({payData:[result],orderData:orderData}));
                     })
                     .catch((err)=>{
                         //console.log("error: ",err)

@@ -180,6 +180,8 @@ const OrderPayPopup = () =>{
             setCheckAmt(0);
             setCheckVatAmt(0);
             setPaidAmt(checkOutVatAmt+checkOutAmt+paidAmt);
+
+            
             
         })
         .catch((err)=>{
