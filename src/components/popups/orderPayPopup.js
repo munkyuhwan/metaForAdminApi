@@ -154,6 +154,7 @@ const OrderPayPopup = () =>{
             displayErrorPopup(dispatch, "XXXX", "결제정보 입력 후 이용 해 주세요.");
             return;
         }
+        /* 
         const result = {"AnsCode": "0000", "AnswerTrdNo": "null", "AuNo": "24265610", "AuthType": "null", "BillNo": "", "CardKind": "1", "CardNo": "94119400", "ChargeAmt": "null", "DDCYn": "1", "DisAmt": "null", "EDCYn": "0", "GiftAmt": "", "InpCd": "1107", "InpNm": "신한카드", "Keydate": "", "MchData": "wooriorder", "MchNo": "22101257", "Message": "마이신한P잔여 : 0                       ", "Month": "00", "OrdCd": "1107", "OrdNm": "개인신용", "PcCard": "null", "PcCoupon": "null", "PcKind": "null", "PcPoint": "null", "QrKind": "null", "RefundAmt": "null", "SvcAmt": "0", "TaxAmt": checkOutVatAmt, "TaxFreeAmt": "0", "TermID": "0710000900", "TradeNo": "000003714185", "TrdAmt": checkOutAmt, "TrdDate": "240424165028", "TrdType": "A15"} 
         var tmpPayList = Object.assign([],paidList);
         const paidData = {paidItem:checkedItemList,paidData:result};
@@ -163,24 +164,30 @@ const OrderPayPopup = () =>{
         setCheckAmt(0);
         setCheckVatAmt(0);
         setPaidAmt(checkOutVatAmt+checkOutAmt+paidAmt);
-
-        /*
-        {"AnsCode": "0000", "AnswerTrdNo": "null", "AuNo": "24265610", "AuthType": "null", "BillNo": "", "CardKind": "1", "CardNo": "94119400", "ChargeAmt": "null", "DDCYn": "1", "DisAmt": "null", "EDCYn": "0", "GiftAmt": "", "InpCd": "1107", "InpNm": "신한카드", "Keydate": "", "MchData": "wooriorder", "MchNo": "22101257", "Message": "마이신한P잔여 : 0                       ", "Month": "00", "OrdCd": "1107", "OrdNm": "개인신용", "PcCard": "null", "PcCoupon": "null", "PcKind": "null", "PcPoint": "null", "QrKind": "null", "RefundAmt": "null", "SvcAmt": "0", "TaxAmt": "91", "TaxFreeAmt": "0", "TermID": "0710000900", "TradeNo": "000003714185", "TrdAmt": "913", "TrdDate": "240424165028", "TrdType": "A15"} 
+          */
+        
         const amtData = {amt:checkOutAmt, taxAmt:checkOutVatAmt, months:"00", bsnNo:bsnNo,termID:tidNo }
         var kocessAppPay = new KocesAppPay();
         kocessAppPay.requestKocesPayment(amtData)
         .then(async (result)=>{ 
             
             console.log("result: ",result);
-            const newPaidList = Object.assign([],paidList,result);
-            setPaidList(newPaidList);
+            var tmpPayList = Object.assign([],paidList);
+            const paidData = {paidItem:checkedItemList,paidData:result};
+            tmpPayList.push(paidData);
+            setPaidList(tmpPayList);
+            setCheckedItemList([]);
+            setCheckAmt(0);
+            setCheckVatAmt(0);
+            setPaidAmt(checkOutVatAmt+checkOutAmt+paidAmt);
             
         })
         .catch((err)=>{
             console.log("error: ",err)
             
         })
-         */
+        
+        
     }
     const cancelOrderPayList = (index) =>{
         var tmpPaidList = Object.assign([],paidList);

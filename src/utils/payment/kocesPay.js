@@ -57,10 +57,11 @@ KocesAppPay.prototype.makePayment = async function ({amt,taxAmt,months}) {
 // 취소 요청
 KocesAppPay.prototype.cancelPayment = async function ({amt,taxAmt,auDate,auNo,tradeNo}) {
     const {KocesPay} = NativeModules;
+    const tidNo = await AsyncStorage.getItem("TID_NO");
     const payData = {
         TrdType:'A20',
-        TermID: TID, 
-        Audate:`${auDate}`,
+        TermID: tidNo, 
+        AuDate:`${auDate}`,
         AuNo:`${auNo}`,
         KeyYn:'I',
         TrdAmt:`${amt}`,
@@ -69,7 +70,7 @@ KocesAppPay.prototype.cancelPayment = async function ({amt,taxAmt,auDate,auNo,tr
         TaxFreeAmt:"0",
         Month:"00",
         MchData:"wooriorder",
-        TrdCode:`T`,
+        TrdCode:"",
         TradeNo:`${tradeNo}`,
         CompCode:"",
         DscYn:1,
@@ -79,16 +80,16 @@ KocesAppPay.prototype.cancelPayment = async function ({amt,taxAmt,auDate,auNo,tr
         CancelReason:"1",
         CashNum:"",
         BillNo:"",
-    };
+    };    
     return await new Promise((resolve, reject)=>{
         KocesPay.prepareKocesPay(
             payData,
             (error)=>{
-                //console.log("error msg: ",error);
-                reject(JSON.parse(error));
+                console.log("error msg: ",error);
+                reject(error);
             },
             (msg)=>{
-                //console.log("success msg: ",msg);
+                console.log("success msg: ",msg);
                 resolve(JSON.parse(msg));
             }
         );
