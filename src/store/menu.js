@@ -12,10 +12,37 @@ import { initOrderList } from './order';
 import { getItems } from '../utils/api/newApi';
 import {isEmpty} from 'lodash';
 import { callApiWithExceptionHandling } from '../utils/api/apiRequest';
-import { ADMIN_API_BASE_URL, ADMIN_API_GOODS, ADMIN_API_MENU_UPDATE, TMP_STORE_DATA } from '../resources/newApiResource';
+import { ADMIN_API_BASE_URL, ADMIN_API_GOODS, ADMIN_API_MENU_UPDATE, ADMIN_API_REGULAR_UPDATE, TMP_STORE_DATA } from '../resources/newApiResource';
+import { setStoreInfo, setTableInfo, setTableStatus } from './tableInfo';
 
 export const clearAllItems = createAsyncThunk("menu/clearAllItems", async(_,{dispatch,getState}) =>{ 
     return [];
+})
+
+export const regularUpdate = createAsyncThunk("menu/regularUpdate", async(_,{dispatch,getState}) =>{ 
+    const {STORE_IDX} = await getStoreID();
+    const TABLE_INFO =  await AsyncStorage.getItem("TABLE_INFO");
+    const lastUpdateDate = await AsyncStorage.getItem("lastUpdate").catch(err=>"");   
+    //console.log("regular update!")
+    //console.log({"STORE_ID":`${STORE_IDX}`, "t_num":TABLE_INFO,"currentDateTime":lastUpdateDate});
+    try {
+        const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_REGULAR_UPDATE}`,{"STORE_ID":`${STORE_IDX}`, "t_num":TABLE_INFO,"currentDateTime":lastUpdateDate}, {});
+        if(data) {
+            const resultData = data?.data;
+            const goodsUpdate = resultData?.goods2_update;
+            const storeInfo = resultData?.store_info;
+            const storeTable = resultData?.store_table;
+            await dispatch(setStoreInfo(storeInfo[0]));
+            await dispatch(setTableStatus(storeTable[0]));
+            await dispatch(setMenuUpdateCheck(goodsUpdate[0]));
+            return [];
+        }else {
+            return rejectWithValue(error.message)
+        }
+      } catch (error) {
+        // 예외 처리
+        return rejectWithValue(error.message)
+    }
 })
 
 // 전체 메뉴 받기
@@ -82,7 +109,6 @@ export const initMenu = createAsyncThunk("menu/initMenu", async(_,{dispatch,getS
 })
 
 // menu update check
-
 export const menuUpdateCheck = createAsyncThunk("menu/menuUpdateCheck", async(_,{dispatch,getState}) =>{
     const {STORE_IDX} = await getStoreID();
     const lastUpdateDate = await AsyncStorage.getItem("lastUpdate").catch(err=>"");   
@@ -105,6 +131,7 @@ export const menuUpdateCheck = createAsyncThunk("menu/menuUpdateCheck", async(_,
             const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_MENU_UPDATE}`,{"STORE_ID":`${STORE_IDX}`,"currentDateTime":lastUpdateDate}, {});
             if(data) {
                 if(data?.result==true) {
+                    console.log("get updated:",data);
                     if(data?.isUpdated == "true") {
                         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"메뉴 업데이트 중입니다."})
                         AsyncStorage.setItem("lastUpdate",data?.updateDateTime);
@@ -135,6 +162,30 @@ export const menuUpdateCheck = createAsyncThunk("menu/menuUpdateCheck", async(_,
 
         }
     }
+})
+export const setMenuUpdateCheck = createAsyncThunk("menu/setMenuUpdateCheck", async(data,{dispatch,getState}) =>{
+    if(data) {
+            if(data?.isUpdated == "true") {
+                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"메뉴 업데이트 중입니다."})
+                AsyncStorage.setItem("lastUpdate",data?.updateDateTime);
+                dispatch(setCartView(false));
+                dispatch(initOrderList());
+                // 카테고리 받기
+                await dispatch(getAdminCategories());
+                // 메뉴 받아오기
+                await dispatch(getAdminItems());
+                dispatch(setSelectedItems());
+                //dispatch(setItemDetail({itemID:null}));
+                dispatch(initMenuDetail());
+                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
+                return ;
+            }else {
+                //EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
+                return rejectWithValue(error.message)
+            }
+    }else {
+        return rejectWithValue(error.message)
+    }   
 })
 
 // Slice
@@ -182,6 +233,10 @@ export const menuSlice = createSlice({
         })
         builder.addCase(clearAllItems.fulfilled,(state, action)=>{
             state.allItems = [];
+        })
+
+        builder.addCase(regularUpdate.fulfilled,(state,action)=>{
+
         })
 
         /*** 이하 삭제 */
