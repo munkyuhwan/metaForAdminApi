@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.0.36";
+export const CURRENT_VERSION = "2.0.37";
 export const releaseNote = {
+    "2.0.37": //2024.04.25
+    `
+        - 중분류 카테고리 노출/비노출 수정.
+    `,
     "2.0.36": //2024.04.25
     `
         - 메뉴 상세 버튼 넓이 조절.
