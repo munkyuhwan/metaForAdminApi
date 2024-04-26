@@ -40,7 +40,12 @@ export const setSubCategories = createAsyncThunk("categories/setSubCategories", 
     const subCategoreis = allCategories.filter(item => item.cate_code1 == selectedMainCategory);
     if(subCategoreis.length>0) {
         const subLevel = subCategoreis[0]?.level2;
-        const filteredSubLevel = subLevel.filter(el=>(el.is_use == "Y" && el.is_del=="N" ));
+        var filteredSubLevel = [];
+        if(subLevel?.length>0) {
+            filteredSubLevel = subLevel.filter(el=>(el.is_use == "Y" && el.is_del=="N" ));
+        }else {
+            filteredSubLevel = subLevel;
+        }
         return filteredSubLevel;
     }else {
         return[]
