@@ -40,7 +40,8 @@ export const setSubCategories = createAsyncThunk("categories/setSubCategories", 
     const subCategoreis = allCategories.filter(item => item.cate_code1 == selectedMainCategory);
     if(subCategoreis.length>0) {
         const subLevel = subCategoreis[0]?.level2;
-        return subLevel;
+        const filteredSubLevel = subLevel.filter(el=>(el.is_use == "Y" && el.is_del=="N" ));
+        return filteredSubLevel;
     }else {
         return[]
     }
@@ -70,7 +71,7 @@ export const cagegoriesSlice = createSlice({
             if(result == true) {
                 const goodsCategory = payload?.goods_category;
                 if(goodsCategory.length > 0) {
-                    const categories = goodsCategory.filter(el=>el.is_use=='Y');
+                    const categories = goodsCategory.filter(el=>(el.is_use=='Y' && el.is_del=='N'));
                     state.allCategories =  categories;
                 }
             }

@@ -1,4 +1,5 @@
 export const ADMIN_API_BASE_URL = "http://175.126.176.79/metacity";
+//export const ADMIN_API_BASE_URL = "http://worder.co.kr/metacity";
 
 
 export const ADMIN_API_GOODS = "/goods2.php";
