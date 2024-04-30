@@ -131,7 +131,6 @@ export const menuUpdateCheck = createAsyncThunk("menu/menuUpdateCheck", async(_,
             const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_MENU_UPDATE}`,{"STORE_ID":`${STORE_IDX}`,"currentDateTime":lastUpdateDate}, {});
             if(data) {
                 if(data?.result==true) {
-                    console.log("get updated:",data);
                     if(data?.isUpdated == "true") {
                         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"메뉴 업데이트 중입니다."})
                         AsyncStorage.setItem("lastUpdate",data?.updateDateTime);

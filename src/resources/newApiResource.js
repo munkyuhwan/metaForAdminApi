@@ -1,6 +1,7 @@
-export const ADMIN_API_BASE_URL = "http://175.126.176.79/metacity";
-//export const ADMIN_API_BASE_URL = "http://worder.co.kr/metacity";
+//export const ADMIN_API_BASE_URL = "http://175.126.176.79/metacity";
+export const ADMIN_API_BASE_URL = "http://worder.co.kr/metacity";
 //export const ADMIN_API_BASE_URL = "http://183.110.232.247/metacity";
+//export const ADMIN_API_BASE_URL = "http://new.worder.co.kr/metacity"; // 신규 서버 
 
 
 
