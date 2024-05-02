@@ -14,6 +14,7 @@ import {isEmpty} from 'lodash';
 import { callApiWithExceptionHandling } from '../utils/api/apiRequest';
 import { ADMIN_API_BASE_URL, ADMIN_API_GOODS, ADMIN_API_MENU_UPDATE, ADMIN_API_REGULAR_UPDATE, TMP_STORE_DATA } from '../resources/newApiResource';
 import { setStoreInfo, setTableInfo, setTableStatus } from './tableInfo';
+import { initImageStorage } from './imageStorage';
 
 export const clearAllItems = createAsyncThunk("menu/clearAllItems", async(_,{dispatch,getState}) =>{ 
     return [];
@@ -172,6 +173,7 @@ export const setMenuUpdateCheck = createAsyncThunk("menu/setMenuUpdateCheck", as
                 // 카테고리 받기
                 await dispatch(getAdminCategories());
                 // 메뉴 받아오기
+                await dispatch(initImageStorage());
                 await dispatch(getAdminItems());
                 dispatch(setSelectedItems());
                 //dispatch(setItemDetail({itemID:null}));
