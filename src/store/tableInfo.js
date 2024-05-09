@@ -35,6 +35,10 @@ export const getTableStatus = createAsyncThunk("tableInfo/getTableStatus", async
         return rejectWithValue(error.message);
     }
 })
+export const setTableStatus = createAsyncThunk("tableInfo/setTableStatus", async(data,{dispatch,rejectWithValue}) =>{
+    //console.log("setTableStatus: ",data);
+    return data;            
+})
 
 // 지점정보 받아오기
 export const getStoreInfo = createAsyncThunk("tableInfo/getStoreInfo", async(data, {dispatch,rejectWithValue})=>{
@@ -51,7 +55,9 @@ export const getStoreInfo = createAsyncThunk("tableInfo/getStoreInfo", async(dat
         console.error(error.message);
         return rejectWithValue(error.message);
     }
-
+})
+export const setStoreInfo = createAsyncThunk("tableInfo/setStoreInfo", async(data, {dispatch,rejectWithValue})=>{
+   return data;   
 })
 
 /**이하 삭제 */
@@ -121,6 +127,14 @@ export const tableInfoSlice = createSlice({
                 state.orderHistory = payload.order_list;
             }
         })
+        builder.addCase(setTableStatus.fulfilled, (state,action)=>{
+            const payload = action.payload;
+            if(!isEmpty(payload)) {
+                state.tableStatus = payload.table[0];
+                state.cardDeviceInfo = payload.card_device_info;
+                state.orderHistory = payload.order_list;
+            }
+        })
 
         // 스토어 정보, 아이피/테이블 리스트
         builder.addCase(getStoreInfo.fulfilled,  (state,action)=>{
@@ -136,6 +150,15 @@ export const tableInfoSlice = createSlice({
         })
         builder.addCase(getStoreInfo.pending,  (state,action)=>{
             
+        })
+
+        builder.addCase(setStoreInfo.fulfilled, (state,action)=>{
+            const payload = action.payload;
+            if(!isEmpty(payload)) {
+                state.posIP = payload.ip;
+                //state.posIP = "192.168.35.95";
+                state.tableList = payload.table_list;
+            }
         })
         
     }

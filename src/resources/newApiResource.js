@@ -1,5 +1,8 @@
-export const ADMIN_API_BASE_URL = "http://175.126.176.79/metacity";
-//export const ADMIN_API_BASE_URL = "http://worder.co.kr/metacity";
+//export const ADMIN_API_BASE_URL = "http://175.126.176.79/metacity";
+export const ADMIN_API_BASE_URL = "http://worder.co.kr/metacity";
+//export const ADMIN_API_BASE_URL = "http://183.110.232.247/metacity";
+//export const ADMIN_API_BASE_URL = "http://new.worder.co.kr/metacity"; // 신규 서버 
+
 
 
 export const ADMIN_API_GOODS = "/goods2.php";
@@ -9,6 +12,7 @@ export const ADMIN_API_TABLE_STATUS = "/store_table.php";
 export const ADMIN_API_STORE_INFO = "/store_info.php";
 export const ADMIN_API_MENU_UPDATE = "/goods2_update.php";
 export const ADMIN_API_MENU_CHECK = "/check_serviceable.php";
+export const ADMIN_API_REGULAR_UPDATE = "/reqular_update.php";
 // 배너
 export const ADMIN_API_BANNER = "/banner.php";
 

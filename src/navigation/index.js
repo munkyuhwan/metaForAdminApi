@@ -12,7 +12,7 @@ import PopupIndicator from '../components/common/popupIndicator'
 import { useDispatch, useSelector } from 'react-redux'
 import { getAdminCategories, setSelectedMainCategory, setSubCategories } from '../store/categories'
 import FullSizePopup from '../components/common/fullsizePopup'
-import { getAdminItems, menuUpdateCheck, setSelectedItems } from '../store/menu'
+import { getAdminItems, menuUpdateCheck, regularUpdate, setSelectedItems } from '../store/menu'
 import _ from 'lodash';
 import {  getStoreInfo, getTableStatus } from '../store/tableInfo'
 import { EventRegister } from 'react-native-event-listeners'
@@ -96,11 +96,11 @@ export default function Navigation() {
             // 주석 나중에 빼자
             statusInterval = setInterval(() => {
                 //console.log("status interval")
-                // 광고 받기
-                //dispatch(getAD()); 
-                dispatch(getStoreInfo());
-                dispatch(getTableStatus());
-                dispatch(menuUpdateCheck());
+                
+                //dispatch(getStoreInfo());
+                //dispatch(getTableStatus());
+                //dispatch(menuUpdateCheck());
+                dispatch(regularUpdate());
             }, DEFAULT_TABLE_STATUS_UPDATE_TIME);
 
         //}
