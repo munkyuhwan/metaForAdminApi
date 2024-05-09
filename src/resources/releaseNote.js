@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.0.39";
+export const CURRENT_VERSION = "2.0.40";
 export const releaseNote = {
+    "2.0.40": //2024.05.09
+    `
+        - 중복 결제 수정.
+    `,
     "2.0.39": //2024.05.02
     `
         - 메뉴 업데이트시 이미지 업데이트 안되는 현상 수정.
