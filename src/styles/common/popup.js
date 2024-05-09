@@ -104,6 +104,7 @@ export const OrderCompleteWrapper = styled.View`
     width:100%;
     height:100%;
     flex:1;
+    padding:40px;
 `
 export const OrderCompleteItemWrapper = styled.View`
     margin:auto;

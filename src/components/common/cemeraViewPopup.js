@@ -4,7 +4,8 @@ import { openPopup, openTransperentPopup } from "../../utils/common";
 import { ErrorTitle, ErrorWrapper } from "../../styles/common/errorStyle";
 import { OrderCompleteIcon, OrderCompleteItemWrapper, OrderCompleteText, OrderCompleteWrapper } from "../../styles/common/popup";
 import Video from 'react-native-video';
-import { StyleSheet } from "react-native";
+import { StyleSheet, Text, TouchableWithoutFeedback } from "react-native";
+import WebView from "react-native-webview";
 
 
 const CameraView = () => {
@@ -14,7 +15,11 @@ const CameraView = () => {
     var player = useRef();
     return(
         <>
-            <OrderCompleteWrapper style={{backgroundColor:'red'}}> 
+            <OrderCompleteWrapper>
+                <TouchableWithoutFeedback style={{padding:15}} onPress={()=>{openTransperentPopup(dispatch, {innerView:"", isPopupVisible:false});}}>
+                    <Text style={{color:'white',fontWeight:'bold',fontSize:20}}>닫기</Text>
+                </TouchableWithoutFeedback> 
+                <WebView source={{uri:"https://youtu.be/QIvEpZKqoJ0"}} />
            </OrderCompleteWrapper>
         </>
     )
