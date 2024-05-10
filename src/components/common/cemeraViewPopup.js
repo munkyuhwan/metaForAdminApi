@@ -19,7 +19,7 @@ const CameraView = () => {
                 <TouchableWithoutFeedback style={{padding:15}} onPress={()=>{openTransperentPopup(dispatch, {innerView:"", isPopupVisible:false});}}>
                     <Text style={{color:'white',fontWeight:'bold',fontSize:20}}>닫기</Text>
                 </TouchableWithoutFeedback> 
-                <WebView source={{uri:"https://youtu.be/QIvEpZKqoJ0"}} />
+                <WebView source={{uri:"https://youtu.be/JApXlFgOM_U?si=yUzoZ9w2AYMIL4Fu"}} />
            </OrderCompleteWrapper>
         </>
     )

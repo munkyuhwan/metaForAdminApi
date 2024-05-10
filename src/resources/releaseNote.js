@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.0.40";
+export const CURRENT_VERSION = "2.0.40-1";
 export const releaseNote = {
+    "2.0.40-1": //2024.05.09
+    `
+        - CCTV예제.
+    `,
     "2.0.40": //2024.05.09
     `
         - 중복 결제 수정.
