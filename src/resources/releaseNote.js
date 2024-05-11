@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.0.40-1";
+export const CURRENT_VERSION = "2.0.41";
 export const releaseNote = {
+    "2.0.41": //2024.05.11
+    `
+        - 할부 창닫기 후 무한 로딩 수정.
+    `,
     "2.0.40-1": //2024.05.09
     `
         - CCTV예제.

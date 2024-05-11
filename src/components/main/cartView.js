@@ -84,6 +84,11 @@ const CartView = () =>{
                 if(monthSelected!="") {
                     makePayment();
                     dispatch(setSelectedMonth(""));
+                }else {
+                    // 할부선택 취소
+                    //console.log("할부 선택 취소");
+                    EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
+                    setPayProcess(false);
                 }
             }
         }
@@ -253,6 +258,7 @@ const CartView = () =>{
                         }else {
                             if( tableStatus?.now_later == "선불") {
                                 if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
+                                    console.log("5만원 이상");
                                     dispatch(setMonthPopup({isMonthSelectShow:true}))
                                 }else {
                                     makePayment();
