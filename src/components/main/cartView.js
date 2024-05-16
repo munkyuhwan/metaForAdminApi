@@ -127,15 +127,15 @@ const CartView = () =>{
                         setPayProcess(false);
                         console.log("result: ",result);
                         const orderData = await metaPostPayFormat(orderList,result, allItems);
+                        dispatch(postLog({payData:result,orderData:orderData}))
                         dispatch(postOrderToPos({payData:result,orderData:orderData}));
                         dispatch(adminDataPost({payData:result,orderData:orderData}));
                     })
                     .catch((err)=>{
-                        //console.log("error: ",err)
                         // 결제 진행끝이다.
                         setPayProcess(false);
                         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
-                        dispatch(postLog({payData:err}))
+                        dispatch(postLog({payData:err,orderData:null}))
                         displayErrorPopup(dispatch, "XXXX", err?.Message)
                     })
                 }
@@ -258,7 +258,6 @@ const CartView = () =>{
                         }else {
                             if( tableStatus?.now_later == "선불") {
                                 if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
-                                    console.log("5만원 이상");
                                     dispatch(setMonthPopup({isMonthSelectShow:true}))
                                 }else {
                                     makePayment();

@@ -1,6 +1,13 @@
 
-export const CURRENT_VERSION = "2.0.41";
+export const CURRENT_VERSION = "2.0.42";
 export const releaseNote = {
+    "2.0.42": //2024.05.14
+    `
+        - 옵션 수량 체크 수정.
+        - 코세스 카드 결제 데이터 변경관련 수정.
+        - 에러로그, 결제 로그 어드민 업로드 수정.
+        - 주기적 체크 시간 수정
+    `,
     "2.0.41": //2024.05.11
     `
         - 할부 창닫기 후 무한 로딩 수정.

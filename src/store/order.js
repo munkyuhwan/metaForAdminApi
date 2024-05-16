@@ -11,7 +11,7 @@ import { POS_BASE_URL, POS_VERSION_CODE, POS_WORK_CD_POSTPAY_ORDER, POS_WORK_CD_
 import { getTableOrderList, postMetaPosOrder, repostMetaPosOrder } from '../utils/api/metaApis';
 import { ERROR_CODE, ERROR_STRING, META_SET_MENU_SEPARATE_CODE_LIST } from '../resources/defaults';
 import moment from 'moment';
-import { postPayLog } from '../utils/api/adminApi';
+import { postOrderLog, postPayLog } from '../utils/api/adminApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { EventRegister } from 'react-native-event-listeners';
 import { ADMIN_API_BASE_URL, ADMIN_API_POST_ORDER, TMP_STORE_DATA } from '../resources/newApiResource';
@@ -146,8 +146,8 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
         const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_POST_ORDER}`,postOrderData, {});
         if(data) {
             if(data?.result) {
-                dispatch(setCartView(false));
-                dispatch(initOrderList());
+                //dispatch(setCartView(false));
+                //dispatch(initOrderList());
                /*  if( tableStatus?.now_later == "선불") {
                     openTransperentPopup(dispatch, {innerView:"OrderComplete", isPopupVisible:true,param:{msg:"주문을 완료했습니다."}});
                 }else {
@@ -178,6 +178,7 @@ export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{
     const { tableStatus } = getState().tableInfo;
     const {payData,orderData} = _;
     var postOrderData = Object.assign({},orderData);
+    const {STORE_IDX} = await getStoreID()
 
     const tableNo = await getTableInfo().catch(err=>{posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:"테이블 설정",MSG2:"테이블 번호를 설정 해 주세요."});});
     if(isEmpty(tableNo)) {
@@ -189,6 +190,9 @@ export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{
     // 결제시 추가 결제 결과 데이터
     let addOrderData = {};
     if(!isEmpty(payData)) {
+        var cardNo = payData?.CardNo;
+        cardNo = cardNo.replace(/\*/gi,"");
+        cardNo = cardNo.replace(/-/gi,"");
         addOrderData = {
             TOTAL_AMT:Number(payData?.TrdAmt)+Number(payData?.TaxAmt),
             TOTAL_VAT:Number(payData?.TaxAmt),
@@ -206,7 +210,7 @@ export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{
                 PAY_VAT:Number(payData?.TaxAmt),
                 PAY_APV_NO:`${payData?.AuNo}`,
                 PAY_APV_DATE:`20${payData?.TrdDate?.substr(0,6)}`,
-                PAY_CARD_NO:`${payData?.CardNo}********`,
+                PAY_CARD_NO:`${cardNo}********`,
                 PAY_UPD_DT:`20${payData?.TrdDate}`,
                 PAY_CANCEL_YN:"N",
                 PAY_CARD_TYPE:`${payData?.InpNm}`,
@@ -237,8 +241,11 @@ export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{
                     }, 3000);
                 }
             }else {
+                const ERROR_CD = data?.ERROR_CD;
+                const ERROR_MSG = data?.ERROR_MSG;
+                const failData = {"storeID":STORE_IDX,"tableNo":tableNo?.TABLE_INFO,"ERROR_CD":ERROR_CD,"ERROR_MSG":ERROR_MSG, "orderData":JSON.stringify(postOrderData),"time":moment().format("YYYY-MM-DD HH:mm:ss")};
+                postOrderLog(failData);
                 displayErrorPopup(dispatch, "XXXX", data?.ERROR_MSG);
-
             }
         }
         return;
@@ -451,18 +458,21 @@ export const addToOrderList =  createAsyncThunk("order/addToOrderList", async(_,
 // 주문로그 
 export const postLog =  createAsyncThunk("order/postLog", async(_,{dispatch, getState,extra}) =>{
     const {orderList} = getState().order;
-    const {payData} = _;
+    const {payData,orderData} = _;
     const date = new Date();
     const tableNo = await getTableInfo().catch(err=>{return {TABLE_INFO:""}});
     // admin log
     const storeID = await AsyncStorage.getItem("STORE_IDX").catch("");
     let auData = [];
+    console.log("orderData: ",orderData);
+    //  [{"prod_cd": "900026", "qty": 1, "set_item": [[Object]]}, {"prod_cd": "900022", "qty": 1, "set_item": []}]
+
     let logdata = {
         time:`${date.getFullYear()}${numberPad(date.getMonth()+1,2)}${numberPad(date.getDate(),2)}`,
         storeID: `${storeID}`,
         tableNo:`${tableNo.TABLE_INFO}`,
         auData:JSON.stringify([{date:`${date.getFullYear()}${numberPad(date.getMonth()+1,2)}${numberPad(date.getDate(),2)}`, AuNo:`${payData?.AuNo}`,TrdAmt:`${Number(payData?.TrdAmt)+Number(payData?.TaxAmt)}` }]),
-        orderList:JSON.stringify(orderList),
+        orderList:JSON.stringify(orderData),
         payResult:JSON.stringify(payData)
     }
     postPayLog(logdata)

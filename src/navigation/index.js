@@ -102,7 +102,7 @@ export default function Navigation() {
                 //dispatch(menuUpdateCheck());
                 dispatch(regularUpdate());
             }, DEFAULT_TABLE_STATUS_UPDATE_TIME);
-
+            dispatch(regularUpdate());
         //}
     },[])
 
