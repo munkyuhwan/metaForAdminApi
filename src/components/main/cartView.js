@@ -49,6 +49,7 @@ const CartView = () =>{
     const [totalCnt, setTotalCnt] = useState(0);
     const [cartCnt, setCartCnt] = useState(0);
     const [prevOrderList, setPrevOrderList] = useState();
+    const [isPayProcess, setPayProcess] = useState(false);
 
     const [slideAnimation, setSlideAnimation] = useState(new Animated.Value(0));
     const slideInterpolate = slideAnimation.interpolate({
@@ -83,18 +84,24 @@ const CartView = () =>{
                 if(monthSelected!="") {
                     makePayment();
                     dispatch(setSelectedMonth(""));
+                }else {
+                    // 할부선택 취소
+                    //console.log("할부 선택 취소");
+                    EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
+                    setPayProcess(false);
                 }
             }
         }
 
     },[isMonthSelectShow,monthSelected])
     const makePayment = async () =>{
-            if( tableStatus?.now_later == "선불") {
+        if( tableStatus?.now_later == "선불") {
                 const bsnNo = await AsyncStorage.getItem("BSN_NO");
                 const tidNo = await AsyncStorage.getItem("TID_NO");
                 const serialNo = await AsyncStorage.getItem("SERIAL_NO");
                 if( isEmpty(bsnNo) || isEmpty(tidNo) || isEmpty(serialNo) ) {
                     displayErrorPopup(dispatch, "XXXX", "결제정보 입력 후 이용 해 주세요.");
+                    setPayProcess(false);
                     return;
                 }
                 const orderData = await metaPostPayFormat(orderList,{}, allItems);
@@ -116,15 +123,19 @@ const CartView = () =>{
                     kocessAppPay.requestKocesPayment(amtData)
                     .then(async (result)=>{ 
                         
+                        // 결제 진행끝이다.
+                        setPayProcess(false);
                         console.log("result: ",result);
                         const orderData = await metaPostPayFormat(orderList,result, allItems);
-                        dispatch(postOrderToPos({payData:[result],orderData:orderData}));
-                        dispatch(adminDataPost({payData:[result],orderData:orderData}));
+                        dispatch(postLog({payData:result,orderData:orderData}))
+                        dispatch(postOrderToPos({payData:result,orderData:orderData}));
+                        dispatch(adminDataPost({payData:result,orderData:orderData}));
                     })
                     .catch((err)=>{
-                        //console.log("error: ",err)
+                        // 결제 진행끝이다.
+                        setPayProcess(false);
                         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
-                        dispatch(postLog({payData:err}))
+                        dispatch(postLog({payData:err,orderData:null}))
                         displayErrorPopup(dispatch, "XXXX", err?.Message)
                     })
                 }
@@ -133,8 +144,8 @@ const CartView = () =>{
                 const orderData = await metaPostPayFormat(orderList,{}, allItems);
                 dispatch(adminDataPost({payData:null,orderData:orderData}));
                 dispatch(postOrderToPos({payData:null,orderData:orderData}));
+                setPayProcess(false);
             }
-         
     }
     const ItemOptionTitle = (additiveId) =>{
         let selOptTitleLanguage = "";
@@ -155,15 +166,18 @@ const CartView = () =>{
     }
 
     const doPayment = async () =>{
+        console.log("do payment")
         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"주문 중 입니다."});
         const isPostable = await isNetworkAvailable()
         .catch(()=>{
             EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
+            setPayProcess(false);
             return false;
         });
         if(!isPostable) {
             displayErrorNonClosePopup(dispatch, "XXXX", "인터넷에 연결할 수 없습니다.");
             EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
+            setPayProcess(false);
             return;
         }
 
@@ -171,12 +185,14 @@ const CartView = () =>{
         .catch((err)=>{
             displayErrorNonClosePopup(dispatch, "XXXX", "상점 정보를 가져올 수 없습니다.");
             EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); 
+            setPayProcess(false);
             return;
         })
         // 개점정보 확인
         if(!storeInfo?.SAL_YMD) {
             EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
             displayErrorPopup(dispatch, "XXXX", "개점이 되지않아 주문을 할 수 없습니다.");
+            setPayProcess(false);
         }else {
             //테이블 주문 가능한지 체크            
             const tableAvail = await getTableAvailability(dispatch)
@@ -186,6 +202,7 @@ const CartView = () =>{
             });
             if(!tableAvail) {
                 EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
+                setPayProcess(false);
             }else {
                 const {STORE_IDX} = await getStoreID();
                 const lastUpdateDate = await AsyncStorage.getItem("lastUpdate").catch(err=>"");   
@@ -195,6 +212,7 @@ const CartView = () =>{
                     if(isItemOrderble?.result == null) {
                         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
                         displayErrorPopup(dispatch, "XXXX", "수량을 체크할 수 없어 주문을 할 수 없습니다.");
+                        setPayProcess(false);
                         return;
                     }else {
                         const itemsUnavailable = isItemOrderble?.result[0]?.unserviceable_items;
@@ -206,6 +224,7 @@ const CartView = () =>{
                             }
                             EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
                             displayErrorPopup(dispatch, "XXXX", itemString+"메뉴는 매진되어 주문을 할 수 없습니다.");
+                            setPayProcess(false);
                             return;
                         }
                     }
@@ -223,6 +242,7 @@ const CartView = () =>{
                                     }]
                                 );
                                 EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
+                                setPayProcess(false);
                             }else {
             
                                 if( tableStatus?.now_later == "선불") {
@@ -250,6 +270,7 @@ const CartView = () =>{
                         if( tableStatus?.now_later == "선불") {
                             if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
                                 dispatch(setMonthPopup({isMonthSelectShow:true}))
+                                setPayProcess(false);
                             }else {
                                 makePayment();
                             }
@@ -262,6 +283,7 @@ const CartView = () =>{
                     if( tableStatus?.now_later == "선불") {
                         if(totalAmt >= PAY_SEPRATE_AMT_LIMIT) {
                             dispatch(setMonthPopup({isMonthSelectShow:true}))
+                            setPayProcess(false);
                         }else {
                             makePayment();
                         }
@@ -273,6 +295,9 @@ const CartView = () =>{
         }
     }
     useEffect(()=>{
+        if(isOn == true) {
+            setPayProcess(false);
+        }
         drawerController(isOn); 
     },[isOn])
 
@@ -389,15 +414,15 @@ const CartView = () =>{
                                 </PayBtn>
                             </TouchableWithoutFeedback>
                         }
-                        {/*isPrepay&&
-                            <TouchableWithoutFeedback onPress={()=>{doPayment();}} >
+                        {isPrepay&&
+                            <TouchableWithoutFeedback onPress={()=>{if(isPayProcess == false){setPayProcess(true); doPayment();}}} >
                                 <PayBtn isFull={true} >
                                     <PayTitle>{LANGUAGE[language]?.cartView.payOrder}</PayTitle>
                                     <PayIcon source={require("../../assets/icons/order.png")} />
                                 </PayBtn>
                             </TouchableWithoutFeedback>
-                        */}
-                        {isPrepay&&
+                        }
+                        {/*isPrepay&&
                             <>
                             <TouchableWithoutFeedback onPress={()=>{doPayment();}} >
                                 <PayBtn isFull={false} isGap={true} >    
@@ -411,7 +436,7 @@ const CartView = () =>{
                                 </PayBtn>
                             </TouchableWithoutFeedback>
                             </>
-                        }
+                        */}
 
                     </PayBtnWrapper>
 

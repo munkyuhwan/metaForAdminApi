@@ -2,6 +2,7 @@ import axios from "axios";
 import { posErrorHandler } from "./errorHandler/ErrorHandler";
 import { ADMIN_BASE_URL, ADMIN_CATEGORIES, ADMIN_ORDER_LOG, ADMIN_PAY_LOG, POS_BASE_URL, POS_VERSION_CODE, POS_WORK_CD_MAIN_CAT, POS_WORK_CD_MID_CAT } from "../../resources/apiResources";
 import { displayErrorPopup, metaErrorHandler } from "../errorHandler/metaErrorHandler";
+import { ADMIN_API_BASE_URL } from "../../resources/newApiResource";
 
 const posOrderHeader = {Accept: 'application/json','Content-Type': 'application/json'}
 const adminOrderHeader = {'Content-Type' : "text/plain"};
@@ -9,7 +10,7 @@ const adminOrderHeader = {'Content-Type' : "text/plain"};
 export const  postOrderLog = async(data) =>{
     return await new Promise(function(resolve, reject){
         axios.post(
-            `${ADMIN_BASE_URL}${ADMIN_ORDER_LOG}`,
+            `${ADMIN_API_BASE_URL}${ADMIN_ORDER_LOG}`,
             data,
             adminOrderHeader,
         ) 
@@ -52,7 +53,7 @@ export const  getAdminMainCategory = async(dispatch) =>{
 export const  postPayLog = async(data) =>{
     return await new Promise(function(resolve, reject){
         axios.post(
-            `${ADMIN_BASE_URL}${ADMIN_PAY_LOG}`,
+            `${ADMIN_API_BASE_URL}${ADMIN_PAY_LOG}`,
             data,
             adminOrderHeader,
         ) 

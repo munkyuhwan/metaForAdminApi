@@ -162,19 +162,19 @@ const ItemDetail = (props) => {
                 var limitCnt = Number(optGroups[i].limit_count);
                 if(limitCnt > 0) {
                     // 무한 선택이 아니다
-                    if(optSelected.length<=0) {
+                    // 무한선택이 아닌데 옵션에 안담기면 엄기지 않는다.
+                    //if(optSelected.length<=0) {
                         // 1. 선택한 옵션이 하나도 없으면 통과 안시킴
                         isPass = false;
-                    }
-                    
-
+                    //}
+                }else {                    
 
 
                 }
 
                 
             }
-        }
+        }         
         if(!isPass) {
             posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:`옵션 필수 수량을 확인 해 주세요.`,MSG2:""})
         }else {
@@ -182,7 +182,7 @@ const ItemDetail = (props) => {
             dispatch(addToOrderList({isAdd:true, isDelete: false, item:menuDetail,menuOptionSelected:optSelected}));
             closeDetail();
         }
-
+        
     }
 
     const closeDetail = () =>{
