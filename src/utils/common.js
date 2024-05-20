@@ -259,17 +259,55 @@ export async function adFileDownloader(dispatch, name,url) {
 }
 export const isAvailable = (item) => {
 
-    if(Number(moment().format("HHmmss")) < 120000) {
-        if(item?.use_timea == "" || item?.use_timeaa == "" || item?.use_timeb == "" || item?.use_timebb == "") {
-            return true;
-        }
-    }
-    if(Number(moment().format("HHmmss")) >= 120000) {
-        if(item?.use_time1a == "" || item?.use_time1aa == "" || item?.use_time1b == "" || item?.use_time1bb == "") {
-           return true;
-        }
-    }
     const startTimeAm = Number(`${item?.use_timea}${item?.use_timeaa}`);
+    const endTimeAm = Number(`${item?.use_timeb}${item?.use_timebb}`);
+
+    const startTimePm = Number(`${item?.use_time1a}${item?.use_time1aa}`);
+    const endTimePm = Number(`${item?.use_time1b}${item?.use_time1bb}`);
+    
+    const currentTime = Number(moment().format("HHmm"));
+    const hourNow = Number(moment().format("HH"));
+    
+    const amTimes = [item?.use_timea,item?.use_timeaa,item?.use_timeb,item?.use_timebb];
+    const pmTimes = [item?.use_time1a,item?.use_time1aa,item?.use_time1b,item?.use_time1bb];
+
+    const emptyAm = amTimes.filter(el=>el == "");
+    const emptyPm = pmTimes.filter(el=>el == "");
+
+    // 수량 오전 오후 시간 설정이 안되어 있다면 그냥 판매
+    if(emptyAm?.length>0 && emptyPm?.length >0) {
+        return true;
+    }
+
+    var isAmPass = true;
+    var isPmPass = true;
+
+    // 1. 수량제한 시간이 있는지 확인 
+    if(emptyAm?.length <= 0) {
+        // 오전 시간 설정 되어 있다면 체크
+        if(currentTime>=startTimeAm && currentTime<=endTimeAm ) {
+            //현 시간이 오전시간 사이에 있으면 판매중 
+            isAmPass = true;
+        }else {
+            isAmPass = false;
+        }
+    }
+    if(emptyPm?.length <= 0) {
+        // 오후 시간 설정 되어 있다면 체크
+        if(currentTime>=startTimePm && currentTime<=endTimePm ) {
+            //현 시간이 오전시간 사이에 있으면 판매중 
+            isPmPass = true;
+        }else {
+            isPmPass = false;
+        }
+    }
+    return isAmPass || isPmPass;
+    // 2. 시간이 수량제한1에 해당하는지 2에 해당하는지 확인 해 함.
+
+    return;
+
+
+   /*  const startTimeAm = Number(`${item?.use_timea}${item?.use_timeaa}`);
     const endTimeAm = Number(`${item?.use_timeb}${item?.use_timebb}`);
 
     const startTimePm = Number(`${item?.use_time1a}${item?.use_time1aa}`);
@@ -282,7 +320,7 @@ export const isAvailable = (item) => {
         return currentTime>startTimeAm && currentTime<endTimeAm
     }else {
         return currentTime>startTimePm && currentTime<endTimePm
-    }
+    } */
 }
 
 // 인터넷 연결 체크
