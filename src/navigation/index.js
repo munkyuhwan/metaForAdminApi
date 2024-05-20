@@ -27,6 +27,7 @@ import MonthSelectPopup from '../components/popups/monthSelectPopup'
 import PopupIndicatorNonCancel from '../components/common/popupIndicatoreNonCancel'
 import { setErrorData } from '../store/error'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { getAdminBulletin } from '../store/menuExtra'
 
 const Stack = createStackNavigator()
 var statusInterval;
@@ -103,7 +104,8 @@ export default function Navigation() {
                 dispatch(regularUpdate());
             }, DEFAULT_TABLE_STATUS_UPDATE_TIME);
             dispatch(regularUpdate());
-        //}
+            dispatch(getAdminBulletin());
+            //}
     },[])
 
     useEffect(async ()=>{

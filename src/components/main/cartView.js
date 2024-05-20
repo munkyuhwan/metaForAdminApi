@@ -54,7 +54,7 @@ const CartView = () =>{
     const [slideAnimation, setSlideAnimation] = useState(new Animated.Value(0));
     const slideInterpolate = slideAnimation.interpolate({
         inputRange:[0,1],
-        outputRange:[(windowWidth*0.266),(windowWidth*0.004)]
+        outputRange:[(windowWidth > 1200 ? windowWidth*0.274:windowWidth*0.266),(windowWidth*0.004)]
         //outputRange:[314,5]
     })
     const boxStyle = {

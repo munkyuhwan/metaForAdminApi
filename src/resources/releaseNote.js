@@ -1,6 +1,12 @@
 
-export const CURRENT_VERSION = "2.0.42";
+export const CURRENT_VERSION = "2.0.43";
 export const releaseNote = {
+    "2.0.43": //2024.05.17
+    `
+        - 메인 상단 공지사항 수정.
+        - 소분류 언어 오류 수정.
+        - 장바구니 w1이슈(닫았을 떄 끝에 살짝 보임) 수정.
+    `,
     "2.0.42": //2024.05.14
     `
         - 옵션 수량 체크 수정.

@@ -20,24 +20,21 @@ const TopMenuList = (props) => {
     const {language} =  useSelector(state=>state.languages);
 
     const [selectedSubList, setSelectedSubList] = useState();
-    
     const ItemTitle = (cateCode) => {
         const selectedData = selectedSubList.filter(el=>el.cate_code2 == cateCode);
-        const adminSelectedSubCatData = menuCategories.filter(el=>el.cate_code1==selectedMainCategory);
-        const adminSubCat = adminSelectedSubCatData[0]?.level2;
-        const selectedAdminSub = adminSubCat?.filter(el=>el.cate_code2 == cateCode);
         if(language=="korean") {
             return selectedData[0].cate_name2;
         }else if(language=="japanese") {
-            return selectedAdminSub[0]?.cate_name2_jp||selectedData[0].cate_name2
+            return selectedData[0]?.cate_name2_jp||selectedData[0].cate_name2;
         }
         else if(language=="chinese") {
-            return selectedAdminSub[0]?.cate_name2_cn||selectedData[0].cate_name2
+            return selectedData[0]?.cate_name2_cn||selectedData[0].cate_name2;
         }
         else if(language=="english") {
-            return selectedAdminSub[0]?.cate_name2_en||selectedData[0].cate_name2
+            return selectedData[0]?.cate_name2_cn||selectedData[0].cate_name2;
         }
         return "";
+
     }
     const ItemWhole = () =>{
         let selTitleLanguage = "";

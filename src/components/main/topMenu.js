@@ -46,11 +46,19 @@ const TopMenu = () =>{
     const [isBulletinShow, setBulletinShow] = useState();
 
     useEffect(()=>{
-        const changedSelectedMainCat = allCategories.filter(el=>el.PROD_L1_CD==selectedMainCategory);
+        const changedSelectedMainCat = allCategories.filter(el=>el.cate_code1==selectedMainCategory);
         if(changedSelectedMainCat) {
             if(changedSelectedMainCat?.length > 0) {
                 //setSelectedSubList(changedSelectedMainCat[0].PROD_L2_LIST);
-                if(changedSelectedMainCat[0]?.PROD_L2_LIST?.length > 0) {setBulletinShow(false)}else {setBulletinShow(true)}
+                if(subCategories) {
+                    if(subCategories?.length > 0) {
+                        setBulletinShow(false)
+                    }else {
+                        setBulletinShow(true)
+                    }
+                }else {
+                    setBulletinShow(true)
+                }
             }
         }
 
