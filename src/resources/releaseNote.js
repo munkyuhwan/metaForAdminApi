@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.0.43";
+export const CURRENT_VERSION = "2.0.44";
 export const releaseNote = {
+    "2.0.44": //2024.05.20
+    `
+        - 준비중 상태 변경
+    `,
     "2.0.43": //2024.05.17
     `
         - 메인 상단 공지사항 수정.
