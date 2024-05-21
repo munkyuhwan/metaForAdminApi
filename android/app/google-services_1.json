@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "501442516745",
-    "project_id": "wooriorderforadminapi",
-    "storage_bucket": "wooriorderforadminapi.appspot.com"
+    "project_number": "1053254939017",
+    "project_id": "wooriorder-7e205",
+    "storage_bucket": "wooriorder-7e205.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:501442516745:android:6a9b36224180fdfc9525d8",
+        "mobilesdk_app_id": "1:1053254939017:android:3f0998c3fa7c1c3cdf3158",
         "android_client_info": {
           "package_name": "com.metacity"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyB4f3vZf80itK42HJPqF_-x9LAn1MmilI4"
+          "current_key": "AIzaSyBDVmyvNt5V4pKIUGARMh3_8znglDUldj4"
         }
       ],
       "services": {

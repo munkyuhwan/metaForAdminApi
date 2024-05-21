@@ -57,6 +57,11 @@ export const getStoreInfo = createAsyncThunk("tableInfo/getStoreInfo", async(dat
     }
 })
 export const setStoreInfo = createAsyncThunk("tableInfo/setStoreInfo", async(data, {dispatch,rejectWithValue})=>{
+    const storeID = data?.store_id;
+    const prevStoreID = await AsyncStorage.getItem("STORE_IDX");
+    //await messaging().unsubscribeFromTopic(prevStoreID);
+    await messaging().unsubscribeFromTopic(prevStoreID);
+    await messaging().subscribeToTopic(storeID)
    return data;   
 })
 
