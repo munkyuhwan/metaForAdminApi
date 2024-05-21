@@ -258,7 +258,6 @@ export async function adFileDownloader(dispatch, name,url) {
     })
 }
 export const isAvailable = (item) => {
-
     const startTimeAm = Number(`${item?.use_timea}${item?.use_timeaa}`);
     const endTimeAm = Number(`${item?.use_timeb}${item?.use_timebb}`);
 
@@ -274,13 +273,36 @@ export const isAvailable = (item) => {
     const emptyAm = amTimes.filter(el=>el == "");
     const emptyPm = pmTimes.filter(el=>el == "");
 
+    var isAmPass = true;
+    var isPmPass = true;
+
     // 수량 오전 오후 시간 설정이 안되어 있다면 그냥 판매
     if(emptyAm?.length>0 && emptyPm?.length >0) {
         return true;
+    }else {
+        if(emptyAm?.length>0 && emptyPm?.length <=0) {
+            // 오전만 비있다.
+            if(currentTime>=startTimePm && currentTime<=endTimePm ) {
+            }else {
+                // 현재 시간이 오후에 해당되는 시간이 아니다
+                return false;
+            }
+        }
+
+        if(emptyAm?.length<=0 && emptyPm?.length>0) {
+            // 오후만 비있다.
+            if(currentTime>=startTimePm && currentTime<=endTimePm ) {
+            }else {
+                // 현재 시간이 오전에 해당하는 시간이 아니다.
+                return false;
+
+            }
+        }
+
     }
 
-    var isAmPass = true;
-    var isPmPass = true;
+
+
 
     // 1. 수량제한 시간이 있는지 확인 
     if(emptyAm?.length <= 0) {
@@ -303,8 +325,6 @@ export const isAvailable = (item) => {
     }
     return isAmPass || isPmPass;
     // 2. 시간이 수량제한1에 해당하는지 2에 해당하는지 확인 해 함.
-
-    return;
 
 
    /*  const startTimeAm = Number(`${item?.use_timea}${item?.use_timeaa}`);

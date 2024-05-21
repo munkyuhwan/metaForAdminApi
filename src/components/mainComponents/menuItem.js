@@ -16,7 +16,11 @@ import { styled } from 'styled-components';
 import { ADMIN_API_BASE_URL } from '../../resources/newApiResource';
 import moment from 'moment';
 import { current } from '@reduxjs/toolkit';
+import { useFocusEffect } from '@react-navigation/native';
+import { DEFAULT_TABLE_STATUS_UPDATE_TIME } from '../../resources/defaults';
 const height = Dimensions.get('window').height;
+let timeoutSet = null;
+
 /* 메인메뉴 메뉴 아이템 */
 const MenuItem = ({item,index,setDetailShow}) => {
     //<MenuItemImage />    
@@ -77,8 +81,17 @@ const MenuItem = ({item,index,setDetailShow}) => {
         }
     }
      */
+    const [reload, setReload] = useState("0");
+    useEffect(()=>{
+        timeoutSet = setInterval(() => {
+            setReload(reload=="1"?"0":"1");
+        }, DEFAULT_TABLE_STATUS_UPDATE_TIME);
+
+    },[])
+    
     return(
         <>
+        {reload &&
             <MenuItemWrapper>
                 <MenuItemTopWrapper>
                     {imgUrl &&
@@ -177,7 +190,7 @@ const MenuItem = ({item,index,setDetailShow}) => {
                     <MenuItemPrice>{numberWithCommas(itemPrice)}원</MenuItemPrice>
                 </MenuItemBottomWRapper>
             </MenuItemWrapper>
-
+        }
         </>
     );
 }

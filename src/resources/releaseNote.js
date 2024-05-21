@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.0.44";
+export const CURRENT_VERSION = "2.0.45";
 export const releaseNote = {
+    "2.0.45": //2024.05.21
+    `
+        - 대기화면 변경 안되는 오류 수정.
+    `,
     "2.0.44": //2024.05.20
     `
         - 준비중 상태 변경
