@@ -150,9 +150,9 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
                 dispatch(initOrderList());
                
                     openTransperentPopup(dispatch, {innerView:"OrderComplete", isPopupVisible:true,param:{msg:"주문을 완료했습니다."}});
-                    setTimeout(() => {
+                    /* setTimeout(() => {
                         openTransperentPopup(dispatch, {innerView:"OrderList", isPopupVisible:true, param:{timeOut:10000} });
-                    }, 3000);
+                    }, 3000); */
                 
                 
             }else {
