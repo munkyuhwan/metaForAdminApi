@@ -146,16 +146,14 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
         const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_POST_ORDER}`,postOrderData, {});
         if(data) {
             if(data?.result) {
-                //dispatch(setCartView(false));
-                //dispatch(initOrderList());
-               /*  if( tableStatus?.now_later == "선불") {
-                    openTransperentPopup(dispatch, {innerView:"OrderComplete", isPopupVisible:true,param:{msg:"주문을 완료했습니다."}});
-                }else {
+                dispatch(setCartView(false));
+                dispatch(initOrderList());
+               
                     openTransperentPopup(dispatch, {innerView:"OrderComplete", isPopupVisible:true,param:{msg:"주문을 완료했습니다."}});
                     setTimeout(() => {
                         openTransperentPopup(dispatch, {innerView:"OrderList", isPopupVisible:true, param:{timeOut:10000} });
                     }, 3000);
-                } */
+                
                 
             }else {
                 return rejectWithValue(error.message)
