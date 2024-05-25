@@ -29,6 +29,7 @@ import { setErrorData } from '../store/error'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { getAdminBulletin } from '../store/menuExtra'
 import messaging from '@react-native-firebase/messaging';
+import { displayErrorPopup } from '../utils/errorHandler/metaErrorHandler'
 
 const Stack = createStackNavigator()
 var statusInterval;
@@ -133,6 +134,8 @@ export default function Navigation() {
             dispatch(getAdminBulletin());
             messaging().onMessage((result)=>{
                 console.log("on message: ",result);
+                displayErrorPopup(dispatch, "XXXX", "푸시수신~");
+
                 dispatch(regularUpdate());
             })
             //}

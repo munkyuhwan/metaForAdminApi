@@ -21,6 +21,8 @@ import { KocesAppPay } from '../../utils/payment/kocesPay';
 import { getAdminCategories } from '../../store/categories';
 import { CURRENT_VERSION, releaseNote } from '../../resources/releaseNote';
 import { isEmpty } from 'lodash'
+import messaging from '@react-native-firebase/messaging';
+import { EventRegister } from 'react-native-event-listeners';
 
 const SettingPopup = () =>{
 
@@ -186,8 +188,16 @@ const SettingPopup = () =>{
     },[])
 
 
-    const setStoreID = () => {
+    const setStoreID = async () => {
+        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"스토 어아이디 설정 중 입니다."})
+        const prevStoreID = await AsyncStorage.getItem("STORE_IDX");
+        if(prevStoreID){       
+            await messaging().unsubscribeFromTopic(prevStoreID);
+        }
         AsyncStorage.setItem("STORE_IDX",storeIdx);
+        await messaging().subscribeToTopic(storeIdx)
+        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
+        
         displayOnAlert("스토어 아이디가 설정되었습니다.",{});            
     }
 
