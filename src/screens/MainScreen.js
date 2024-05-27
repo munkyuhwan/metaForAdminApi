@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import {View, NativeModules, DeviceEventEmitter, KeyboardAvoidingView} from 'react-native'
+import {View, NativeModules, DeviceEventEmitter, KeyboardAvoidingView, TouchableWithoutFeedback} from 'react-native'
 import SideMenu from '../components/main/sideMenu'
 import TopMenu from '../components/main/topMenu'
 import { MainWrapper, WholeWrapper } from '../styles/main/mainStyle'
@@ -16,6 +16,8 @@ import { setLanguage } from '../store/languages'
 import { DEFAULT_TABLE_STATUS_UPDATE_TIME } from '../resources/defaults'
 import {isEmpty} from 'lodash';
 import { getAD, setAdScreen } from '../store/ad'
+import { VLCPlayer, VlCPlayerView } from 'react-native-vlc-media-player';
+
 let timeoutSet = null;
 
 const MainScreen = () =>{   
@@ -47,6 +49,18 @@ const MainScreen = () =>{
         } 
           
     },[isShow])
+    return(
+        <>
+        <TouchableWithoutFeedback onPress={()=>{console.log("on press!!!!");}}>
+
+            <VLCPlayer
+                style={{width:'100%',height:'100%'}}
+                videoAspectRatio="16:9"
+                source={{ uri: "https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8"}}
+                />
+        </TouchableWithoutFeedback>
+        </>
+    )
     return(
         <>
             <KeyboardAvoidingView behavior="padding" enabled style={{width:'100%', height:'100%'}} >
