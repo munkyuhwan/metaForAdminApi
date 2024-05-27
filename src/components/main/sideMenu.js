@@ -9,6 +9,7 @@ import LeftMenuList from '../menuComponents/leftMenuList'
 import { LANGUAGE } from '../../resources/strings';
 import { DEFAULT_CATEGORY_ALL_CODE } from '../../resources/defaults';
 import { setAdScreen } from '../../store/ad';
+import { regularUpdate } from '../../store/menu';
 
 const SideMenu = () =>{
     const dispatch = useDispatch();
@@ -20,7 +21,7 @@ const SideMenu = () =>{
     if(allCategories.length <=0) {
         return (
             <SideMenuWrapper>
-                <TouchableWithoutFeedback onPress={()=>{ console.log("press logo"); dispatch(setAdScreen({isShow:true,isMain:true}));}}>
+                <TouchableWithoutFeedback onPress={()=>{ dispatch(regularUpdate());  dispatch(setAdScreen({isShow:true,isMain:true})); }}>
                     <LogoWrapper>
                         <LogoTop source={require("../../assets/icons/logo.png")}  />
                     </LogoWrapper>
@@ -48,7 +49,7 @@ const SideMenu = () =>{
     return(
         <>
             <SideMenuWrapper>
-                <TouchableWithoutFeedback onPress={()=>{ dispatch(setAdScreen({isShow:true,isMain:true}));}}>
+                <TouchableWithoutFeedback onPress={()=>{ dispatch(regularUpdate()); dispatch(setAdScreen({isShow:true,isMain:true})); }}>
                     <LogoWrapper>
                         <LogoTop source={require("../../assets/icons/logo.png")}  />
                     </LogoWrapper>

@@ -24,7 +24,6 @@ export const regularUpdate = createAsyncThunk("menu/regularUpdate", async(_,{dis
     const {STORE_IDX} = await getStoreID();
     const TABLE_INFO =  await AsyncStorage.getItem("TABLE_INFO");
     const lastUpdateDate = await AsyncStorage.getItem("lastUpdate").catch(err=>"");   
-    //console.log("regular update!")
     //console.log({"STORE_ID":`${STORE_IDX}`, "t_num":TABLE_INFO,"currentDateTime":lastUpdateDate});
     try {
         const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_REGULAR_UPDATE}`,{"STORE_ID":`${STORE_IDX}`, "t_num":TABLE_INFO,"currentDateTime":lastUpdateDate}, {});
@@ -163,6 +162,7 @@ export const menuUpdateCheck = createAsyncThunk("menu/menuUpdateCheck", async(_,
     }
 })
 export const setMenuUpdateCheck = createAsyncThunk("menu/setMenuUpdateCheck", async(data,{dispatch,getState}) =>{
+    console.log("setMenuUpdateCheck: ",data);
     if(data) {
             if(data?.isUpdated == "true") {
                 EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"메뉴 업데이트 중입니다."})
