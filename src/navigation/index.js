@@ -134,7 +134,6 @@ export default function Navigation() {
             dispatch(getAdminBulletin());
             messaging().onMessage((result)=>{
                 console.log("on message: ",result);
-                displayErrorPopup(dispatch, "XXXX", "푸시수신~");
                 dispatch(regularUpdate());
             })
             //}
