@@ -31,7 +31,7 @@ const TopMenuList = (props) => {
             return selectedData[0]?.cate_name2_cn||selectedData[0].cate_name2;
         }
         else if(language=="english") {
-            return selectedData[0]?.cate_name2_cn||selectedData[0].cate_name2;
+            return selectedData[0]?.cate_name2_en||selectedData[0].cate_name2;
         }
         return "";
 

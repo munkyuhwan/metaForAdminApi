@@ -21,19 +21,18 @@ const LeftMenuList = (props) => {
     }
     const ItemTitle = (categoryID, index) => {
         let selTitleLanguage = "";
-        const selExtra = menuCategories?.filter(el=>el.cate_code1==categoryID);
-        
+        const selExtra = data?.filter(el=>el.cate_code1==categoryID);
         if(language=="korean") {
-            selTitleLanguage = data[index]?.PROD_L1_NM;
+            selTitleLanguage = data[index]?.cate_name1;
         }
         else if(language=="japanese") {
-            selTitleLanguage = selExtra[0]?.cate_name1_jp || data[index]?.PROD_L1_NM;
+            selTitleLanguage = selExtra[0]?.cate_name1_jp || data[index]?.cate_name1;
         }
         else if(language=="chinese") {
-            selTitleLanguage = selExtra[0]?.cate_name1_cn|| data[index]?.PROD_L1_NM;
+            selTitleLanguage = selExtra[0]?.cate_name1_cn|| data[index]?.cate_name1;
         }
         else if(language=="english") {
-            selTitleLanguage = selExtra[0]?.cate_name1_en|| data[index]?.PROD_L1_NM;
+            selTitleLanguage = selExtra[0]?.cate_name1_en|| data[index]?.cate_name1;
         }
 
         return selTitleLanguage;    
