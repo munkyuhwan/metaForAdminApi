@@ -49,18 +49,18 @@ const MainScreen = () =>{
         } 
           
     },[isShow])
-    return(
+    /* return(
         <>
         <TouchableWithoutFeedback onPress={()=>{console.log("on press!!!!");}}>
 
             <VLCPlayer
                 style={{width:'100%',height:'100%'}}
                 videoAspectRatio="16:9"
-                source={{ uri: "https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8"}}
+                source={{ uri: "rtsp://user:1q2w3e4r.@14.35.253.159:556/trackID=1"}}
                 />
         </TouchableWithoutFeedback>
         </>
-    )
+    ) */
     return(
         <>
             <KeyboardAvoidingView behavior="padding" enabled style={{width:'100%', height:'100%'}} >

@@ -6,6 +6,7 @@ import { OrderCompleteIcon, OrderCompleteItemWrapper, OrderCompleteText, OrderCo
 import Video from 'react-native-video';
 import { StyleSheet, Text, TouchableWithoutFeedback } from "react-native";
 import WebView from "react-native-webview";
+import { VLCPlayer } from "react-native-vlc-media-player";
 
 
 const CameraView = () => {
@@ -15,14 +16,16 @@ const CameraView = () => {
     var player = useRef();
     return(
         <>
-            <OrderCompleteWrapper>
-                <TouchableWithoutFeedback style={{padding:15}} onPress={()=>{openTransperentPopup(dispatch, {innerView:"", isPopupVisible:false});}}>
-                    <Text style={{color:'white',fontWeight:'bold',fontSize:20}}>닫기</Text>
-                </TouchableWithoutFeedback> 
-                <WebView source={{uri:"https://youtu.be/JApXlFgOM_U?si=yUzoZ9w2AYMIL4Fu"}} />
-           </OrderCompleteWrapper>
+            <TouchableWithoutFeedback onPress={()=>{console.log("on press!!!!");}}>
+
+                <VLCPlayer
+                    style={{width:'100%',height:'100%'}}
+                    videoAspectRatio="16:9"
+                    source={{ uri: "rtsp://user:1q2w3e4r.@14.35.253.159:556/trackID=1"}}
+                    />
+            </TouchableWithoutFeedback>
         </>
-    )
+    ) 
 }
 var styles = StyleSheet.create({
     backgroundVideo: {

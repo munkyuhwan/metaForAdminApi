@@ -164,11 +164,11 @@ const TopMenu = () =>{
                         </AutoScroll>
                     }
                 </SafeAreaView>
-                {/* 
+                {
                 <TouchableWithoutFeedback onPress={()=>{openTransperentPopup(dispatch, {innerView:"CameraView", isPopupVisible:true}); }} >
-                    <Image style={{width:50,height:50, position:'absolute',right:340}} resizeMode='contain' source={require("../../assets/icons/cctv.png")}/>
+                    <Image style={{width:50,height:50, position:'absolute',right:'40%'}} resizeMode='contain' source={require("../../assets/icons/cctv.png")}/>
                 </TouchableWithoutFeedback>
-                */}
+                }
                 <TouchableWithoutFeedback onPress={()=>{ countDown(); onSettingPress();} } style={{position:'absolute',  top:0,left:0, zIndex:999999999}}>
                 <TableName>
                     <TableNameSmall>테이블</TableNameSmall>
