@@ -15,7 +15,7 @@ import { setCartView, setIconClick } from '../../store/cart';
 import { IconWrapper } from '../../styles/main/topMenuStyle';
 import TopButton from '../menuComponents/topButton';
 import {  getStoreID, isNetworkAvailable, itemEnableCheck, numberWithCommas, openFullSizePopup, openTransperentPopup } from '../../utils/common';
-import { adminDataPost, initOrderList, postLog, postOrderToPos, presetOrderData } from '../../store/order';
+import { adminDataPost, initOrderList, postLog, postOrderToPos, presetOrderData, setOrderProcess } from '../../store/order';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {isEmpty} from 'lodash';
 import LogWriter from '../../utils/logWriter';
@@ -295,6 +295,7 @@ const CartView = () =>{
         }
     }
     useEffect(()=>{
+        dispatch(setOrderProcess(false));
         if(isOn == true) {
             setPayProcess(false);
         }
@@ -355,6 +356,10 @@ const CartView = () =>{
         }
         
     },[orderList])
+    useEffect(()=>{
+        // 주문중 상태 변경: 주문중에 메뉴 업데이트를 안하기 위함dispatch(setOrderProcess(true));
+        dispatch(setOrderProcess(isPayProcess));
+    },[isPayProcess])
   
 
     return(

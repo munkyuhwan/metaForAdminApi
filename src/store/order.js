@@ -489,6 +489,10 @@ export const getOrderStatus = createAsyncThunk("order/getOrderStatus", async(_,{
 export const clearOrderStatus = createAsyncThunk("order/clearOrderStatus", async(_,{dispatch, getState,extra}) =>{
     return [];
 })
+// 테이블 주문중
+export const setOrderProcess = createAsyncThunk("order/onProcess",  async(data,{dispatch, getState,extra}) =>{
+    return data;
+})
 
 // Slice
 export const orderSlice = createSlice({
@@ -503,6 +507,7 @@ export const orderSlice = createSlice({
         orgOrderNo:"",
         orderNo:"",
         metaOrderData:null,
+        onProcess:false,
     },
     extraReducers:(builder)=>{
         // 어드민 데이터 보내기
@@ -602,7 +607,10 @@ export const orderSlice = createSlice({
         builder.addCase(clearOrderStatus.fulfilled,(state, action)=>{
                 state.orderStatus = [];
         })
-
+        // 주문 중 상태 setOrderProcess
+        builder.addCase(setOrderProcess.fulfilled,(state, action)=>{
+            state.onProcess = action.payload;
+        })
 
         
     }
