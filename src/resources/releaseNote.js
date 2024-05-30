@@ -1,6 +1,13 @@
 
-export const CURRENT_VERSION = "2.0.46";
+export const CURRENT_VERSION = "2.0.47";
 export const releaseNote = {
+    "2.0.47": //2024.05.30
+    `
+        - 주문중 / 결제중일때 업데이트 막기.
+        - 언어 선택시 창 닫기.
+        - W1 메뉴 상세 닫기 UI  두줄 됨.
+        - 주문 완료 후 메뉴 로딩.
+    `,
     "2.0.46": //2024.05.28
     `
         - 카테고리 언어 변경 수정.
