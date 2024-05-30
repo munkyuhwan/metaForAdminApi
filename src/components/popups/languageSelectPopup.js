@@ -6,6 +6,7 @@ import { LANGUAGE_KOREAN } from '../../resources/icons';
 import { TouchableWithoutFeedback } from 'react-native';
 import { setLanguage } from '../../store/languages';
 import { PopupSubtitleText, PopupTitleText, PopupTitleWrapper } from '../../styles/common/coreStyle';
+import { openPopup } from '../../utils/common';
 
 const LanguageSelectPopup = () => {
     const dispatch = useDispatch();
@@ -21,7 +22,7 @@ const LanguageSelectPopup = () => {
                     {
                         LANGUAGE_LIST.map(el => {
                             return (
-                                <TouchableWithoutFeedback key={el+"_language"} onPress={()=>{dispatch(setLanguage(el))}}>
+                                <TouchableWithoutFeedback key={el+"_language"} onPress={()=>{dispatch(setLanguage(el)); openPopup(dispatch, {innerView:"", isPopupVisible:false}); }}>
                                     <LanguageIconWrapper>
                                         {el=="korean" &&
                                             <LanguageIconImage source={require("../../assets/icons/korean.png")} />

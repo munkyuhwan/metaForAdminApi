@@ -17,6 +17,7 @@ import { EventRegister } from 'react-native-event-listeners';
 import { ADMIN_API_BASE_URL, ADMIN_API_POST_ORDER, TMP_STORE_DATA } from '../resources/newApiResource';
 import { callApiWithExceptionHandling } from '../utils/api/apiRequest';
 import { displayErrorPopup } from '../utils/errorHandler/metaErrorHandler';
+import { regularUpdate } from './menu';
 
 export const initOrderList = createAsyncThunk("order/initOrderList", async() =>{
     return  {
@@ -232,6 +233,7 @@ export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{
             if(data.ERROR_CD == "E0000") {
                 dispatch(setCartView(false));
                 dispatch(initOrderList());
+                dispatch(regularUpdate());
                 if( tableStatus?.now_later == "선불") {
                     openTransperentPopup(dispatch, {innerView:"OrderComplete", isPopupVisible:true,param:{msg:"주문을 완료했습니다."}});
                 }else {
@@ -487,6 +489,10 @@ export const getOrderStatus = createAsyncThunk("order/getOrderStatus", async(_,{
 export const clearOrderStatus = createAsyncThunk("order/clearOrderStatus", async(_,{dispatch, getState,extra}) =>{
     return [];
 })
+// 테이블 주문중
+export const setOrderProcess = createAsyncThunk("order/onProcess",  async(data,{dispatch, getState,extra}) =>{
+    return data;
+})
 
 // Slice
 export const orderSlice = createSlice({
@@ -501,6 +507,7 @@ export const orderSlice = createSlice({
         orgOrderNo:"",
         orderNo:"",
         metaOrderData:null,
+        onProcess:false,
     },
     extraReducers:(builder)=>{
         // 어드민 데이터 보내기
@@ -600,7 +607,10 @@ export const orderSlice = createSlice({
         builder.addCase(clearOrderStatus.fulfilled,(state, action)=>{
                 state.orderStatus = [];
         })
-
+        // 주문 중 상태 setOrderProcess
+        builder.addCase(setOrderProcess.fulfilled,(state, action)=>{
+            state.onProcess = action.payload;
+        })
 
         
     }

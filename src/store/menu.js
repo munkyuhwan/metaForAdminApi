@@ -24,6 +24,10 @@ export const regularUpdate = createAsyncThunk("menu/regularUpdate", async(_,{dis
     const {STORE_IDX} = await getStoreID();
     const TABLE_INFO =  await AsyncStorage.getItem("TABLE_INFO");
     const lastUpdateDate = await AsyncStorage.getItem("lastUpdate").catch(err=>"");   
+    const {onProcess} = getState().order;
+    if(onProcess == true) {
+        return;
+    }
     //console.log("regular update!")
     //console.log({"STORE_ID":`${STORE_IDX}`, "t_num":TABLE_INFO,"currentDateTime":lastUpdateDate});
     try {
