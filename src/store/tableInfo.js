@@ -7,7 +7,7 @@ import { ADMIN_API_BASE_URL, ADMIN_API_CATEGORY, TMP_STORE_DATA, ADMIN_API_TABLE
 import { getStoreID } from '../utils/common';
 import { callApiWithExceptionHandling } from '../utils/api/apiRequest';
 import {isEmpty} from 'lodash';
-
+import messaging from '@react-native-firebase/messaging';
 
 
 // 관리자 테이블 상테 받아오기
@@ -57,6 +57,13 @@ export const getStoreInfo = createAsyncThunk("tableInfo/getStoreInfo", async(dat
     }
 })
 export const setStoreInfo = createAsyncThunk("tableInfo/setStoreInfo", async(data, {dispatch,rejectWithValue})=>{
+    const storeID = data?.store_id;
+    const prevStoreID = await AsyncStorage.getItem("STORE_IDX");
+    //await messaging().unsubscribeFromTopic(prevStoreID);
+    if(prevStoreID) {
+        await messaging().unsubscribeFromTopic(prevStoreID);
+    }
+    await messaging().subscribeToTopic(storeID)
    return data;   
 })
 

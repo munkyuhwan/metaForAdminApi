@@ -15,12 +15,14 @@ import { useSharedValue } from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initOrderList } from '../../store/order';
 import { setCartView } from '../../store/cart';
-import { getAdminItems, initMenu } from '../../store/menu';
+import { getAdminItems, initMenu, regularUpdate } from '../../store/menu';
 import { CODE_PUSH_PRODUCTION, CODE_PUSH_SECRET } from '../../resources/apiResources';
 import { KocesAppPay } from '../../utils/payment/kocesPay';
 import { getAdminCategories } from '../../store/categories';
 import { CURRENT_VERSION, releaseNote } from '../../resources/releaseNote';
 import { isEmpty } from 'lodash'
+import messaging from '@react-native-firebase/messaging';
+import { EventRegister } from 'react-native-event-listeners';
 
 const SettingPopup = () =>{
 
@@ -186,9 +188,19 @@ const SettingPopup = () =>{
     },[])
 
 
-    const setStoreID = () => {
+    const setStoreID = async () => {
+        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"스토 어아이디 설정 중 입니다."})
+        const prevStoreID = await AsyncStorage.getItem("STORE_IDX");
+        if(prevStoreID){       
+            await messaging().unsubscribeFromTopic(prevStoreID);
+        }
         AsyncStorage.setItem("STORE_IDX",storeIdx);
+        await messaging().subscribeToTopic(storeIdx)
+        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
+        
         displayOnAlert("스토어 아이디가 설정되었습니다.",{});            
+        dispatch(regularUpdate());
+
     }
 
     const deviceConnection = async () =>{

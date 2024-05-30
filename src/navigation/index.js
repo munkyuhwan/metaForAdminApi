@@ -28,9 +28,35 @@ import PopupIndicatorNonCancel from '../components/common/popupIndicatoreNonCanc
 import { setErrorData } from '../store/error'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { getAdminBulletin } from '../store/menuExtra'
+import messaging from '@react-native-firebase/messaging';
+import { displayErrorPopup } from '../utils/errorHandler/metaErrorHandler'
 
 const Stack = createStackNavigator()
 var statusInterval;
+
+function requestUserPermission() {
+    console.log("requestUserPermission");
+    messaging().requestPermission()
+    .then(result=>{
+        console.log("permission result: ",result);
+      /*   messaging().getToken()
+        .then((result)=>{
+            console.log("result: ");
+            console.log("messaging().getToken: ",result);
+        })
+        .catch((err)=>{
+            console.log("err: ",err)
+        }) */
+
+    })
+    .catch((err)=>{
+        console.log("err: ",err);
+    })
+    
+}
+  
+
+
 export default function Navigation() {
     const dispatch = useDispatch();
 
@@ -95,16 +121,21 @@ export default function Navigation() {
     useEffect(()=>{
         //if(!isEmpty(tableInfo)) { 
             // 주석 나중에 빼자
-            statusInterval = setInterval(() => {
+            /* statusInterval = setInterval(() => {
                 //console.log("status interval")
                 
                 //dispatch(getStoreInfo());
                 //dispatch(getTableStatus());
                 //dispatch(menuUpdateCheck());
                 dispatch(regularUpdate());
-            }, DEFAULT_TABLE_STATUS_UPDATE_TIME);
+            }, DEFAULT_TABLE_STATUS_UPDATE_TIME); */
+            
             dispatch(regularUpdate());
             dispatch(getAdminBulletin());
+            messaging().onMessage((result)=>{
+                console.log("on message: ",result);
+                dispatch(regularUpdate());
+            })
             //}
     },[])
 
@@ -118,7 +149,7 @@ export default function Navigation() {
         getDeviceInfo();
         // 광고 받기
         dispatch(getAD()); 
-
+        requestUserPermission();
     },[])
     useEffect(()=>{
         // 카테고리 선택에 따라 아이템 변경
@@ -177,6 +208,7 @@ export default function Navigation() {
         }
             
     },[tableStatus,cardDeviceInfo,orderHistory,posIP])
+
     return (
         <>  
             <NavigationContainer
