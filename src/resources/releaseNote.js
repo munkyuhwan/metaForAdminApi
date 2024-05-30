@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.0.45";
+export const CURRENT_VERSION = "2.0.46";
 export const releaseNote = {
+    "2.0.46": //2024.05.28
+    `
+        - 카테고리 언어 변경 수정.
+    `,
     "2.0.45": //2024.05.21
     `
         - 대기화면 변경 안되는 오류 수정.
