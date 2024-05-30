@@ -1,6 +1,11 @@
 
-export const CURRENT_VERSION = "2.0.47";
+export const CURRENT_VERSION = "2.1.0";
 export const releaseNote = {
+    "2.1.0": //2024.05.30
+    `
+        - 푸시 기능 통합.
+        - cctv 기능 통합.
+    `,
     "2.0.47": //2024.05.30
     `
         - 주문중 / 결제중일때 업데이트 막기.
