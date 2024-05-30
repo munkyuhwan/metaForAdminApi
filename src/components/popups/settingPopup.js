@@ -15,7 +15,7 @@ import { useSharedValue } from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initOrderList } from '../../store/order';
 import { setCartView } from '../../store/cart';
-import { getAdminItems, initMenu } from '../../store/menu';
+import { getAdminItems, initMenu, regularUpdate } from '../../store/menu';
 import { CODE_PUSH_PRODUCTION, CODE_PUSH_SECRET } from '../../resources/apiResources';
 import { KocesAppPay } from '../../utils/payment/kocesPay';
 import { getAdminCategories } from '../../store/categories';
@@ -199,6 +199,8 @@ const SettingPopup = () =>{
         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
         
         displayOnAlert("스토어 아이디가 설정되었습니다.",{});            
+        dispatch(regularUpdate());
+
     }
 
     const deviceConnection = async () =>{

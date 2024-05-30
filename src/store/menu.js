@@ -162,7 +162,6 @@ export const menuUpdateCheck = createAsyncThunk("menu/menuUpdateCheck", async(_,
     }
 })
 export const setMenuUpdateCheck = createAsyncThunk("menu/setMenuUpdateCheck", async(data,{dispatch,getState}) =>{
-    console.log("setMenuUpdateCheck: ",data);
     if(data) {
             if(data?.isUpdated == "true") {
                 EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"메뉴 업데이트 중입니다."})
