@@ -81,7 +81,7 @@ export const KOCES_CODE_STORE_DOWNLOAD = "D10";
 export const KOCES_CODE_KEY_RENEW = "D20";
 
 // ADMIN API URL
-export const ADMIN_BASE_URL = "http://worder.co.kr/metacity";
+export const ADMIN_BASE_URL = "http://worder2.co.kr/metacity";
 
 export const ADMIN_API_GOODS = "good2.php";
 export const ADMIN_API_CATEGORIES = "category.php";

@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.1.0";
+export const CURRENT_VERSION = "2.1.1";
 export const releaseNote = {
+    "2.1.1": //2024.05.31
+    `
+        - api주소 변경
+    `,
     "2.1.0": //2024.05.30
     `
         - 푸시 기능 통합.
