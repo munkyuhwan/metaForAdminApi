@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.1.1";
+export const CURRENT_VERSION = "2.1.2";
 export const releaseNote = {
+    "2.1.2": //2024.06.03
+    `
+        - 스토어 아이디 세팅 수정
+    `,
     "2.1.1": //2024.05.31
     `
         - api주소 변경

@@ -190,7 +190,7 @@ const SettingPopup = () =>{
 
     const setStoreID = async () => {
         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"스토 어아이디 설정 중 입니다."})
-        const prevStoreID = await AsyncStorage.getItem("STORE_IDX");
+        const prevStoreID = await AsyncStorage.getItem("STORE_IDX").catch(()=>{return null;});
         if(prevStoreID){       
             await messaging().unsubscribeFromTopic(prevStoreID);
         }
