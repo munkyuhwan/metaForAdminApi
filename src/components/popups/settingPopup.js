@@ -191,15 +191,28 @@ const SettingPopup = () =>{
     const setStoreID = async () => {
         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"스토 어아이디 설정 중 입니다."})
         const prevStoreID = await AsyncStorage.getItem("STORE_IDX").catch(()=>{return null;});
-        if(prevStoreID){       
-            await messaging().unsubscribeFromTopic(prevStoreID);
+        if(prevStoreID){      
+            try{
+               await messaging().unsubscribeFromTopic(prevStoreID);
+            }catch(err){
+                console.log("err:",err);
+                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
+                displayOnAlert(`${err}`,{});        
+                return;    
+            }
         }
         AsyncStorage.setItem("STORE_IDX",storeIdx);
-        await messaging().subscribeToTopic(storeIdx)
-        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
-        
-        displayOnAlert("스토어 아이디가 설정되었습니다.",{});            
-        dispatch(regularUpdate());
+        try {
+            await messaging().subscribeToTopic(storeIdx)
+            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
+            displayOnAlert("스토어 아이디가 설정되었습니다.",{});            
+            dispatch(regularUpdate());
+        }catch(err){
+            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
+            displayOnAlert(`${err}`,{});            
+            return;
+        }
+       
 
     }
 

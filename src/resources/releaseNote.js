@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.1.2";
+export const CURRENT_VERSION = "2.1.3";
 export const releaseNote = {
+    "2.1.3": //2024.06.05
+    `
+        - 푸시 세팅 실패 시 얼럿 추가.
+    `,
     "2.1.2": //2024.06.03
     `
         - 스토어 아이디 세팅 수정
