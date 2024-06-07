@@ -70,7 +70,14 @@ export default function Navigation() {
     const {isMonthSelectShow} = useSelector(state=>state.monthSelect);
 
     const navigate = useRef();
-
+    const {images} = useSelector(state=>state.imageStorage);
+    useEffect(()=>{
+        if(images.length < allItems.length) {
+            EventRegister.emit("showSpinner",{isSpinnerShow:true, msg:"이미지 다운로드 중입니다."})
+        }else {
+            EventRegister.emit("showSpinner",{isSpinnerShow:false, msg:""})
+        }
+    },[images])
     const handleEventListener = () => {
         //리스너 중복방지를 위해 한번 삭제
         DeviceEventEmitter.removeAllListeners("onPending");

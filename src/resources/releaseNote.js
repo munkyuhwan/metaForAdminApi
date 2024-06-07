@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.1.3";
+export const CURRENT_VERSION = "2.1.4";
 export const releaseNote = {
+    "2.1.4": //2024.06.08
+    `
+        - 이미지 다운로드 스피너 추가.
+    `,
     "2.1.3": //2024.06.05
     `
         - 푸시 세팅 실패 시 얼럿 추가.
