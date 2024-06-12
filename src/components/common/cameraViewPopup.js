@@ -19,35 +19,34 @@ const CameraView = () => {
     const {tableInfo,cctv} = useSelector(state => state.tableInfo);
 
     var player = useRef();
-    useEffect(()=>{
-        console.log("cctv:: ",cctv)
-    },[cctv])
     function onPressItem(index) {
-        
+
     }
+    //source={{ uri: "rtsp://user:1q2w3e4r.@14.35.253.159:556/trackID=1"}}
 
     return(
         <>
             <TouchableWithoutFeedback onPress={()=>{console.log("on press!!!!");}}>
                 <CCTVWrapper>
-                <TopMenuWrapper>
-                    <CategoryScrollView  horizontal showsHorizontalScrollIndicator={false} >
-                        <CategoryWrapper>
-                            {
-                                <CCTVItemList
-                                    data={cctv}
-                                    onSelectItem={(index)=>{ onPressItem(index); }}
-                                    initSelect={0}
-                                />
-                            }
-                       </CategoryWrapper>
-                    </CategoryScrollView>
-            </TopMenuWrapper>
-        
+                    <TopMenuWrapper>
+                            <CategoryScrollView  horizontal showsHorizontalScrollIndicator={false} >
+                                <CategoryWrapper>
+                                    {
+                                        <CCTVItemList
+                                            data={cctv}
+                                            onSelectItem={(index)=>{ onPressItem(index); }}
+                                            initSelect={0}
+                                        />
+                                    }
+                            </CategoryWrapper>
+                            </CategoryScrollView>
+                    </TopMenuWrapper>
                     <VLCPlayer
-                        style={{width:'100%',height:'100%'}}
+                        style={{width:'100%',height:'90%'}}
                         videoAspectRatio="16:9"
-                        source={{ uri: "rtsp://user:1q2w3e4r.@14.35.253.159:556/trackID=1"}}
+                        onLoad={()=>{console.log("on load")}}
+                        onPlaying={()=>{console.log("on playing")}}
+                        source={{ uri: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"}}
                         />
                 </CCTVWrapper>
             </TouchableWithoutFeedback>
