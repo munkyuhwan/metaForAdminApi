@@ -66,6 +66,9 @@ export const setStoreInfo = createAsyncThunk("tableInfo/setStoreInfo", async(dat
     await messaging().subscribeToTopic(storeID)
    return data;   
 })
+export const setCctv = createAsyncThunk("tableInfo/setCctv", async(data, {dispatch,rejectWithValue})=>{
+   return data;   
+})
 
 /**이하 삭제 */
 
@@ -105,10 +108,21 @@ export const tableInfoSlice = createSlice({
         tableStatus:{},
         cardDeviceInfo:{},
         orderHistory:[],
+        cctv:[],
         tableCode:"0001",
         posIP:"",
     },
     extraReducers:(builder)=>{
+        // setCctv
+        builder.addCase(setCctv.fulfilled,(state, action)=>{
+            state.cctv = action.payload;
+        })
+        builder.addCase(setCctv.pending,(state, action)=>{
+        })
+        builder.addCase(setCctv.rejected,(state, action)=>{
+        })
+
+
         // 메인 카테고리 받기
         builder.addCase(setTableInfo.fulfilled,(state, action)=>{
             state.tableInfo = action.payload;

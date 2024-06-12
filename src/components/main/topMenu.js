@@ -36,7 +36,7 @@ const TopMenu = () =>{
     const {selectedMainCategory,subCategories, allCategories} = useSelector(state => state.categories);
     const [tableNoText, setTableNoText] = useState("");
     const [tableInfoText, setTableInfoText] = useState("");
-    const {tableInfo} = useSelector(state => state.tableInfo);
+    const {tableInfo,cctv} = useSelector(state => state.tableInfo);
     
     const {bulletin} = useSelector(state=>state.menuExtra);
 
@@ -142,7 +142,7 @@ const TopMenu = () =>{
         }else {
             setSettingTouch(0);
         }
-    } 
+    }
     return(
         <>
             <TopMenuWrapper>
@@ -164,11 +164,11 @@ const TopMenu = () =>{
                         </AutoScroll>
                     }
                 </SafeAreaView>
-                {/*
-                <TouchableWithoutFeedback onPress={()=>{openTransperentPopup(dispatch, {innerView:"CameraView", isPopupVisible:true}); }} >
-                    <Image style={{width:50,height:50, position:'absolute',right:'40%'}} resizeMode='contain' source={require("../../assets/icons/cctv.png")}/>
-                </TouchableWithoutFeedback>
-                */}
+                {cctv?.length > 0 &&
+                    <TouchableWithoutFeedback onPress={()=>{openTransperentPopup(dispatch, {innerView:"CameraView", isPopupVisible:true}); }} >
+                        <Image style={{width:50,height:50, position:'absolute',right:'40%'}} resizeMode='contain' source={require("../../assets/icons/cctv.png")}/>
+                    </TouchableWithoutFeedback>
+                }
                 <TouchableWithoutFeedback onPress={()=>{ countDown(); onSettingPress();} } style={{position:'absolute',  top:0,left:0, zIndex:999999999}}>
                 <TableName>
                     <TableNameSmall>테이블</TableNameSmall>

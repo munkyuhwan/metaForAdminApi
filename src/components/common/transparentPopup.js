@@ -14,7 +14,7 @@ import OrderListPopup from '../popups/orderListPopup';
 import ErrorPopup from './errorPopup';
 import OrderCompletePopup from './orderCompletePopup';
 import OrderFailListPopup from '../popups/orderFailList';
-import CameraView from './cemeraViewPopup';
+import CameraView from './cameraViewPopup';
 import OrderPayPopup from '../popups/orderPayPopup';
 
 const TransparentPopUp = (props) =>{

@@ -13,7 +13,7 @@ import { getItems } from '../utils/api/newApi';
 import {isEmpty} from 'lodash';
 import { callApiWithExceptionHandling } from '../utils/api/apiRequest';
 import { ADMIN_API_BASE_URL, ADMIN_API_GOODS, ADMIN_API_MENU_UPDATE, ADMIN_API_REGULAR_UPDATE, TMP_STORE_DATA } from '../resources/newApiResource';
-import { setStoreInfo, setTableInfo, setTableStatus } from './tableInfo';
+import { setCctv, setStoreInfo, setTableInfo, setTableStatus } from './tableInfo';
 import { initImageStorage } from './imageStorage';
 
 export const clearAllItems = createAsyncThunk("menu/clearAllItems", async(_,{dispatch,getState}) =>{ 
@@ -37,7 +37,9 @@ export const regularUpdate = createAsyncThunk("menu/regularUpdate", async(_,{dis
             const goodsUpdate = resultData?.goods2_update;
             const storeInfo = resultData?.store_info;
             const storeTable = resultData?.store_table;
+            const cctvs = resultData?.cctv;
             await dispatch(setStoreInfo(storeInfo[0]));
+            await dispatch(setCctv(cctvs));
             await dispatch(setTableStatus(storeTable[0]));
             await dispatch(setMenuUpdateCheck(goodsUpdate[0]));
             return [];
