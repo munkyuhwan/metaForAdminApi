@@ -66,10 +66,14 @@ export const setStoreInfo = createAsyncThunk("tableInfo/setStoreInfo", async(dat
     await messaging().subscribeToTopic(storeID)
    return data;   
 })
+
 export const setCctv = createAsyncThunk("tableInfo/setCctv", async(data, {dispatch,rejectWithValue})=>{
    return data;   
 })
 
+export const setLastOrderItem = createAsyncThunk("tableInfo/setLastOrderItem", async(data, {dispatch,rejectWithValue})=>{
+    return data;   
+ })
 /**이하 삭제 */
 
 export const initTableInfo =  createAsyncThunk("tableInfo/initTableInfo", async() =>{
@@ -111,8 +115,21 @@ export const tableInfoSlice = createSlice({
         cctv:[],
         tableCode:"0001",
         posIP:"",
+        lastOrderItem:"",
     },
     extraReducers:(builder)=>{
+        // setLastOrderItem
+        builder.addCase(setLastOrderItem.fulfilled,(state, action)=>{
+            if(action.payload) {
+                state.lastOrderItem = action.payload;
+            }
+        })
+        builder.addCase(setLastOrderItem.pending,(state, action)=>{
+        })
+        builder.addCase(setLastOrderItem.rejected,(state, action)=>{
+        })
+
+
         // setCctv
         builder.addCase(setCctv.fulfilled,(state, action)=>{
             state.cctv = action.payload;

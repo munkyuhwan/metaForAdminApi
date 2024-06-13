@@ -1,6 +1,11 @@
 
-export const CURRENT_VERSION = "2.1.4";
+export const CURRENT_VERSION = "2.1.5";
 export const releaseNote = {
+    "2.1.5": //2024.06.08
+    `
+        - 플로팅 버튼 추가.
+        - 카테고리 사용 안함 추가
+    `,
     "2.1.4": //2024.06.08
     `
         - 이미지 다운로드 스피너 추가.

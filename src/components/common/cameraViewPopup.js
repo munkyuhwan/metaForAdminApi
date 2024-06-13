@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { openPopup, openTransperentPopup } from "../../utils/common";
 import { ErrorTitle, ErrorWrapper } from "../../styles/common/errorStyle";
-import { OrderCompleteIcon, OrderCompleteItemWrapper, OrderCompleteText, OrderCompleteWrapper } from "../../styles/common/popup";
+import { OrderCompleteIcon, OrderCompleteItemWrapper, OrderCompleteText, OrderCompleteWrapper, PopupCloseButton, PopupCloseButtonWrapper } from "../../styles/common/popup";
 import Video from 'react-native-video';
 import { Image, StyleSheet, Text, TouchableWithoutFeedback } from "react-native";
 import WebView from "react-native-webview";
@@ -25,8 +25,8 @@ const CameraView = () => {
     //source={{ uri: "rtsp://user:1q2w3e4r.@14.35.253.159:556/trackID=1"}}
 
     return(
-        <>
-            <TouchableWithoutFeedback onPress={()=>{console.log("on press!!!!");}}>
+        <>  
+
                 <CCTVWrapper>
                     <TopMenuWrapper>
                             <CategoryScrollView  horizontal showsHorizontalScrollIndicator={false} >
@@ -49,7 +49,10 @@ const CameraView = () => {
                         source={{ uri: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"}}
                         />
                 </CCTVWrapper>
-            </TouchableWithoutFeedback>
+
+                <TouchableWithoutFeedback style={{zIndex:999999}} onPress={()=>{ openTransperentPopup(dispatch, {innerView:"", isPopupVisible:false}); }}>
+                    <PopupCloseButton  style={{position:'absolute', right:5,top:5}} source={require('../../assets/icons/close_red.png')}/>
+                </TouchableWithoutFeedback>
         </>
     ) 
 }

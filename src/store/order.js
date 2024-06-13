@@ -18,6 +18,7 @@ import { ADMIN_API_BASE_URL, ADMIN_API_POST_ORDER, TMP_STORE_DATA } from '../res
 import { callApiWithExceptionHandling } from '../utils/api/apiRequest';
 import { displayErrorPopup } from '../utils/errorHandler/metaErrorHandler';
 import { regularUpdate } from './menu';
+import { setLastOrderItem } from './tableInfo';
 
 export const initOrderList = createAsyncThunk("order/initOrderList", async() =>{
     return  {
@@ -95,6 +96,7 @@ export const presetOrderData = createAsyncThunk("order/presetOrderData", async(_
 export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{dispatch, rejectWithValue, getState})=>{
     const { tableStatus } = getState().tableInfo;
     const {payData, orderData} = _;
+    const {allItems} = getState().menu;
     var postOrderData = Object.assign({}, orderData);
     const date = new Date();
     const tableNo = await getTableInfo().catch(err=>{posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:"테이블 설정",MSG2:"테이블 번호를 설정 해 주세요."});});
@@ -140,8 +142,34 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
         "STORE_ID":STORE_IDX,
     }
     postOrderData = {...postOrderData,...addData};
-    //console.log("postOrderData========================================================")
+    //console.log("postOrderDatatoadmin========================================================")
     //console.log(JSON.stringify(postOrderData))
+
+    // 마지막 주문 팝업 추가
+    const itemList = postOrderData?.ITEM_INFO
+    if(itemList.length > 0) {
+        itemList?.map(el=>{
+            const itemDetail = allItems.filter(item => item.prod_cd == el.ITEM_CD );
+            console.log("itemDetail: ",itemDetail) 
+            if(itemDetail?.length>0) {
+                const isPopup = itemDetail[0]?.is_popup;
+                console.log("is popup: ",isPopup);
+                if(isPopup == "Y") {
+                    dispatch(setLastOrderItem(itemDetail[0].prod_cd));
+                }
+            }
+
+        })
+    }
+    /* 
+        if(itemDetail?.length>0) {
+            const isPopup = itemDetail[0]?.is_popup;
+            console.log("is popup: ",isPopup);
+            if(isPopup == "Y") {
+                
+            }
+        }
+         */
     try {
         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
         const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_POST_ORDER}`,postOrderData, {});

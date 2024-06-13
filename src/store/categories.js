@@ -76,7 +76,7 @@ export const cagegoriesSlice = createSlice({
             if(result == true) {
                 const goodsCategory = payload?.goods_category;
                 if(goodsCategory.length > 0) {
-                    const categories = goodsCategory.filter(el=>(el.is_use=='Y' && el.is_del=='N'));
+                    const categories = goodsCategory.filter(el=>(el.is_use=='Y' && el.is_del=='N' && el.is_view=='Y'  ));
                     state.allCategories =  categories;
                 }
             }

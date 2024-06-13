@@ -12,25 +12,22 @@ import { DEFAULT_CATEGORY_ALL_CODE } from '../../resources/defaults';
 const CCTVItemList = (props) => {
     const dispatch = useDispatch();
     const data = props.data;
-    //console.log("data: ",data);
 
-    //if(data?.length <= 0 ) {
+    if(data?.length <= 0 ) {
         return(
             <>
             </>
         )
-    //}
+    }
 
 
     return(
         <>
         {data?.map((el)=>{
             return(
-                <TouchableWithoutFeedback key={"subcat_"+el?.cate_code2} onPress={()=>{ onPressAction(el?.cate_code2); }}>
-                    <CategorySelected>
-                        <TopMenuText key={"subcatText_"+el?.cate_code2} >{ItemTitle(el?.cate_code2)}</TopMenuText>
-                    </CategorySelected>
-                </TouchableWithoutFeedback>
+                <CategorySelected>
+                    <TopMenuText key={"subcatText_"+el?.idx} >{el?.cctv_name}</TopMenuText>
+                </CategorySelected>
             )
         })
 

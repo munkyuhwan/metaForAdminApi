@@ -10,6 +10,7 @@ import { setSelectedMainCategory, setSelectedSubCategory } from '../../store/cat
 import { useSharedValue } from 'react-native-reanimated';
 import { numberPad, openFullSizePopup, openPopup } from '../../utils/common';
 import { DEFAULT_CATEGORY_ALL_CODE } from '../../resources/defaults';
+import FloatingBtn from '../popups/floatingButtonPopup';
 
 // 스크롤링 관련
 var touchStartOffset = 0;
@@ -177,6 +178,8 @@ const MenuListView = () => {
                     />
                 }
             </MenuListWrapper>
+            <FloatingBtn isDetailShow={isDetailShow} setDetailShow={setDetailShow}  />
+
             {/*isDetailShow&&
             <ItemDetail isDetailShow={isDetailShow} setDetailShow={setDetailShow} language={language}/>
                 */}
