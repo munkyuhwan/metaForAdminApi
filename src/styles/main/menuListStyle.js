@@ -64,10 +64,12 @@ export const MenuItemDetailSpicenessWrapper = styled.View`
     justifyContent: flex-start;
 `
 export const MenuItemButtonInnerWrapperLeft = styled.View`
-    width:100%;
-    flex:1;
+    width:20%;
     flexDirection: row;
     justifyContent:flex-end;
+    position:absolute;
+    right:0px;
+    bottom:0px;
 `
 export const MenuItemButton = styled.Image`
     width:56px;

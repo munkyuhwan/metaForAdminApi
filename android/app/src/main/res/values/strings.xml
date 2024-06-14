@@ -2,7 +2,7 @@
     <string name="app_name">우리오더</string>
     <string name="appCenterCrashes_whenToSendCrashes" moduleConfig="true" translatable="false">DO_NOT_ASK_JAVASCRIPT</string>
     <string name="appCenterAnalytics_whenToEnableAnalytics" moduleConfig="true" translatable="false">ALWAYS_SEND</string>
-    <string name="reactNativeCodePush_androidDeploymentKey">da5e87fb-a7b8-4e7a-8428-e6eda2804cb3</string>
+    <string name="reactNativeCodePush_androidDeploymentKey">19141664-dee8-47a6-83c2-75caa43dfc71</string>
 
     <!-- 결제관련 string 테스트 -->
     <string name="TID">0710000900</string>

@@ -124,9 +124,9 @@ export const CALL_SERVICE_GROUP_CODE = "99999";
 
 
 
-export const CODE_PUSH_SECRET = "da5e87fb-a7b8-4e7a-8428-e6eda2804cb3";
-export const CODE_PUSH_PRODUCTION = "_strT2FBl4DuNhi3d4zU4MNmQrbfGU4s7iTFK";
-export const CODE_PUSH_DEBUG = "GZAwRKJ3yfMeCfp7elUrPyn8EiW_ldg_274Lt";
-export const CODE_PUSH_STAGING = "LXSnC9viZ4XyE3ak5RkNsl_v9I8bE-_LGhqS-";
+export const CODE_PUSH_SECRET = "19141664-dee8-47a6-83c2-75caa43dfc71";
+export const CODE_PUSH_PRODUCTION = "wbJlabxfWFONX94d5LDm-TR-kakI-vPgq5ZXt";
+export const CODE_PUSH_DEBUG = "6O5wsLiA2OJc3wVixWnkX7lH8p8GTt8NIEAgz";
+export const CODE_PUSH_STAGING = "kH66lhPgWM3pKcW2qHGccXxn55CbOMmoy14q5";
 
 

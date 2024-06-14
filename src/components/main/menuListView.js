@@ -178,7 +178,7 @@ const MenuListView = () => {
                     />
                 }
             </MenuListWrapper>
-            <FloatingBtn isDetailShow={isDetailShow} setDetailShow={setDetailShow}  />
+           {/*  <FloatingBtn isDetailShow={isDetailShow} setDetailShow={setDetailShow}  /> */}
 
             {/*isDetailShow&&
             <ItemDetail isDetailShow={isDetailShow} setDetailShow={setDetailShow} language={language}/>
