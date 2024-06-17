@@ -1,6 +1,11 @@
 
-export const CURRENT_VERSION = "2.1.8";
+export const CURRENT_VERSION = "2.2.0";
 export const releaseNote = {
+    "2.2.0": //2024.06.17
+    `
+        - cctv 기능 추가.
+        - 마지막 주문 메뉴 플로팅 추가.
+    `,
     "2.1.8": //2024.06.13
     `
         - 사진터치시 카트 추가되는 버그 수정.

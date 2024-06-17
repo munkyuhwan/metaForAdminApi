@@ -68,7 +68,7 @@ export const setStoreInfo = createAsyncThunk("tableInfo/setStoreInfo", async(dat
 })
 
 export const setCctv = createAsyncThunk("tableInfo/setCctv", async(data, {dispatch,rejectWithValue})=>{
-   return data;   
+   return data[0];   
 })
 
 export const setLastOrderItem = createAsyncThunk("tableInfo/setLastOrderItem", async(data, {dispatch,rejectWithValue})=>{

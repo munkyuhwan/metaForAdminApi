@@ -46,7 +46,7 @@ export const CategoryDefault = styled.View`
     borderTopRightRadius:${RADIUS_DOUBLE}px;
 `
 export const CategorySelected = styled.View`
-    backgroundColor: ${colorBrown};
+    backgroundColor: ${ props => props?.isSelected?colorRed:colorBrown };
     width:160px;
     height:90%;
     marginRight:7px;

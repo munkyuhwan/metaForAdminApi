@@ -11,19 +11,31 @@ import { CCTVWrapper } from "../../styles/popup/cctvStyle";
 import { CategoryScrollView, CategoryWrapper, TopMenuWrapper } from "../../styles/main/topMenuStyle";
 import TopMenuList from "../menuComponents/topMenuList";
 import CCTVItemList from "../menuComponents/cctvItemList";
+import { EventRegister } from "react-native-event-listeners";
 
 
 const CameraView = () => {
     const dispatch = useDispatch();
     const {popupMsg, param,innerTransView} = useSelector(state=>state.popup);
     const {tableInfo,cctv} = useSelector(state => state.tableInfo);
+    const [currentIndex, setCurrentIndex] = useState();
+    const [cctvUrl, setCctvUrl] = useState("");
 
     var player = useRef();
-    function onPressItem(index) {
-
+    function onPressItem(data) {
+        setCurrentIndex(data.idx);
     }
-    //source={{ uri: "rtsp://user:1q2w3e4r.@14.35.253.159:556/trackID=1"}}
-
+    useEffect(()=>{
+        if(cctv) {
+            setCurrentIndex(cctv[0].idx);
+        }
+    },[cctv])
+    useEffect(()=>{
+        const filteredCctv = cctv.filter(el=>el.idx==currentIndex);
+        if(filteredCctv) {
+            setCctvUrl(filteredCctv[0].cctv_url);   
+        }
+    },[currentIndex])
     return(
         <>  
 
@@ -34,20 +46,24 @@ const CameraView = () => {
                                     {
                                         <CCTVItemList
                                             data={cctv}
-                                            onSelectItem={(index)=>{ onPressItem(index); }}
+                                            onSelectItem={(selected)=>{ onPressItem(selected); }}
                                             initSelect={0}
+                                            currentIndex={currentIndex}
                                         />
                                     }
                             </CategoryWrapper>
                             </CategoryScrollView>
                     </TopMenuWrapper>
-                    <VLCPlayer
-                        style={{width:'100%',height:'90%'}}
-                        videoAspectRatio="16:9"
-                        onLoad={()=>{console.log("on load")}}
-                        onPlaying={()=>{console.log("on playing")}}
-                        source={{ uri: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"}}
+                    {cctvUrl &&
+                        <VLCPlayer
+                            ref={player}
+                            style={{width:'100%',height:'90%'}}
+                            videoAspectRatio="16:9"
+                            onLoad={()=>{ console.log("on playing"); EventRegister.emit("showSpinner",{isSpinnerShow:false, msg:""});  }}
+                            onPlaying={()=>{console.log("on load"); EventRegister.emit("showSpinner",{isSpinnerShow:true, msg:"로딩중"}); }}
+                            source={{ uri: cctvUrl}}
                         />
+                    }
                 </CCTVWrapper>
 
                 <TouchableWithoutFeedback style={{zIndex:999999}} onPress={()=>{ openTransperentPopup(dispatch, {innerView:"", isPopupVisible:false}); }}>

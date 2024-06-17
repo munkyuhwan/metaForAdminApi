@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { Animated, TouchableWithoutFeedback } from 'react-native';
+import { Animated, Pressable, TouchableWithoutFeedback } from 'react-native';
 import { CategoryDefault, CategorySelected, TopMenuText } from '../../styles/main/topMenuStyle';
 import { colorBrown, tabBaseColor } from '../../assets/colors/color';
 import { RADIUS_DOUBLE } from '../../styles/values';
@@ -19,15 +19,15 @@ const CCTVItemList = (props) => {
             </>
         )
     }
-
-
     return(
         <>
         {data?.map((el)=>{
             return(
-                <CategorySelected>
-                    <TopMenuText key={"subcatText_"+el?.idx} >{el?.cctv_name}</TopMenuText>
-                </CategorySelected>
+                <Pressable onPress={()=>{ props?.onSelectItem(el); }}>
+                    <CategorySelected isSelected={props?.currentIndex==el?.idx} >
+                        <TopMenuText key={"subcatText_"+el?.idx} >{el?.cctv_name}</TopMenuText>
+                    </CategorySelected>
+                </Pressable>
             )
         })
 
