@@ -31,9 +31,12 @@ const CameraView = () => {
         }
     },[cctv])
     useEffect(()=>{
+        EventRegister.emit("showSpinner",{isSpinnerShow:true, msg:"로딩중"});
         const filteredCctv = cctv.filter(el=>el.idx==currentIndex);
         if(filteredCctv) {
-            setCctvUrl(filteredCctv[0].cctv_url);   
+            if(filteredCctv[0]) {
+                setCctvUrl(filteredCctv[0].cctv_url);   
+            }
         }
     },[currentIndex])
     return(
@@ -60,7 +63,7 @@ const CameraView = () => {
                             style={{width:'100%',height:'90%'}}
                             videoAspectRatio="16:9"
                             onLoad={()=>{ console.log("on playing"); EventRegister.emit("showSpinner",{isSpinnerShow:false, msg:""});  }}
-                            onPlaying={()=>{console.log("on load"); EventRegister.emit("showSpinner",{isSpinnerShow:true, msg:"로딩중"}); }}
+                            onPlaying={()=>{console.log("on load"); EventRegister.emit("showSpinner",{isSpinnerShow:false, msg:""});  }}
                             source={{ uri: cctvUrl}}
                         />
                     }

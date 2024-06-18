@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.2.0";
+export const CURRENT_VERSION = "2.2.1";
 export const releaseNote = {
+    "2.2.1": //2024.06.18
+    `
+        - cctv 버그 수정.
+    `,
     "2.2.0": //2024.06.17
     `
         - cctv 기능 추가.
