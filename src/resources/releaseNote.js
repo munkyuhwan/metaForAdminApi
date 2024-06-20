@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.0.47";
+export const CURRENT_VERSION = "2.0.48";
 export const releaseNote = {
+    "2.0.48": //2024.06.20
+    `
+        - 주문 더블클릭 보완.
+    `,
     "2.0.47": //2024.05.30
     `
         - 주문중 / 결제중일때 업데이트 막기.
