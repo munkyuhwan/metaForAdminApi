@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.2.1";
+export const CURRENT_VERSION = "2.2.2";
 export const releaseNote = {
+    "2.2.2": //2024.06.18
+    `
+        - 주문하기 더블클릭 보완.
+    `,
     "2.2.1": //2024.06.18
     `
         - cctv 버그 수정.

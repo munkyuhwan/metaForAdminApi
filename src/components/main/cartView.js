@@ -412,7 +412,7 @@ const CartView = () =>{
                     <PayBtnWrapper>
 
                         {!isPrepay&&
-                            <TouchableWithoutFeedback onPress={()=>{doPayment();}} >
+                            <TouchableWithoutFeedback onPress={()=>{if(isPayProcess == false){setPayProcess(true); doPayment();}}} >
                                 <PayBtn isFull={true} >
                                     <PayTitle>{LANGUAGE[language]?.cartView.makeOrder}</PayTitle>
                                     <PayIcon source={require("../../assets/icons/order.png")} />
