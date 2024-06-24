@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.2.3";
+export const CURRENT_VERSION = "2.2.4";
 export const releaseNote = {
+    "2.2.4": //2024.06.24
+    `
+        - 메뉴 10자 이상 일 경우 오토스크롤 적용.
+    `,
     "2.2.3": //2024.06.24
     `
         - 닫기버튼 크기 조절.

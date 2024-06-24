@@ -18,6 +18,8 @@ import moment from 'moment';
 import { current } from '@reduxjs/toolkit';
 import { useFocusEffect } from '@react-navigation/native';
 import { DEFAULT_TABLE_STATUS_UPDATE_TIME } from '../../resources/defaults';
+import AutoScroll from "@homielab/react-native-auto-scroll";
+
 const height = Dimensions.get('window').height;
 let timeoutSet = null;
 
@@ -88,7 +90,7 @@ const MenuItem = ({item,index,setDetailShow}) => {
         }, DEFAULT_TABLE_STATUS_UPDATE_TIME);
 
     },[])
-    
+
     return(
         <>
         {reload &&
@@ -186,7 +188,16 @@ const MenuItem = ({item,index,setDetailShow}) => {
 
                 </MenuItemTopWrapper>
                 <MenuItemBottomWRapper>
-                    <MenuItemName>{itemTitle()||item.gname_kr}</MenuItemName>
+                    {itemTitle() &&
+                        itemTitle()?.length >= 10 &&
+                        <AutoScroll duration={15000} style={{width:'100%'}}>
+                            <MenuItemName>{itemTitle()||item.gname_kr}</MenuItemName>
+                        </AutoScroll>
+                    }
+                    {itemTitle() &&
+                        itemTitle()?.length < 10 &&
+                        <MenuItemName>{itemTitle()||item.gname_kr}</MenuItemName>
+                    }
                     <MenuItemPrice>{numberWithCommas(itemPrice)}원</MenuItemPrice>
                 </MenuItemBottomWRapper>
             </MenuItemWrapper>
