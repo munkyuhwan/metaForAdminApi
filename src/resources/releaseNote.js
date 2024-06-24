@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.2.2";
+export const CURRENT_VERSION = "2.2.3";
 export const releaseNote = {
+    "2.2.3": //2024.06.24
+    `
+        - 닫기버튼 크기 조절.
+    `,
     "2.2.2": //2024.06.18
     `
         - 주문하기 더블클릭 보완.
