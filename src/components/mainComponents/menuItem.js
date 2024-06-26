@@ -188,16 +188,7 @@ const MenuItem = ({item,index,setDetailShow}) => {
 
                 </MenuItemTopWrapper>
                 <MenuItemBottomWRapper>
-                    {itemTitle() &&
-                        itemTitle()?.length >= 10 &&
-                        <AutoScroll duration={15000} style={{width:'100%'}}>
-                            <MenuItemName>{itemTitle()||item.gname_kr}</MenuItemName>
-                        </AutoScroll>
-                    }
-                    {itemTitle() &&
-                        itemTitle()?.length < 10 &&
-                        <MenuItemName>{itemTitle()||item.gname_kr}</MenuItemName>
-                    }
+                    <MenuItemName>{itemTitle()||item.gname_kr}</MenuItemName>
                     <MenuItemPrice>{numberWithCommas(itemPrice)}원</MenuItemPrice>
                 </MenuItemBottomWRapper>
             </MenuItemWrapper>

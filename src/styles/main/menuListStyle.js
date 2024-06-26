@@ -93,21 +93,24 @@ export const MenuItemHotness = styled.Image`
 `
 export const MenuItemBottomWRapper = styled.View`
     width:100%; 
-    height:100px;
+    height:120px;
     flex:1;
     flexDirection:column;  
-    paddingTop:16px;
+    paddingTop:2px;
     alignItems:center;
 `
 export const MenuItemName = styled.Text`
-    fontSize:30px;
+    fontSize:26px;
     color:${colorWhite};
     fontWeight:900;
+    height:80px;
+    textAlignVertical:center;
 `
 export const MenuItemPrice = styled.Text`
     fontSize:26px;
     color:${colorWhite};
- 
+    justifyContents:center;
+    lineHeight:30px;
 `
 export const SoldOutLayer = styled.View`
     with:300px;
