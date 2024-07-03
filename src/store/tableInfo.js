@@ -120,9 +120,9 @@ export const tableInfoSlice = createSlice({
     extraReducers:(builder)=>{
         // setLastOrderItem
         builder.addCase(setLastOrderItem.fulfilled,(state, action)=>{
-            if(action.payload) {
+            //if(action.payload) {
                 state.lastOrderItem = action.payload;
-            }
+            //}
         })
         builder.addCase(setLastOrderItem.pending,(state, action)=>{
         })

@@ -1,6 +1,11 @@
 
-export const CURRENT_VERSION = "2.2.5";
+export const CURRENT_VERSION = "2.2.6";
 export const releaseNote = {
+    "2.2.6": //2024.06.24
+    `
+        - 플로팅 버튼 움직이는 동작 추가.
+        - 플로팅 버튼 노출여부 바로 반영되도록 적용.
+    `,
     "2.2.5": //2024.06.24
     `
         - 리스트에서 메뉴명 두줄로 변경.

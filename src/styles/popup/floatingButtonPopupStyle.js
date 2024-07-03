@@ -1,13 +1,14 @@
 import { styled } from "styled-components";
 import { colorRed, colorWhite, colorYellow } from "../../assets/colors/color";
+import { Animated } from "react-native";
 
-export const FloatingBackgroundWrapper = styled.View`
+export const FloatingBackgroundWrapper = styled(Animated.View)`
     width:${props=>props?.size}px;
     height:${props=>props?.size}px;
     backgroundColor:rgba(255,255,255, 0.2);
     position:absolute; 
     zIndex:9999999;
-    right:20;
+    right:800;
     bottom:20;
     borderRadius:100px;
     justifyContent:center;

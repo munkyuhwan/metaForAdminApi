@@ -30,6 +30,7 @@ import moment from 'moment';
 import { metaPosDataFormat, metaPostPayFormat } from '../../utils/payment/metaPosDataFormat';
 import { callApiWithExceptionHandling } from '../../utils/api/apiRequest';
 import { ADMIN_API_BASE_URL, ADMIN_API_MENU_UPDATE } from '../../resources/newApiResource';
+import FloatingBtn from '../popups/floatingButtonPopup';
 
 const windowWidth = Dimensions.get('window').width;
 const CartView = () =>{
@@ -345,8 +346,6 @@ const CartView = () =>{
                     itemTotal = itemTotal+(Number(itemDetail[0]?.account)*Number(orderItem?.qty));
                     qtyTotal = qtyTotal+orderItem?.qty;
                 } 
-                
-
             }
             setTotalCnt(qtyTotal)
             setTotalAmt(itemTotal)
@@ -447,7 +446,6 @@ const CartView = () =>{
 
                 </OrderWrapper>
             </CartViewWrapper>  
-           
         </>
     )
 }
