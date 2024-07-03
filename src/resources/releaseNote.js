@@ -1,7 +1,7 @@
 
 export const CURRENT_VERSION = "2.2.6";
 export const releaseNote = {
-    "2.2.6": //2024.06.24
+    "2.2.6": //2024.07.04
     `
         - 플로팅 버튼 움직이는 동작 추가.
         - 플로팅 버튼 노출여부 바로 반영되도록 적용.
