@@ -147,7 +147,7 @@ export default function Navigation() {
             //}
     },[])
 
-    useEffect(async ()=>{
+    const InitFunction = async() =>{
         handleEventListener();
         // 카테고리 받기
         await dispatch(getAdminCategories());
@@ -158,6 +158,20 @@ export default function Navigation() {
         // 광고 받기
         dispatch(getAD()); 
         requestUserPermission();
+    }
+
+    useEffect(()=>{
+        InitFunction();
+        /*handleEventListener();
+        // 카테고리 받기
+        await dispatch(getAdminCategories());
+        // 메뉴 받아오기
+        await dispatch(getAdminItems());
+        // 기기 정보 받기
+        getDeviceInfo();
+        // 광고 받기
+        dispatch(getAD()); 
+        requestUserPermission(); */
     },[])
     useEffect(()=>{
         // 카테고리 선택에 따라 아이템 변경

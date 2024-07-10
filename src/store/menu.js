@@ -220,7 +220,7 @@ export const menuSlice = createSlice({
             state.menuError = {ERROR_MSG:action?.payload,IS_ERROR:true}
         }) 
         builder.addCase(getAdminItems.pending,(state, action)=>{
-            state.isMenuLoading = true;
+            state.isMenuLoading = false;
         }) 
 
         // 보여줄 아이템셋
