@@ -1,11 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { getAdminBanners } from '../utils/apis';
-import { adFileDownloader, getStoreID } from '../utils/common';
+import { adFileDownloader, getStoreID, openPopup } from '../utils/common';
 import { ADMIN_BANNER_DIR } from '../resources/apiResources';
 import { callApiWithExceptionHandling } from '../utils/api/apiRequest';
 import { ADMIN_API_BANNER, ADMIN_API_BANNER_DIR, ADMIN_API_BASE_URL } from '../resources/newApiResource';
+import { setErrorData } from './error';
 
-export const getAD = createAsyncThunk("ads/getAD", async(_,{dispatch}) =>{
+export const getAD = createAsyncThunk("ads/getAD", async(_,{dispatch,rejectWithValue}) =>{
     const {STORE_IDX, SERVICE_ID} = await getStoreID()
     try {
         const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_BANNER}`,{"STORE_ID":`${STORE_IDX}`}, {});
@@ -18,13 +19,15 @@ export const getAD = createAsyncThunk("ads/getAD", async(_,{dispatch}) =>{
                 }
                 return payload;
             }else {
-                return rejectWithValue(error.message)
+                return rejectWithValue("")
             }
         }else {
-            return rejectWithValue(error.message)
+            return rejectWithValue("")
         }
     } catch (error) {
         // 예외 처리
+        dispatch(setErrorData({errorCode:"XXXX",errorMsg:`어드민 광고 ${error.message}`})); 
+        openPopup(dispatch,{innerView:"Error", isPopupVisible:true}); 
         return rejectWithValue(error.message)
     }
 
@@ -40,7 +43,7 @@ export const setAdImgs = createAsyncThunk("ads/setAdImgs", async(data,{dispatch,
 
 /**이하삭제 */
 
-export const setAdScreen = createAsyncThunk("ads/setAdScreen", async(data,{dispatch}) =>{
+export const setAdScreen = createAsyncThunk("ads/setAdScreen", async(data,{dispatch,rejectWithValue}) =>{
     const {isMain, isShow} = data;
     if(isMain) {
         // 메인에서 넘어갈 경우 배너 길이 확인해서 1보다 크면 넘김
@@ -56,10 +59,10 @@ export const setAdScreen = createAsyncThunk("ads/setAdScreen", async(data,{dispa
                     }
                     return payload?.length>0    
                 }else {
-                    return rejectWithValue(error.message)
+                    return rejectWithValue()
                 }
             }else {
-                return rejectWithValue(error.message)
+                return rejectWithValue()
             }
         } catch (error) {
             // 예외 처리

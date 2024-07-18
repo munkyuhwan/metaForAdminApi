@@ -3,7 +3,8 @@ import axios from 'axios';
 export async function callApiWithExceptionHandling(url,postData={}, options = {}) {
     try {
       // Axios를 사용하여 API 호출
-      const response = await axios.post(url,postData, options);
+      const optData = {timeout:1000*60*1, timeoutErrorMessage:'요청시간이 초과되었습니다.'};
+      const response = await axios.post(url,postData, optData);
 
       // 응답 상태 코드가 2xx 범위가 아니라면 예외 발생
       if (response?.status < 200 || response?.status >= 300) {

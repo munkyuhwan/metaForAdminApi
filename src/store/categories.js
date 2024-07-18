@@ -2,7 +2,8 @@ import { createAsyncThunk, createSlice, isRejectedWithValue } from '@reduxjs/too
 import { callApiWithExceptionHandling } from '../utils/api/apiRequest';
 import { ADMIN_API_BASE_URL, ADMIN_API_CATEGORY, TMP_STORE_DATA } from '../resources/newApiResource';
 import {isEmpty} from 'lodash';
-import { getStoreID } from '../utils/common';
+import { getStoreID, openPopup } from '../utils/common';
+import { setErrorData } from './error';
 
 export const setCategories = createAsyncThunk("categories/setCategories", async(data) =>{
     return data;
@@ -19,9 +20,11 @@ export const getAdminCategories = createAsyncThunk("categories/getAdminCategorie
         }else {
             return data;
         }
-      } catch (error) {
+    } catch (error) {
         // 예외 처리
         console.error(error.message);
+        dispatch(setErrorData({errorCode:"XXXX",errorMsg:`어드민 카테고리 ${error.message}`})); 
+        openPopup(dispatch,{innerView:"Error", isPopupVisible:true}); 
         //EventRegister.emit("showSpinner",{isSpinnerShow:false, msg:""})
         return rejectWithValue(error.message);
     }

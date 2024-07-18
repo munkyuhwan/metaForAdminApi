@@ -15,12 +15,13 @@ import { callApiWithExceptionHandling } from '../utils/api/apiRequest';
 import { ADMIN_API_BASE_URL, ADMIN_API_GOODS, ADMIN_API_MENU_UPDATE, ADMIN_API_REGULAR_UPDATE, TMP_STORE_DATA } from '../resources/newApiResource';
 import { setCctv, setStoreInfo, setTableInfo, setTableStatus } from './tableInfo';
 import { initImageStorage } from './imageStorage';
+import { setErrorData } from './error';
 
 export const clearAllItems = createAsyncThunk("menu/clearAllItems", async(_,{dispatch,getState}) =>{ 
     return [];
 })
 
-export const regularUpdate = createAsyncThunk("menu/regularUpdate", async(_,{dispatch,getState}) =>{ 
+export const regularUpdate = createAsyncThunk("menu/regularUpdate", async(_,{dispatch,getState, rejectWithValue}) =>{ 
     const {STORE_IDX} = await getStoreID();
     const TABLE_INFO =  await AsyncStorage.getItem("TABLE_INFO");
     const lastUpdateDate = await AsyncStorage.getItem("lastUpdate").catch(err=>"");   
@@ -44,11 +45,14 @@ export const regularUpdate = createAsyncThunk("menu/regularUpdate", async(_,{dis
             await dispatch(setMenuUpdateCheck(goodsUpdate[0]));
             return [];
         }else {
-            return rejectWithValue(error.message)
+            return rejectWithValue()
         }
-      } catch (error) {
+    } catch (error) {
         // 예외 처리
-        return rejectWithValue(error.message)
+        console.log("error: ",error)
+        dispatch(setErrorData({errorCode:"XXXX",errorMsg:`어드민 업데이트 ${error?.message}`})); 
+        openPopup(dispatch,{innerView:"Error", isPopupVisible:true});
+        return rejectWithValue(error?.message)
     }
 })
 
@@ -73,14 +77,14 @@ export const getAdminItems = createAsyncThunk("menu/getAdminItems", async(_,{dis
                     return rejectWithValue("")
                 }
             }else {
-                return rejectWithValue(error.message)
+                return rejectWithValue("")
             }
         }else {
-            return rejectWithValue(error.message)
+            return rejectWithValue("")
         }
       } catch (error) {
         // 예외 처리
-        return rejectWithValue(error.message)
+        return rejectWithValue(`어드민 메뉴 ${error.message}`)
     }
     
 })
@@ -116,7 +120,7 @@ export const initMenu = createAsyncThunk("menu/initMenu", async(_,{dispatch,getS
 })
 
 // menu update check
-export const menuUpdateCheck = createAsyncThunk("menu/menuUpdateCheck", async(_,{dispatch,getState}) =>{
+export const menuUpdateCheck = createAsyncThunk("menu/menuUpdateCheck", async(_,{dispatch,getState, rejectWithValue}) =>{
     const {STORE_IDX} = await getStoreID();
     const lastUpdateDate = await AsyncStorage.getItem("lastUpdate").catch(err=>"");   
     
@@ -156,10 +160,10 @@ export const menuUpdateCheck = createAsyncThunk("menu/menuUpdateCheck", async(_,
                     }
                     return data;
                 }else {
-                    return rejectWithValue(error.message)
+                    return rejectWithValue("")
                 }
             }else {
-                return rejectWithValue(error.message)
+                return rejectWithValue("")
             }
         } catch (error) {
             // 예외 처리
@@ -168,7 +172,7 @@ export const menuUpdateCheck = createAsyncThunk("menu/menuUpdateCheck", async(_,
         }
     }
 })
-export const setMenuUpdateCheck = createAsyncThunk("menu/setMenuUpdateCheck", async(data,{dispatch,getState}) =>{
+export const setMenuUpdateCheck = createAsyncThunk("menu/setMenuUpdateCheck", async(data,{dispatch,getState, rejectWithValue}) =>{
     if(data) {
             if(data?.isUpdated == "true") {
                 EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"메뉴 업데이트 중입니다."})
@@ -179,7 +183,9 @@ export const setMenuUpdateCheck = createAsyncThunk("menu/setMenuUpdateCheck", as
                 await dispatch(getAdminCategories());
                 // 메뉴 받아오기
                 await dispatch(initImageStorage());
+                console.log("get admin items");
                 await dispatch(getAdminItems());
+                console.log("finish getting admin items");
                 dispatch(setSelectedItems());
                 //dispatch(setItemDetail({itemID:null}));
                 dispatch(initMenuDetail());
@@ -187,10 +193,10 @@ export const setMenuUpdateCheck = createAsyncThunk("menu/setMenuUpdateCheck", as
                 return ;
             }else {
                 //EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
-                return rejectWithValue(error.message)
+                return rejectWithValue()
             }
     }else {
-        return rejectWithValue(error.message)
+        return rejectWithValue()
     }   
 })
 

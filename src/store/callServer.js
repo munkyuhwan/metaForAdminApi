@@ -18,7 +18,7 @@ export const getServiceList = createAsyncThunk("callServer/getServiceList", asyn
             const data = result?.data;
             return data;
         }else {
-            return rejectWithValue(error.message)
+            return rejectWithValue()
         }
       } catch (error) {
         // 예외 처리
@@ -27,7 +27,7 @@ export const getServiceList = createAsyncThunk("callServer/getServiceList", asyn
     }
 });
 // 직원 호출하기
-export const postService = createAsyncThunk("callServer/postService", async(data,{dispatch}) =>{    
+export const postService = createAsyncThunk("callServer/postService", async(data,{dispatch,rejectWithValue}) =>{    
     const postCallData = data;
     const {STORE_IDX} = await getStoreID()
     .catch(err=>{
@@ -45,7 +45,7 @@ export const postService = createAsyncThunk("callServer/postService", async(data
             openPopup(dispatch,{innerView:"AutoClose", isPopupVisible:true,param:{msg:"직원호출을 완료했습니다."}});
             return data;
         }else {
-            return rejectWithValue(error.message)
+            return rejectWithValue("")
         }
       } catch (error) {
         // 예외 처리

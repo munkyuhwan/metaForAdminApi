@@ -1,6 +1,14 @@
 
-export const CURRENT_VERSION = "2.2.6";
+export const CURRENT_VERSION = "2.2.8";
 export const releaseNote = {
+    "2.2.8": //2024.07.17
+    `
+        - api요청 실패 메시지 수정.
+    `,
+    "2.2.7": //2024.07.16
+    `
+        - api요청 일부 수정.
+    `,
     "2.2.6": //2024.07.04
     `
         - 플로팅 버튼 움직이는 동작 추가.
