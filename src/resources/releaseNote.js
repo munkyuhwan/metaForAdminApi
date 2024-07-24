@@ -1,6 +1,14 @@
 
-export const CURRENT_VERSION = "2.2.8";
+export const CURRENT_VERSION = "2.2.10";
 export const releaseNote = {
+    "2.2.10": //2024.07.17
+    `
+        - 주문시 메뉴 업데이트 체크 문구 및 업데이트 바로 진행하게 수정.
+    `,
+    "2.2.9": //2024.07.17
+    `
+        - api요청 실패 재요청.
+    `,
     "2.2.8": //2024.07.17
     `
         - api요청 실패 메시지 수정.

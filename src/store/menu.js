@@ -16,23 +16,27 @@ import { ADMIN_API_BASE_URL, ADMIN_API_GOODS, ADMIN_API_MENU_UPDATE, ADMIN_API_R
 import { setCctv, setStoreInfo, setTableInfo, setTableStatus } from './tableInfo';
 import { initImageStorage } from './imageStorage';
 import { setErrorData } from './error';
+import FastImage from 'react-native-fast-image';
 
 export const clearAllItems = createAsyncThunk("menu/clearAllItems", async(_,{dispatch,getState}) =>{ 
     return [];
 })
 
 export const regularUpdate = createAsyncThunk("menu/regularUpdate", async(_,{dispatch,getState, rejectWithValue}) =>{ 
+    EventRegister.emit("showSpinner",{isSpinnerShow:true, msg:"데이터 요청중입니다. "})
     const {STORE_IDX} = await getStoreID();
     const TABLE_INFO =  await AsyncStorage.getItem("TABLE_INFO");
     const lastUpdateDate = await AsyncStorage.getItem("lastUpdate").catch(err=>"");   
     const {onProcess} = getState().order;
     if(onProcess == true) {
+        EventRegister.emit("showSpinner",{isSpinnerShow:false, msg:""})
         return;
     }
     //console.log("regular update!")
     //console.log({"STORE_ID":`${STORE_IDX}`, "t_num":TABLE_INFO,"currentDateTime":lastUpdateDate});
     try {
         const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_REGULAR_UPDATE}`,{"STORE_ID":`${STORE_IDX}`, "t_num":TABLE_INFO,"currentDateTime":lastUpdateDate}, {});
+        EventRegister.emit("showSpinner",{isSpinnerShow:false, msg:""})
         if(data) {
             const resultData = data?.data;
             const goodsUpdate = resultData?.goods2_update;
@@ -49,6 +53,7 @@ export const regularUpdate = createAsyncThunk("menu/regularUpdate", async(_,{dis
         }
     } catch (error) {
         // 예외 처리
+        EventRegister.emit("showSpinner",{isSpinnerShow:false, msg:""})
         console.log("error: ",error)
         dispatch(setErrorData({errorCode:"XXXX",errorMsg:`어드민 업데이트 ${error?.message}`})); 
         openPopup(dispatch,{innerView:"Error", isPopupVisible:true});
@@ -58,9 +63,11 @@ export const regularUpdate = createAsyncThunk("menu/regularUpdate", async(_,{dis
 
 // 전체 메뉴 받기
 export const getAdminItems = createAsyncThunk("menu/getAdminItems", async(_,{dispatch,getState, rejectWithValue})=>{
+    EventRegister.emit("showSpinner",{isSpinnerShow:true, msg:"데이터 요청중입니다. "})
     const {STORE_IDX} = await getStoreID();
     try {
         const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_GOODS}`,{"STORE_ID":`${STORE_IDX}`}, {});
+        EventRegister.emit("showSpinner",{isSpinnerShow:false, msg:""})
         if(data) {
             if(data?.result==true) {
                 if(data?.order==null || data?.order==undefined) {
@@ -83,6 +90,7 @@ export const getAdminItems = createAsyncThunk("menu/getAdminItems", async(_,{dis
             return rejectWithValue("")
         }
       } catch (error) {
+        EventRegister.emit("showSpinner",{isSpinnerShow:false, msg:""})
         // 예외 처리
         return rejectWithValue(`어드민 메뉴 ${error.message}`)
     }

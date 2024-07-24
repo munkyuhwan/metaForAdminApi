@@ -89,8 +89,8 @@ const MenuItem = ({item,index,setDetailShow}) => {
             setReload(reload=="1"?"0":"1");
         }, DEFAULT_TABLE_STATUS_UPDATE_TIME);
 
+        //FastImage.preload([{uri:item?.gimg_chg}]);
     },[])
-
     return(
         <>
         {reload &&
@@ -100,6 +100,7 @@ const MenuItem = ({item,index,setDetailShow}) => {
                         <>
                             <TouchableWithoutFeedback onPress={()=>{setDetailShow(true); dispatch(setItemDetail({itemID})); }} >
                                 <FastImage style={{ width:'100%',height:height*0.28, borderRadius:RADIUS_DOUBLE}} source={{uri:filteredImg[0]?.imgData}} resizeMode={FastImage.resizeMode.cover} />
+                                {/* <FastImage style={{ width:'100%',height:height*0.28, borderRadius:RADIUS_DOUBLE}} source={{uri:item?.gimg_chg}} resizeMode={FastImage.resizeMode.cover} /> */}
                             </TouchableWithoutFeedback>
                         </>
                     }

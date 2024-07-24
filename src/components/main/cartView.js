@@ -14,7 +14,7 @@ import { LANGUAGE } from '../../resources/strings';
 import { setCartView, setIconClick } from '../../store/cart';
 import { IconWrapper } from '../../styles/main/topMenuStyle';
 import TopButton from '../menuComponents/topButton';
-import {  getStoreID, isNetworkAvailable, itemEnableCheck, numberWithCommas, openFullSizePopup, openTransperentPopup } from '../../utils/common';
+import {  getDeviceInfo, getStoreID, isNetworkAvailable, itemEnableCheck, numberWithCommas, openFullSizePopup, openTransperentPopup } from '../../utils/common';
 import { adminDataPost, initOrderList, postLog, postOrderToPos, presetOrderData, setOrderProcess } from '../../store/order';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {isEmpty} from 'lodash';
@@ -24,13 +24,16 @@ import { displayErrorNonClosePopup, displayErrorPopup } from '../../utils/errorH
 import { setMonthPopup, setSelectedMonth } from '../../store/monthPopup';
 import { EventRegister } from 'react-native-event-listeners';
 import { getMenuUpdateState, getPosStoreInfo, getTableAvailability } from '../../utils/api/metaApis';
-import { initMenu, menuUpdateCheck } from '../../store/menu';
+import { getAdminItems, initMenu, menuUpdateCheck, regularUpdate } from '../../store/menu';
 import { META_SET_MENU_SEPARATE_CODE_LIST, PAY_SEPRATE_AMT_LIMIT } from '../../resources/defaults';
 import moment from 'moment';
 import { metaPosDataFormat, metaPostPayFormat } from '../../utils/payment/metaPosDataFormat';
 import { callApiWithExceptionHandling } from '../../utils/api/apiRequest';
 import { ADMIN_API_BASE_URL, ADMIN_API_MENU_UPDATE } from '../../resources/newApiResource';
 import FloatingBtn from '../popups/floatingButtonPopup';
+import { getAdminCategories } from '../../store/categories';
+import { getAD } from '../../store/ad';
+import { getAdminBulletin } from '../../store/menuExtra';
 
 const windowWidth = Dimensions.get('window').width;
 const CartView = () =>{
@@ -78,6 +81,19 @@ const CartView = () =>{
         //dispatch(postToPos({paymentResult}));
         //lw.writeLog("Teset test test")
     } 
+    const InitFunction = async() =>{
+        // 카테고리 받기
+        await dispatch(getAdminCategories());
+        // 메뉴 받아오기
+        await dispatch(getAdminItems());
+        //EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
+        // 기기 정보 받기
+        getDeviceInfo();
+        // 광고 받기
+        dispatch(getAD());
+        dispatch(regularUpdate());
+        dispatch(getAdminBulletin());
+    }
 
     useEffect(()=>{
         if(!isMonthSelectShow) {
@@ -235,15 +251,19 @@ const CartView = () =>{
                     if(data) {
                         if(data?.result==true) {
                             if(data?.isUpdated == "true") {
+                                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
+                                setPayProcess(false);
+                                //displayErrorPopup(dispatch, "XXXX", "메뉴 업데이트가 되었습니다.\n업데이트 후에 주문 해 주세요.");
+                                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"메뉴 업데이트가 되었습니다.\n업데이트를 진행합니다."});
+                                InitFunction();
+                                /* 
                                 Alert.alert(
                                     "업데이트",
                                     "메뉴 업데이트가 되었습니다. 업데이트 후 주문하실 수 있습니다.",
                                     [{
                                         text:'확인',
                                     }]
-                                );
-                                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
-                                setPayProcess(false);
+                                ); */
                             }else {
             
                                 if( tableStatus?.now_later == "선불") {

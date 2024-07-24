@@ -14,6 +14,9 @@ import moment from 'moment';
 import { ADMIN_API_BASE_URL, ADMIN_API_MENU_CHECK } from '../resources/newApiResource';
 import { callApiWithExceptionHandling } from './api/apiRequest';
 
+export const waitFor = (timeToDelay) => new Promise((resolve) => setTimeout(resolve, timeToDelay)) //이와 같이 선언 후
+
+
 export function getDeviceInfo () {
     DeviceInfo.getBatteryLevel().then((batteryLevel) => {
         //console.log("batteryLevel: ",batteryLevel)

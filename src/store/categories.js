@@ -4,16 +4,19 @@ import { ADMIN_API_BASE_URL, ADMIN_API_CATEGORY, TMP_STORE_DATA } from '../resou
 import {isEmpty} from 'lodash';
 import { getStoreID, openPopup } from '../utils/common';
 import { setErrorData } from './error';
+import { EventRegister } from 'react-native-event-listeners';
 
 export const setCategories = createAsyncThunk("categories/setCategories", async(data) =>{
     return data;
 })
 // 어드민 카테고리 받기
 export const getAdminCategories = createAsyncThunk("categories/getAdminCategories", async(_,{dispatch,rejectWithValue}) =>{
+    EventRegister.emit("showSpinner",{isSpinnerShow:true, msg:"데이터 요청중입니다. "})
 
     const {STORE_IDX} = await getStoreID();
     try {
         const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_CATEGORY}`,{"STORE_ID":`${STORE_IDX}`}, {});
+        EventRegister.emit("showSpinner",{isSpinnerShow:false, msg:""})
         if(data?.goods_category == null) {
             //EventRegister.emit("showSpinner",{isSpinnerShow:false, msg:""})
             return rejectWithValue("DATA DOES NOT EXIST");
@@ -22,6 +25,7 @@ export const getAdminCategories = createAsyncThunk("categories/getAdminCategorie
         }
     } catch (error) {
         // 예외 처리
+        EventRegister.emit("showSpinner",{isSpinnerShow:false, msg:""})
         console.error(error.message);
         dispatch(setErrorData({errorCode:"XXXX",errorMsg:`어드민 카테고리 ${error.message}`})); 
         openPopup(dispatch,{innerView:"Error", isPopupVisible:true}); 
