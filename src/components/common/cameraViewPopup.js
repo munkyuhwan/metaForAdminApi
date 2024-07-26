@@ -27,7 +27,11 @@ const CameraView = () => {
     }
     useEffect(()=>{
         if(cctv) {
-            setCurrentIndex(cctv[0].idx);
+            if(currentIndex) {
+                setCurrentIndex(currentIndex);
+            }else {
+                setCurrentIndex(cctv[0].idx);
+            }
         }
     },[cctv])
     useEffect(()=>{

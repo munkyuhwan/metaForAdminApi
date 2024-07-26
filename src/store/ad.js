@@ -42,9 +42,12 @@ export const setAdImgs = createAsyncThunk("ads/setAdImgs", async(data,{dispatch,
 })
 
 /**이하삭제 */
-
-export const setAdScreen = createAsyncThunk("ads/setAdScreen", async(data,{dispatch,rejectWithValue}) =>{
+export const setAdScreen = createAsyncThunk("ads/setAdScreen", async(data,{dispatch,getState, rejectWithValue}) =>{
     const {isMain, isShow} = data;
+    const {innerTransView} = getState().popup;
+    if(innerTransView == "CameraView") {
+        return rejectWithValue()
+    }
     if(isMain) {
         // 메인에서 넘어갈 경우 배너 길이 확인해서 1보다 크면 넘김
         const {STORE_IDX, SERVICE_ID} = await getStoreID()
