@@ -1,6 +1,12 @@
 
-export const CURRENT_VERSION = "2.2.11";
+export const CURRENT_VERSION = "2.2.12";
 export const releaseNote = {
+    "2.2.12": //2024.07.27
+    `
+        - cctv화면에서 메인화면 안넘어가도록 수정
+        - cctv테이블별 사용여부 적용.
+        - cctv화면에서 메인화면 안넘어가도록 수정
+    `,
     "2.2.11": //2024.07.26
     `
         - cctv화면에서 메인화면 안넘어가도록 수정

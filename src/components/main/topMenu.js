@@ -36,7 +36,7 @@ const TopMenu = () =>{
     const {selectedMainCategory,subCategories, allCategories} = useSelector(state => state.categories);
     const [tableNoText, setTableNoText] = useState("");
     const [tableInfoText, setTableInfoText] = useState("");
-    const {tableInfo,cctv} = useSelector(state => state.tableInfo);
+    const {tableInfo,cctv,tableStatus} = useSelector(state => state.tableInfo);
     
     const {bulletin} = useSelector(state=>state.menuExtra);
 
@@ -164,7 +164,7 @@ const TopMenu = () =>{
                         </AutoScroll>
                     }
                 </SafeAreaView>
-                {cctv?.length > 0 &&
+                { (tableStatus?.is_cctv=="Y" && cctv?.length > 0)&&
                     <TouchableWithoutFeedback onPress={()=>{openTransperentPopup(dispatch, {innerView:"CameraView", isPopupVisible:true}); }} >
                         <Image style={{width:50,height:50, position:'absolute',right:'40%'}} resizeMode='contain' source={require("../../assets/icons/cctv.png")}/>
                     </TouchableWithoutFeedback>
