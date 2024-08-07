@@ -1,6 +1,11 @@
 
-export const CURRENT_VERSION = "2.0.48";
+export const CURRENT_VERSION = "2.0.49";
 export const releaseNote = {
+
+    "2.0.49": //2024.08.07
+    `
+        - 메뉴추가 버튼 영역 수정.
+    `,
     "2.0.48": //2024.06.20
     `
         - 주문 더블클릭 보완.
