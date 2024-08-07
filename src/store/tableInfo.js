@@ -115,13 +115,20 @@ export const tableInfoSlice = createSlice({
         cctv:[],
         tableCode:"0001",
         posIP:"",
-        lastOrderItem:"",
+        lastOrderItem:[],
     },
     extraReducers:(builder)=>{
         // setLastOrderItem
         builder.addCase(setLastOrderItem.fulfilled,(state, action)=>{
             //if(action.payload) {
-                state.lastOrderItem = action.payload;
+                //const toPut = Object.assign([],state.lastOrderItem,action.payload);
+                if(action.payload!="") {
+                    console.log("action.payload: ",action.payload);
+                    var listTest = state.lastOrderItem.filter(el=>el.prod_cd != action.payload.prod_cd);
+                    //var lorder = state.lastOrderItem;
+                    listTest.push(action.payload);
+                    state.lastOrderItem = listTest;
+                }
             //}
         })
         builder.addCase(setLastOrderItem.pending,(state, action)=>{

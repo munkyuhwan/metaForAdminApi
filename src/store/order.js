@@ -155,7 +155,7 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
                 const isPopup = itemDetail[0]?.is_popup;
                 console.log("is popup: ",isPopup);
                 if(isPopup == "Y") {
-                    dispatch(setLastOrderItem(itemDetail[0].prod_cd));
+                    dispatch(setLastOrderItem(itemDetail[0]));
                 }
             }
 

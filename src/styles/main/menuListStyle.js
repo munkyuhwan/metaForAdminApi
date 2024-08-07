@@ -32,6 +32,7 @@ export const MenuItemTopWrapper = styled.View`
 export const MenuItemWrapper = styled.View`
     width:32.5%;    
 `
+
 export const MenuItemImageWrapper = styled.View`
     width:100%;
     height:100%;    
@@ -146,4 +147,3 @@ export const SoldOutText = styled.Text`
     width:100%;
     height:100%;
 `
-
