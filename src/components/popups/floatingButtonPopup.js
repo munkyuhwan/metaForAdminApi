@@ -9,6 +9,8 @@ import { setItemDetail } from "../../store/menuDetail";
 import {isEmpty, isEqual} from "lodash";
 import { useFocusEffect } from "@react-navigation/native";
 import { setLastOrderItem } from "../../store/tableInfo";
+import { EventRegister } from "react-native-event-listeners";
+import { setQickOrder, setQuickOrder } from "../../store/cart";
 
 const FloatingBtn = (props) => {
 
@@ -111,19 +113,25 @@ const FloatingBtn = (props) => {
             <></>
         )
     } 
+
+    async function makeLastOrder() {
+        if(lastItemDetail[0]?.prod_gb=="09"||lastItemDetail[0]?.prod_gb=="02"){
+            //props?.setDetailShow(true);  
+            dispatch(setItemDetail({itemID:lastItemDetail[0].prod_cd}));
+        } else { 
+            await dispatch(addToOrderList({isAdd:true, isDelete: false, item:lastItemDetail[0],menuOptionSelected:[]}));
+            dispatch(setQuickOrder(true));
+            //doPayment();
+        } 
+    }
+
     return(
         <>
             {lastItemDetail?.length>0 &&
                 <FloatingBackgroundWrapper style={[{...boxStyle}]}  size={"150"} >
                     <FloatingBackgroundInnerdWrapper  size={"140"} >
-                        <TouchableWithoutFeedback onPress={async ()=>{                         
-                            if(lastItemDetail[0]?.prod_gb=="09"||lastItemDetail[0]?.prod_gb=="02"){
-                                //props?.setDetailShow(true);  
-                                dispatch(setItemDetail({itemID:lastItemDetail[0].prod_cd}));
-                            } else { 
-                                dispatch(addToOrderList({isAdd:true, isDelete: false, item:lastItemDetail[0],menuOptionSelected:[]}));
-                            } 
-
+                        <TouchableWithoutFeedback onPress={()=>{                         
+                           makeLastOrder();
                         }} >
                             <FloatingWrapper>
                                 <FastImage style={{ width:'100%',height:'100%', borderRadius:200}} source={{uri:filteredImg[0].imgData}} resizeMode={FastImage.resizeMode.cover} />

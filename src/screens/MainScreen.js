@@ -17,6 +17,7 @@ import { DEFAULT_TABLE_STATUS_UPDATE_TIME } from '../resources/defaults'
 import {isEmpty} from 'lodash';
 import { getAD, setAdScreen } from '../store/ad'
 import { regularUpdate } from '../store/menu'
+import { QuickOrderPopup } from '../components/popups/quickOrderPopup'
 let timeoutSet = null;
 
 const MainScreen = () =>{   
@@ -34,8 +35,8 @@ const MainScreen = () =>{
         clearInterval(timeoutSet);
         timeoutSet=null;
         timeoutSet = setInterval(()=>{
-            dispatch(regularUpdate());
-            dispatch(setAdScreen({isShow:true,isMain:true}))
+            //dispatch(regularUpdate());
+            //dispatch(setAdScreen({isShow:true,isMain:true}))
         },SCREEN_TIMEOUT)
     } 
 

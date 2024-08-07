@@ -42,7 +42,7 @@ const CartView = () =>{
 
     const dispatch = useDispatch();
     const orderListRef = useRef();
-    const {isOn} = useSelector((state)=>state.cartView);
+    const {isOn, isQuickOrder} = useSelector((state)=>state.cartView);
     const {orderList,vatTotal} = useSelector((state)=>state.order);
     const {orderStatus} = useSelector(state=>state.order);    
     const {allItems} = useSelector(state=>state.menu);
@@ -379,7 +379,11 @@ const CartView = () =>{
         // 주문중 상태 변경: 주문중에 메뉴 업데이트를 안하기 위함dispatch(setOrderProcess(true));
         dispatch(setOrderProcess(isPayProcess));
     },[isPayProcess])
-  
+    useEffect(()=>{
+        if(isQuickOrder == true) {
+            if(isPayProcess == false){setPayProcess(true); doPayment();}
+        }
+    },[isQuickOrder])
 
     return(
         <>  

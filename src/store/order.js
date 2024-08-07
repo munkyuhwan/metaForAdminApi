@@ -5,7 +5,7 @@ import { addOrderToPos, getOrderByTable } from '../utils/apis';
 import { getIP, getStoreID, getTableInfo, grandTotalCalculate, numberPad, openPopup, openTransperentPopup, orderListDuplicateCheck, setOrderData } from '../utils/common';
 import { isEqual, isEmpty } from 'lodash'
 import { posErrorHandler } from '../utils/errorHandler/ErrorHandler';
-import { setCartView } from './cart';
+import { setCartView, setQickOrder, setQuickOrder } from './cart';
 import LogWriter from '../utils/logWriter';
 import { POS_BASE_URL, POS_VERSION_CODE, POS_WORK_CD_POSTPAY_ORDER, POS_WORK_CD_PREPAY_ORDER_REQUEST, POS_WORK_CD_VERSION } from '../resources/apiResources';
 import { getTableOrderList, postMetaPosOrder, repostMetaPosOrder } from '../utils/api/metaApis';
@@ -208,7 +208,7 @@ export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{
     const {payData,orderData} = _;
     var postOrderData = Object.assign({},orderData);
     const {STORE_IDX} = await getStoreID()
-
+    dispatch(setQuickOrder(false));
     const tableNo = await getTableInfo().catch(err=>{posErrorHandler(dispatch, {ERRCODE:"XXXX",MSG:"테이블 설정",MSG2:"테이블 번호를 설정 해 주세요."});});
     if(isEmpty(tableNo)) {
         EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
