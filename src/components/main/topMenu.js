@@ -44,12 +44,24 @@ const TopMenu = () =>{
     const [bulletinText, setBulletinText] = useState("");
     const [bulletinCode, setBulletinCode] = useState("");
     const [isBulletinShow, setBulletinShow] = useState();
+    useEffect(()=>{
+        if(subCategories) {
+            if(subCategories?.length > 0) {
+                setBulletinShow(false)
+            }else {
+                setBulletinShow(true)
+            }
+        }else {
+            setBulletinShow(true)
+        }
+    },[subCategories])
 
     useEffect(()=>{
+        /*
         const changedSelectedMainCat = allCategories.filter(el=>el.cate_code1==selectedMainCategory);
+         
         if(changedSelectedMainCat) {
             if(changedSelectedMainCat?.length > 0) {
-                //setSelectedSubList(changedSelectedMainCat[0].PROD_L2_LIST);
                 if(subCategories) {
                     if(subCategories?.length > 0) {
                         setBulletinShow(false)
@@ -61,7 +73,7 @@ const TopMenu = () =>{
                 }
             }
         }
-
+        */
         scrollViewRef.current.scrollTo({x:0,animated: false});
         const bulletinToShow = bulletin?.filter(el=>el.cate_code == selectedMainCategory);
         if(bulletinToShow){

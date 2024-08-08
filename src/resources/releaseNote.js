@@ -1,6 +1,11 @@
 
-export const CURRENT_VERSION = "2.2.12";
+export const CURRENT_VERSION = "2.2.13";
 export const releaseNote = {
+    "2.2.13": //2024.08.08
+    `
+        - 배너 안나오는 버그 수정
+        - 주류 팝업
+    `,
     "2.2.12": //2024.07.27
     `
         - cctv화면에서 메인화면 안넘어가도록 수정

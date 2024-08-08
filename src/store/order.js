@@ -205,7 +205,7 @@ export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{
     //const {metaOrderData} = getState().order;
     //var orderList = Object.assign({},metaOrderData);
     const { tableStatus } = getState().tableInfo;
-    const {payData,orderData} = _;
+    const {payData,orderData,isQuick} = _;
     var postOrderData = Object.assign({},orderData);
     const {STORE_IDX} = await getStoreID()
     dispatch(setQuickOrder(false));
@@ -259,9 +259,11 @@ export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{
         const data = await callApiWithExceptionHandling(`${POS_BASE_URL(POS_IP)}`,postOrderData, {}); 
         if(data) {
             if(data.ERROR_CD == "E0000") {
-                dispatch(setCartView(false));
-                dispatch(initOrderList());
-                dispatch(regularUpdate());
+                if(isQuick==false) {
+                    dispatch(setCartView(false));
+                    dispatch(initOrderList());
+                    dispatch(regularUpdate());
+                }
                 if( tableStatus?.now_later == "선불") {
                     openTransperentPopup(dispatch, {innerView:"OrderComplete", isPopupVisible:true,param:{msg:"주문을 완료했습니다."}});
                 }else {
@@ -407,6 +409,90 @@ export const resetAmtOrderList = createAsyncThunk("order/resetAmtOrderList", asy
 
 })
 
+export const initToQuickOrderList =  createAsyncThunk("order/initToQuickOrderList", async(_,{dispatch, getState,extra}) =>{
+    return;
+})
+
+
+export const addToQuickOrderList =  createAsyncThunk("order/addToQuickOrderList", async(_,{dispatch, getState,extra}) =>{
+    const item = _?.item;
+    const isAdd =  _?.isAdd;
+    const isDelete =  _?.isDelete;
+    const menuOptionSelected = _?.menuOptionSelected;
+    const {quickOrderList} = getState().order;
+    var currentOrderList = Object.assign([],quickOrderList);
+    var orderItemForm = {
+        prod_cd:"",
+        qty:0,
+        set_item:[]
+    };
+    if( META_SET_MENU_SEPARATE_CODE_LIST.indexOf(item?.prod_gb)>=0) {
+        // 메뉴 선택하부금액 
+        // 선택한 옵션의 가격이 들어감
+        // 세트 메인 품목의 가격은 그대로 하위 품목들의 가격이 들어가고 그에따라 수량이 늘아날떄 가격과 수량이 같이 올라가야함
+        // 메뉴 데이터 주문데이터에 맞게 변경
+        const duplicatedList = currentOrderList.filter(el=> (el.prod_cd == item?.prod_cd) && ( isEqual(el.set_item,menuOptionSelected) ) );
+        // 중복 체크
+        if(duplicatedList.length>0) {
+            for(var i=0;i<quickOrderList.length;i++) {
+                if(quickOrderList[i].prod_cd == item?.prod_cd) {
+                    // 옵션도 비교해야함
+                    if(isEqual(quickOrderList[i].set_item, menuOptionSelected)) {
+                        if(isAdd) {
+                            // 세트 아이템 
+                            currentOrderList[i] = Object.assign({},{...currentOrderList[i],...{qty:Number(quickOrderList[i]["qty"])+1}});
+                        }else {
+                            if(isDelete) {
+                                currentOrderList[i] = Object.assign({},{...currentOrderList[i],...{qty:0}});
+                            }else {
+                                currentOrderList[i] = Object.assign({},{...currentOrderList[i],...{qty:Number(quickOrderList[i]["qty"])-1}});
+                            }
+                        }
+                    }
+                }
+            }
+        }else {
+            orderItemForm["prod_cd"] = item?.prod_cd;
+            orderItemForm["qty"] = 1;
+            orderItemForm["set_item"] = menuOptionSelected;
+            currentOrderList.unshift(orderItemForm);
+        }
+
+        //currentOrderList = await currentOrderList.filter(el=>el.qty > 0);
+        const finalOrderList = currentOrderList.filter(el=>el.qty > 0);
+        return({quickOrderList:finalOrderList});
+        
+    }else {
+         // 다른 메뉴들
+        // 세트메뉴 경우 그냥 세트 품목들 0원 세트 메인 상품의 가격에 세트메뉴 가격을 추가함
+        const duplicatedList = currentOrderList.filter(el=>el.prod_cd == item?.prod_cd);
+        const exceptedList = currentOrderList.filter(el=>el.prod_cd != item?.prod_cd);
+        
+        if(duplicatedList.length>0) {
+            for(var i=0;i<quickOrderList.length;i++) {
+                if(quickOrderList[i].prod_cd == item?.prod_cd) {
+                    if(isAdd) {
+                        currentOrderList[i] = Object.assign({},{...currentOrderList[i],...{qty:Number(quickOrderList[i]["qty"])+1}});
+                    }else {
+                        if(isDelete) {
+                            currentOrderList[i] = Object.assign({},{...currentOrderList[i],...{qty:0}});
+                        }else {
+                            currentOrderList[i] = Object.assign({},{...currentOrderList[i],...{qty:Number(quickOrderList[i]["qty"])-1}});
+                        }
+                    }
+                }
+            }
+        }else {
+            orderItemForm["prod_cd"] = item?.prod_cd;
+            orderItemForm["qty"] = 1;
+            orderItemForm["set_item"] = [];
+            currentOrderList.unshift(orderItemForm);
+        }
+        const finalOrderList = currentOrderList.filter(el=>el.qty > 0);
+        return({quickOrderList:finalOrderList});
+    }
+})
+
 export const addToOrderList =  createAsyncThunk("order/addToOrderList", async(_,{dispatch, getState,extra}) =>{
     const item = _?.item;
     const isAdd =  _?.isAdd;
@@ -521,6 +607,10 @@ export const clearOrderStatus = createAsyncThunk("order/clearOrderStatus", async
 export const setOrderProcess = createAsyncThunk("order/onProcess",  async(data,{dispatch, getState,extra}) =>{
     return data;
 })
+// 테이블 주문중
+export const setQuickShow = createAsyncThunk("order/setQuickShow",  async(data,{dispatch, getState,extra}) =>{
+    return data;
+})
 
 // Slice
 export const orderSlice = createSlice({
@@ -536,8 +626,15 @@ export const orderSlice = createSlice({
         orderNo:"",
         metaOrderData:null,
         onProcess:false,
+
+        quickOrderList:[],
+        isQuickShow:false,
     },
     extraReducers:(builder)=>{
+        
+        builder.addCase(setQuickShow.fulfilled, (state,action)=>{
+            state.isQuickShow = action.payload;
+        })
         // 어드민 데이터 보내기
         builder.addCase(adminDataPost.fulfilled, (state,action)=>{
 
@@ -593,6 +690,25 @@ export const orderSlice = createSlice({
         })
         // 주문 추가
         builder.addCase(addToOrderList.pending,(state, action)=>{
+            
+        })
+
+        // 빠른주문주문 초기화
+        builder.addCase(initToQuickOrderList.fulfilled,(state, action)=>{
+            state.quickOrderList = [];
+        })
+        // 빠른주문주문 추가
+        builder.addCase(addToQuickOrderList.fulfilled,(state, action)=>{
+            if(action.payload){
+                state.quickOrderList = Object.assign([], action.payload.quickOrderList);
+            }
+        })
+        // 주문 추가
+        builder.addCase(addToQuickOrderList.rejected,(state, action)=>{
+            
+        })
+        // 주문 추가
+        builder.addCase(addToQuickOrderList.pending,(state, action)=>{
             
         })
         // order list empty

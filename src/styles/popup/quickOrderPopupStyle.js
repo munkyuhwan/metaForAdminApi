@@ -48,7 +48,7 @@ export const QuickTopMenuWrapper = styled.View`
     height: 80px;
     display: flex;
     justifyContent: flex-start;
-    zIndex:99999;
+    zIndex:99;
     position:absolute;
     bottom:50%;
 `

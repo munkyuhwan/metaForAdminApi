@@ -178,7 +178,6 @@ const MenuListView = () => {
                     />
                 }
             </MenuListWrapper>
-            <FloatingBtn isDetailShow={isDetailShow} setDetailShow={setDetailShow}  />
 {/*             <QuickOrderPopup/>
  */}
             {/*isDetailShow&&

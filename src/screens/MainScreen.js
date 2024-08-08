@@ -4,7 +4,7 @@ import SideMenu from '../components/main/sideMenu'
 import TopMenu from '../components/main/topMenu'
 import { MainWrapper, WholeWrapper } from '../styles/main/mainStyle'
 import CartView from '../components/main/cartView'
-import { SCREEN_TIMEOUT } from '../resources/numberValues'
+import { QUICK_MENU_TIMEOUT, SCREEN_TIMEOUT } from '../resources/numberValues'
 import MenuListView from '../components/main/menuListView'
 import ItemDetail from '../components/detailComponents/itemDetail'
 import PopUp from '../components/common/popup'
@@ -18,7 +18,10 @@ import {isEmpty} from 'lodash';
 import { getAD, setAdScreen } from '../store/ad'
 import { regularUpdate } from '../store/menu'
 import { QuickOrderPopup } from '../components/popups/quickOrderPopup'
+import FloatingBtn from '../components/popups/floatingButtonPopup'
+import { setQuickShow } from '../store/order'
 let timeoutSet = null;
+let quickOrderTimeoutSet = null;
 
 const MainScreen = () =>{   
     const navigation = useNavigation();
@@ -26,6 +29,7 @@ const MainScreen = () =>{
     const {language} = useSelector(state=>state.languages);
     const {menuDetailID} = useSelector((state)=>state.menuDetail);
     const {isShow, adList} = useSelector((state)=>state.ads);
+    const {quickOrderList, isQuickShow} = useSelector(state=>state.order);
 
     useEffect(()=>{
         dispatch(setLanguage("korean"));  
@@ -39,6 +43,13 @@ const MainScreen = () =>{
             //dispatch(setAdScreen({isShow:true,isMain:true}))
         },SCREEN_TIMEOUT)
     } 
+    function quickOrderTimeOut(){
+        clearInterval(quickOrderTimeoutSet);
+        quickOrderTimeoutSet=null;
+        quickOrderTimeoutSet = setInterval(()=>{
+            dispatch(setQuickShow(true));
+        },QUICK_MENU_TIMEOUT)
+    } 
 
     useEffect(()=>{
           
@@ -47,13 +58,25 @@ const MainScreen = () =>{
             timeoutSet=null;
         }else {
             screenTimeOut();
+            quickOrderTimeOut()
         } 
           
     },[isShow])
+    useEffect(()=>{
+          
+        if(isQuickShow) {
+            clearInterval(quickOrderTimeoutSet);
+            quickOrderTimeoutSet=null;
+        }else {
+            quickOrderTimeOut()
+        } 
+          
+    },[isQuickShow])
+
     return(
         <>
             <KeyboardAvoidingView behavior="padding" enabled style={{width:'100%', height:'100%'}} >
-                <WholeWrapper onTouchStart={()=>{     screenTimeOut();     }} >
+                <WholeWrapper onTouchStart={()=>{     screenTimeOut();  quickOrderTimeOut();   }} >
                     <SideMenu/>
                     <MainWrapper>
                         <TopMenu/>
@@ -65,6 +88,7 @@ const MainScreen = () =>{
             {menuDetailID!=null &&
                 <ItemDetail onDetailTouchStart={screenTimeOut} isDetailShow={menuDetailID!=null} language={language}/>
             }
+            <FloatingBtn/>
         </>
     )
 }

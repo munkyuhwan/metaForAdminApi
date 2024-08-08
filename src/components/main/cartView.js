@@ -145,7 +145,7 @@ const CartView = () =>{
                         console.log("result: ",result);
                         const orderData = await metaPostPayFormat(orderList,result, allItems);
                         dispatch(postLog({payData:result,orderData:orderData}))
-                        dispatch(postOrderToPos({payData:result,orderData:orderData}));
+                        dispatch(postOrderToPos({isQuick:false, payData:result,orderData:orderData}));
                         dispatch(adminDataPost({payData:result,orderData:orderData}));
                     })
                     .catch((err)=>{
@@ -160,7 +160,7 @@ const CartView = () =>{
                 EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
                 const orderData = await metaPostPayFormat(orderList,{}, allItems);
                 dispatch(adminDataPost({payData:null,orderData:orderData}));
-                dispatch(postOrderToPos({payData:null,orderData:orderData}));
+                dispatch(postOrderToPos({isQuick:false, payData:null,orderData:orderData}));
                 setPayProcess(false);
             }
     }
