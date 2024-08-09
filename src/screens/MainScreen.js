@@ -39,8 +39,8 @@ const MainScreen = () =>{
         clearInterval(timeoutSet);
         timeoutSet=null;
         timeoutSet = setInterval(()=>{
-            //dispatch(regularUpdate());
-            //dispatch(setAdScreen({isShow:true,isMain:true}))
+            dispatch(regularUpdate());
+            dispatch(setAdScreen({isShow:true,isMain:true}))
         },SCREEN_TIMEOUT)
     } 
     function quickOrderTimeOut(){

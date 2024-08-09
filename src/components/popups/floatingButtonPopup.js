@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import FastImage from "react-native-fast-image";
 import { RADIUS_DOUBLE } from "../../styles/values";
 import { Animated, Dimensions, TouchableWithoutFeedback, View } from "react-native";
-import { addToOrderList, addToQuickOrderList, adminDataPost, initToQuickOrderList, postOrderToPos, setQuickShow } from "../../store/order";
+import { addToOrderList, addToQuickOrderList, adminDataPost, initToQuickOrderList, postLog, postOrderToPos, setQuickShow } from "../../store/order";
 import { setItemDetail } from "../../store/menuDetail";
 import {isEmpty, isEqual} from "lodash";
 import { useFocusEffect } from "@react-navigation/native";
@@ -32,6 +32,7 @@ import { getAD } from "../../store/ad";
 import { getAdminBulletin } from "../../store/menuExtra";
 import { KocesAppPay } from "../../utils/payment/kocesPay";
 import { metaPostPayFormat } from "../../utils/payment/metaPosDataFormat";
+import { PAY_SEPRATE_AMT_LIMIT } from "../../resources/defaults";
 
 const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
@@ -109,6 +110,7 @@ const FloatingBtn = (props) => {
                     return;
                 }
                 const orderData = await metaPostPayFormat(quickOrderList,{}, allItems);
+                console.log("order data: ",orderData);
                 if(orderData) {
                     var payAmt = 0;
                     var vatAmt = 0;
@@ -121,6 +123,7 @@ const FloatingBtn = (props) => {
                             vatAmt = vatAmt + Number(orderData.ITEM_INFO[i].SETITEM_INFO[j].VAT)
                         }                        
                     }
+                    console.log("payAmt: ",payAmt);
                     const amtData = {amt:payAmt, taxAmt:vatAmt, months:monthSelected, bsnNo:bsnNo,termID:tidNo }
                     //console.log("amtData: ",amtData);
                     var kocessAppPay = new KocesAppPay();

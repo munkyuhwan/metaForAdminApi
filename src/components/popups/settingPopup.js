@@ -220,10 +220,12 @@ const SettingPopup = () =>{
         var kocessStoreDownload = new KocesAppPay();
         await kocessStoreDownload.storeDownload();
         kocessStoreDownload.requestKoces()
-        .then(result=>{
+        .then(async (result)=>{
             var kocesRenewKey = new KocesAppPay();
-            kocesRenewKey.keyRenew()
-            .then((result)=>{
+            await kocesRenewKey.keyRenew()
+            kocesRenewKey.requestKoces()
+            .then((keyRenewResult)=>{
+                console.log("keyRenewResult: ",keyRenewResult);
                 displayOnAlert("설정되었습니다.",{});
             })
             .catch((err)=>{
