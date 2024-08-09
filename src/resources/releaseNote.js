@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.2.13";
+export const CURRENT_VERSION = "2.2.14";
 export const releaseNote = {
+    "2.2.14": //2024.08.08
+    `
+        - 주류 팝업 수정
+    `,
     "2.2.13": //2024.08.08
     `
         - 배너 안나오는 버그 수정

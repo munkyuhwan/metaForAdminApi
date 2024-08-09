@@ -266,10 +266,14 @@ export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{
                 }
                 if( tableStatus?.now_later == "선불") {
                     openTransperentPopup(dispatch, {innerView:"OrderComplete", isPopupVisible:true,param:{msg:"주문을 완료했습니다."}});
+                    dispatch(setQuickShow(true));
                 }else {
                     openTransperentPopup(dispatch, {innerView:"OrderComplete", isPopupVisible:true,param:{msg:"주문을 완료했습니다."}});
                     setTimeout(() => {
                         openTransperentPopup(dispatch, {innerView:"OrderList", isPopupVisible:true, param:{timeOut:10000} });
+                        if(isQuick==false) {
+                            dispatch(setQuickShow(true));
+                        }
                     }, 3000);
                 }
             }else {

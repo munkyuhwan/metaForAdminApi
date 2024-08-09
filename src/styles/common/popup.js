@@ -47,7 +47,7 @@ export const TransperentPopupTopTitle = styled.Text`
 `
 export const TransperentPopupTopSubTitle = styled.Text`
     paddingTop:40px;
-    color:${colorWhite};
+    color:${colorBlack};
     lineHeight:31px;
     fontSize:24px;
 `
@@ -120,4 +120,16 @@ export const OrderCompleteText = styled.Text`
     fontSize:90px;
     color:${colorRed};
     fontWeight:bold;
+`
+
+// 투명배경 상단 텍스트
+export const TransparentQuickOrderTopWrapper = styled.View`
+    backgroundColor:${colorRed};
+    marginBottom:5px;
+`
+
+export const TransperentQuickOrderTopSubTitle = styled.Text`
+    color:${colorWhite};
+    lineHeight:31px;
+    fontSize:24px;
 `

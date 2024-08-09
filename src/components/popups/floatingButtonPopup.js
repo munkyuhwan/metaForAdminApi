@@ -33,6 +33,7 @@ import { getAdminBulletin } from "../../store/menuExtra";
 import { KocesAppPay } from "../../utils/payment/kocesPay";
 import { metaPostPayFormat } from "../../utils/payment/metaPosDataFormat";
 import { PAY_SEPRATE_AMT_LIMIT } from "../../resources/defaults";
+import { TransparentPopupTopWrapper, TransparentQuickOrderTopWrapper, TransperentPopupTopSubTitle, TransperentPopupTopTitle, TransperentQuickOrderTopSubTitle } from "../../styles/common/popup";
 
 const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
@@ -311,7 +312,7 @@ const FloatingBtn = (props) => {
 
                         {imgUrl &&
                         <TouchableWithoutFeedback onPress={()=>{ makeLastOrder(item); }} >
-                            <FastImage style={{ width:200,height:height*0.25, borderRadius:RADIUS_DOUBLE}} source={{uri:quickItem[0]?.imgData}} resizeMode={FastImage.resizeMode.cover} />
+                            <FastImage style={{ width:170,height:height*0.2, borderRadius:RADIUS_DOUBLE}} source={{uri:quickItem[0]?.imgData}} resizeMode={FastImage.resizeMode.cover} />
                             {/*<FastImage style={{ width:'100%',height:height*0.28, borderRadius:RADIUS_DOUBLE}} source={{uri:item?.gimg_chg}} resizeMode={FastImage.resizeMode.cover} />*/}
                         </TouchableWithoutFeedback>
                         }
@@ -396,7 +397,7 @@ const FloatingBtn = (props) => {
                     }
                     </MenuItemTopWrapper>
                     <QuickMenuItemBottomWRapper>
-                        <QuickMenuItemName>{itemTitle()||item.gname_kr}</QuickMenuItemName>
+                            <QuickMenuItemName>{itemTitle()||item.gname_kr}</QuickMenuItemName>
                         <QuickMenuItemPrice>{numberWithCommas(itemPrice)}원</QuickMenuItemPrice>
                     </QuickMenuItemBottomWRapper>
 
@@ -419,10 +420,13 @@ const FloatingBtn = (props) => {
             <View style={{position:'absolute',width:'100%',height:'100%',backgroundColor:'rgba(0,0,0,0.3)'}} ></View>
             <QuickTopMenuWrapper>
                 <CategorySelected isSelected={true} >
-                    <TopMenuText key={"subcatText_"} >{"빠른 주문"}</TopMenuText>
+                    <TopMenuText key={"subcatText_"} >{"논스톱 주문"}</TopMenuText>
                 </CategorySelected>
             </QuickTopMenuWrapper>
             <QuickOrderWrapper>
+                <TransparentQuickOrderTopWrapper>
+                    <TransperentQuickOrderTopSubTitle>{LANGUAGE[language]?.etc.quickOrder}</TransperentQuickOrderTopSubTitle>
+                </TransparentQuickOrderTopWrapper>     
                 <FlatList
                     style={{height:'100%', zIndex: 99, paddingBottom:10,flex:1}}
                     data={lastOrderItem}

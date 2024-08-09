@@ -72,6 +72,9 @@ export const LANGUAGE = {
             payRestAmtTitle:"남은금액",
             payAmtUnit:'원',
             payAmCancel:'결제취소',
+        },
+        etc:{
+            quickOrder:"논스톱으로 장바구니에 담기지 않고 바로 주문(주문시 유의)"
         }
     },
 
@@ -143,6 +146,9 @@ export const LANGUAGE = {
        },
        adSCreen:{
             letsOrder:"注文する",
+       },
+       etc:{
+           quickOrder:"ノンストップでカートに入れずにすぐに注文（注文時の注意)"
        }
     },
 
@@ -209,6 +215,9 @@ export const LANGUAGE = {
         },
         adSCreen:{
             letOrder:"下订单",
+        },
+        etc:{
+            quickOrder:"无需加入购物车即可立即下单（下单需谨慎）"
         }
 
     },
@@ -274,6 +283,9 @@ export const LANGUAGE = {
        },
        adSCreen:{
             letsOrder:"Place an order",
+       },
+       etc:{
+           quickOrder:"Order directly without adding to cart nonstop (Note when ordering)"
        }
     }
 
