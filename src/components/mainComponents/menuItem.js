@@ -99,8 +99,8 @@ const MenuItem = ({item,index,setDetailShow}) => {
                     {imgUrl &&
                         <>
                             <TouchableWithoutFeedback onPress={()=>{setDetailShow(true); dispatch(setItemDetail({itemID})); }} >
-                                <FastImage style={{ width:'100%',height:height*0.28, borderRadius:RADIUS_DOUBLE}} source={{uri:filteredImg[0]?.imgData}} resizeMode={FastImage.resizeMode.cover} />
-                                {/*<FastImage style={{ width:'100%',height:height*0.28, borderRadius:RADIUS_DOUBLE}} source={{uri:item?.gimg_chg}} resizeMode={FastImage.resizeMode.cover} />*/}
+                                {/* <FastImage style={{ width:'100%',height:height*0.28, borderRadius:RADIUS_DOUBLE}} source={{uri:filteredImg[0]?.imgData}} resizeMode={FastImage.resizeMode.cover} /> */}
+                                <FastImage style={{ width:'100%',height:height*0.28, borderRadius:RADIUS_DOUBLE}} source={{uri:item?.gimg_chg}} resizeMode={FastImage.resizeMode.cover} />
                             </TouchableWithoutFeedback>
                         </>
                     }

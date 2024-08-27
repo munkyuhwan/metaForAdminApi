@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import styled, {css} from 'styled-components/native';
-import { RADIUS, RADIUS_DOUBLE } from '../values';
+import { RADIUS, RADIUS_DOUBLE, RADIUS_SMALL, RADIUS_SMALL_DOUBLE } from '../values';
 import { Animated, TouchableWithoutFeedback } from 'react-native';
 import { colorBlack, colorGrey, colorRed, colorWhite, mainTheme, textColorWhite } from '../../assets/colors/color';
 import FastImage from 'react-native-fast-image';
@@ -163,6 +163,31 @@ export const CartItemAmtText = styled.Text`
     flex:1;
     textAlign:center;
     lineHeight:58px;
+    color:${colorBlack};
+`
+// 더치페이
+export const DutchPayItemAmtText = styled.Text`
+    fontSize:30px;
+    fontWeight:bold;
+    flex:1;
+    textAlign:center;
+    lineHeight:58px;
+    color:${colorBlack};
+    margin:auto;
+    marginTop:14px;
+`
+export const DutchPayItemAmtTextCollored = styled.Text`
+    fontSize:30px;
+    fontWeight:bold;
+    flex:1;
+    textAlign:center;
+    lineHeight:58px;
+    color:${props=>props.color};
+    backgroundColor:${props=>props.bgColor};
+    margin:auto;
+    marginTop:14px;
+    width:${props=>props.width};
+    borderRadius:${RADIUS_SMALL};
 `
 // 수량 조절 메뉴 상세
 export const DetailItemAmtWrapper = styled.View`
@@ -209,6 +234,12 @@ export const DetailOperandorText = styled.Text`
 
 
 // 취소 버튼
+export const DutchItemCancelWrapper = styled.View`
+    width:50%;
+    height:24%;
+    flex:1;
+    backgroundColor:yellow;
+`
 export const CartItemCancelWrapper = styled.View`
     width:30%;
     height:24%;
@@ -266,7 +297,19 @@ export const PayBtnWrapper = styled.View`
 export const PayBtn = styled.View`
     width: ${(props)=>{ return props?.isFull? "100%" :  "48%" }};
     ${(props)=>{ return props?.isGap?"marginLeft:4px; marginRight:4px;":"" }}
-    backgroundColor:${colorRed};
+    backgroundColor:${props=>props.color};
+    flexDirection:row;
+    textAlign:center;
+    justifyContent:center;
+    borderRadius:${RADIUS};
+    marginTop:10px;
+    paddingTop:7px;
+    paddingBottom:7px;
+`
+export const DutchPayBtn = styled.View`
+    width: ${(props)=>{ return props?.isFull? "93%" :  "48%" }};
+    ${(props)=>{ return props?.isGap?"marginLeft:4px; marginRight:4px;":"" }}
+    backgroundColor:${props=>props.color};
     flexDirection:row;
     textAlign:center;
     justifyContent:center;

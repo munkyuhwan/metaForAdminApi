@@ -425,3 +425,87 @@ export const itemEnableCheck = async (STORE_IDX, items) => {
     
 
 }
+
+// 더치페이 선택 
+export function dutchPayItemCalculator(dutchOrderList,dutchOrderToPayList, dutchOrderPaidList, itemToAdd) {
+    // dutchOrderList: 주문내역
+    // dutchOrderToPayList: 현재 선택 내역
+    // dutchOrderPaidList: 결제한 내역
+    // itemToAdd: 선택내역에 추가할 메뉴
+    //console.log("dutchOrderList: ",dutchOrderList);
+    //console.log("dutchOrderToPayList: ",dutchOrderToPayList);
+    //console.log("dutchOrderPaidList: ",dutchOrderPaidList);
+    //console.log("itemToAdd: ",itemToAdd);
+    var returnDutchOrderToPayList = Object.assign([],dutchOrderToPayList);
+    var returnDutchOrderList = Object.assign([],dutchOrderList);
+    var returnDutchOrderPaitList = dutchOrderPaidList;
+
+    const isAdd = itemToAdd.isAdd;
+    const orderIndex = itemToAdd.orderIndex;
+    var selectIndex=null;
+    if(itemToAdd.selectIndex!=undefined) {
+        selectIndex = itemToAdd.selectIndex;
+    }else {
+        if(returnDutchOrderToPayList?.length>0) {
+            for(var i=0;i<returnDutchOrderToPayList.length;i++) {
+                console.log(returnDutchOrderToPayList[i].index,",",orderIndex);
+                if(returnDutchOrderToPayList[i].index == orderIndex) {
+                    selectIndex = i;
+                }
+            }
+        }else {
+            selectIndex = itemToAdd.selectIndex;
+        }
+    }
+    // 선택한 메뉴
+    var selectedItem = dutchOrderList[orderIndex];
+    var qty = selectedItem.qty;
+    if(isAdd){
+        if(qty<=0) {
+            return;
+        }
+    }
+    // 카트에 담긴 수량 조절
+    if(!isAdd){
+        returnDutchOrderList[orderIndex] =  Object.assign({},returnDutchOrderList[orderIndex],{qty:Number(returnDutchOrderList[orderIndex].qty)+1});
+    }else {
+        returnDutchOrderList[orderIndex] =  Object.assign({},returnDutchOrderList[orderIndex],{qty:Number(returnDutchOrderList[orderIndex].qty)-1});
+    }
+    // 선택한 메뉴 수량조절
+    // 1. 메뉴에서는 하나 빼고
+    // 2. 선택한 메뉴 수량은 1로 한다.
+    selectedItem = {...selectedItem,...{qty:1}, index:orderIndex};
+
+    // 선택한 아이템이 기존에 추가되어 있는 아이템인지 체크
+    const checkSelected = dutchOrderToPayList.filter(el=> el.index == orderIndex);
+    if(checkSelected.length>0) {
+        // 선택된 아이템이 있으면 수량만 올린다.
+        var newSelected = Object.assign({},checkSelected[0]);
+        if(!isAdd){
+            if(Number(newSelected.qty)<=1) {
+                //delete returnDutchOrderToPayList[index];
+                returnDutchOrderToPayList = returnDutchOrderToPayList.filter(el=>el.index!=orderIndex);
+            }else {
+                newSelected = {...newSelected, ...{qty:Number(newSelected.qty)-1}};
+                returnDutchOrderToPayList[selectIndex] = newSelected;
+            }
+        }else {
+            newSelected = {...newSelected, ...{qty:Number(newSelected.qty)+1}};
+            returnDutchOrderToPayList[selectIndex] = newSelected;
+        }
+        console.log("new selected: ",newSelected)
+    }else {
+        returnDutchOrderToPayList.push(selectedItem);
+    }
+
+
+    return {
+        dutchOrderList:returnDutchOrderList,
+        dutchOrderToPayList:returnDutchOrderToPayList,
+        dutchOrderPaidList:returnDutchOrderPaitList
+    }
+
+
+
+
+}

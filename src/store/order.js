@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { MENU_DATA } from '../resources/menuData';
 //import { SERVICE_ID, STORE_ID } from '../resources/apiResources';
 import { addOrderToPos, getOrderByTable } from '../utils/apis';
-import { getIP, getStoreID, getTableInfo, grandTotalCalculate, numberPad, openPopup, openTransperentPopup, orderListDuplicateCheck, setOrderData } from '../utils/common';
+import { dutchPayItemCalculator, getIP, getStoreID, getTableInfo, grandTotalCalculate, numberPad, openPopup, openTransperentPopup, orderListDuplicateCheck, setOrderData } from '../utils/common';
 import { isEqual, isEmpty } from 'lodash'
 import { posErrorHandler } from '../utils/errorHandler/ErrorHandler';
 import { setCartView, setQickOrder, setQuickOrder } from './cart';
@@ -142,9 +142,7 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
         "STORE_ID":STORE_IDX,
     }
     postOrderData = {...postOrderData,...addData};
-    //console.log("postOrderDatatoadmin========================================================")
-    //console.log(JSON.stringify(postOrderData))
-
+    
     // 마지막 주문 팝업 추가
     const itemList = postOrderData?.ITEM_INFO
     if(itemList.length > 0) {
@@ -161,6 +159,9 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
 
         })
     }
+    //console.log("postOrderDatatoadmin========================================================")
+    //console.log(JSON.stringify(postOrderData))
+
     /* 
         if(itemDetail?.length>0) {
             const isPopup = itemDetail[0]?.is_popup;
@@ -616,6 +617,62 @@ export const setQuickShow = createAsyncThunk("order/setQuickShow",  async(data,{
     return data;
 })
 
+// dutchpay
+export const setDutchOrderList = createAsyncThunk("order/setDutchOrderList",  async(data,{dispatch, getState,extra}) =>{
+    const {dutchOrderList } = getState().order;
+    
+    console.log("data: ",data);
+    return data;
+})
+export const setDutchOrderToPayList = createAsyncThunk("order/setDutchOrderToPayList",  async(data,{dispatch, getState,extra}) =>{
+    const { dutchOrderList, dutchOrderToPayList, dutchOrderPaidList, dutchOrderLeftList } = getState().order;
+    const {allItems} = getState().menu;
+    const calculateResult = dutchPayItemCalculator(dutchOrderList,dutchOrderToPayList, dutchOrderPaidList, data);
+
+    if(calculateResult) {
+        const resultDutchOrderToPay = calculateResult.dutchOrderToPayList;
+        //const itemDetail = allItems?.filter(el=>el.prod_cd == order?.prod_cd);
+        var selectedTotalAmt = 0;
+        for(var i=0;i<resultDutchOrderToPay.length;i++) {
+            const itemDetail = allItems?.filter(el=>el.prod_cd == resultDutchOrderToPay[i]?.prod_cd);
+            const prodGb = itemDetail[0]?.prod_gb; // 세트하부금액 구분용
+
+            if(META_SET_MENU_SEPARATE_CODE_LIST.indexOf(prodGb)>=0) {
+                // 선택하부금액 
+                var itemTotal = Number(itemDetail[0]?.account);
+                const setItem = resultDutchOrderToPay[i]?.set_item;
+                if(setItem.length>0) {
+                    var setItemPrice = 0;
+                    for(var i=0;i<setItem.length;i++) {
+                        const setItemData = allItems?.filter(el=>el.prod_cd == setItem[i].optItem);
+                        if(setItemData.length>0) {
+                            setItemPrice = Number(setItemPrice)+(Number(setItemData[0]?.account)*Number(setItem[i]?.qty));
+                        }
+                    }
+                    itemTotal = (Number(itemTotal)+Number(setItemPrice))*Number(resultDutchOrderToPay[i]?.qty);
+                }else {
+                    itemTotal = Number(itemDetail[0]?.account)*Number(resultDutchOrderToPay[i]?.qty);
+                }
+                selectedTotalAmt += Number(itemTotal);
+            }else {
+                const itemTotal = Number(itemDetail[0]?.account)*Number(resultDutchOrderToPay[i]?.qty);
+                selectedTotalAmt += Number(itemTotal);
+            }
+        }
+
+        return {...calculateResult,...{dutchSelectedTotalAmt:selectedTotalAmt}};
+    }else {
+        return;
+    }
+})
+
+
+export const initDutchPayOrder = createAsyncThunk("order/initDutchPayOrder",  async(data,{dispatch, getState,extra}) =>{
+    return;
+})
+
+
+
 // Slice
 export const orderSlice = createSlice({
     name: 'order',
@@ -633,8 +690,54 @@ export const orderSlice = createSlice({
 
         quickOrderList:[],
         isQuickShow:false,
+
+        // dutchpay
+        dutchOrderList:[{"prod_cd": "900014", "qty": 3, "set_item": []}, {"prod_cd": "1016", "qty": 4, "set_item": []}, {"prod_cd": "900022", "qty": 1, "set_item": []}, {"prod_cd": "900032", "qty": 2, "set_item": []}],
+        dutchOrderToPayList:[],
+        dutchOrderPaidList:[],
+        dutchOrderLeftList:[],
+        dutchSelectedTotalAmt:0,
     },
     extraReducers:(builder)=>{
+        // dutchpay
+        initDutchPayOrder
+        builder.addCase(initDutchPayOrder.fulfilled, (state,action)=>{
+            state.dutchOrderList = [];
+            state.dutchOrderToPayList = [];
+            state.dutchOrderPaidList = [];
+        })
+        builder.addCase(initDutchPayOrder.rejected, (state,action)=>{
+
+        })
+        builder.addCase(initDutchPayOrder.pending, (state,action)=>{
+
+        })  
+        builder.addCase(setDutchOrderList.fulfilled, (state,action)=>{
+            state.dutchOrderList = state.orderList;
+        })
+        builder.addCase(setDutchOrderList.rejected, (state,action)=>{
+
+        })
+        builder.addCase(setDutchOrderList.pending, (state,action)=>{
+
+        })  
+        builder.addCase(setDutchOrderToPayList.fulfilled, (state,action)=>{
+            if(action.payload) {
+                state.dutchOrderList = action.payload.dutchOrderList;
+                state.dutchOrderToPayList = action.payload.dutchOrderToPayList;
+                state.dutchOrderPaidList = action.payload.dutchOrderPaidList;
+                state.dutchSelectedTotalAmt = action.payload.dutchSelectedTotalAmt;
+                //var currentItems = Object.assign([],state.dutchOrderToPayList);
+                //currentItems.push(action.payload);
+                //state.dutchOrderToPayList = currentItems;
+            }
+        })
+        builder.addCase(setDutchOrderToPayList.rejected, (state,action)=>{
+
+        })
+        builder.addCase(setDutchOrderToPayList.pending, (state,action)=>{
+
+        })
         
         builder.addCase(setQuickShow.fulfilled, (state,action)=>{
             state.isQuickShow = action.payload;

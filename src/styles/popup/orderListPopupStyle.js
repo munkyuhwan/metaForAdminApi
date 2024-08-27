@@ -74,6 +74,43 @@ export const OrderListTableColumnName = styled.Text`
 export const OrderListTableList = styled.FlatList`
 
 `
+export const DutchPayFullWrapper = styled.View`
+    flex:1;
+    flexDirection:row;
+    width:100%;
+    marginTop:15px;
+    backgroundColor:${colorGrey};
+    gap:10px;
+    padding:10px;
+    borderTopLeftRadius:${RADIUS_SMALL};
+    borderBottomLeftRadius:${RADIUS_SMALL};
+    borderBottomRightRadius:${RADIUS_SMALL};
+    borderWidth:3px;
+    borderColor:${colorRed};
+`
+export const DutchPayHalfWrapper = styled.View`
+    flex:1;
+    width:100%;
+    height:100%;
+    backgroundColor:${colorWhite};
+    borderRadius:${RADIUS_SMALL};
+    ${props=>props?.isBorder==true?`borderWidth:2px;borderColor:${colorRed};`:""};
+    alignItems:center;
+    paddingTop:10px;
+    paddingBottom:10px;
+`
+
+// 더치페이 아이템 추가 버튼
+export const DutchPayItemAddWrapper = styled.View`
+    width:130%;
+    height: 60px;
+    backgroundColor:${colorGrey};
+    borderRadius:${RADIUS};
+    flexDirection:row;
+    padding:3px;
+    marginTop:17px;
+`
+
 // 리스트 아이템
 export const OrderListTableItemWrapper=styled.View`
     flexDirection:row;
@@ -195,7 +232,7 @@ export const OrderPayDimWrapper = styled.View`
 export const OrderPayTabWrapper = styled.View`
     flexDirection:row;
     position:absolute;
-    right:0;
+    right:-1px;
     bottom:-22;
 `
 export const OrderPayTab = styled.View`

@@ -76,7 +76,8 @@ const RecommendItem = (props) => {
                 }}>
                 <RecommendItemWrapper>
                     <RecommendItemImageWrapper>
-                        <RecommendItemImage  source={{uri:(`${images.filter(el=>el.name==recommentItemID)[0]?.imgData}`),priority: FastImage.priority.high }} />
+                        {/* <RecommendItemImage  source={{uri:(`${images.filter(el=>el.name==recommentItemID)[0]?.imgData}`),priority: FastImage.priority.high }} /> */}
+                        <RecommendItemImage  source={{uri:menuDetail?.gimg_chg,priority: FastImage.priority.high }} />
 
                         <RecommendItemDim isSelected={props?.isSelected}/>
                         {props?.isSelected &&

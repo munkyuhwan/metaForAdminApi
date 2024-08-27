@@ -312,8 +312,8 @@ const FloatingBtn = (props) => {
 
                         {imgUrl &&
                         <TouchableWithoutFeedback onPress={()=>{ makeLastOrder(item); }} >
-                            <FastImage style={{ width:170,height:height*0.2, borderRadius:RADIUS_DOUBLE}} source={{uri:quickItem[0]?.imgData}} resizeMode={FastImage.resizeMode.cover} />
-                            {/*<FastImage style={{ width:'100%',height:height*0.28, borderRadius:RADIUS_DOUBLE}} source={{uri:item?.gimg_chg}} resizeMode={FastImage.resizeMode.cover} />*/}
+                            {/* <FastImage style={{ width:170,height:height*0.2, borderRadius:RADIUS_DOUBLE}} source={{uri:quickItem[0]?.imgData}} resizeMode={FastImage.resizeMode.cover} /> */}
+                            <FastImage style={{ width:'100%',height:height*0.28, borderRadius:RADIUS_DOUBLE}} source={{uri:item?.gimg_chg}} resizeMode={FastImage.resizeMode.cover} />
                         </TouchableWithoutFeedback>
                         }
                         {!imgUrl &&

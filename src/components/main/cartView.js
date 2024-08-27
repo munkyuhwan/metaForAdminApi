@@ -15,7 +15,7 @@ import { setCartView, setIconClick } from '../../store/cart';
 import { IconWrapper } from '../../styles/main/topMenuStyle';
 import TopButton from '../menuComponents/topButton';
 import {  getDeviceInfo, getStoreID, isNetworkAvailable, itemEnableCheck, numberWithCommas, openFullSizePopup, openTransperentPopup } from '../../utils/common';
-import { adminDataPost, initOrderList, postLog, postOrderToPos, presetOrderData, setOrderProcess } from '../../store/order';
+import { adminDataPost, initOrderList, postLog, postOrderToPos, presetOrderData, setDutchOrderList, setOrderProcess } from '../../store/order';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {isEmpty} from 'lodash';
 import LogWriter from '../../utils/logWriter';
@@ -34,6 +34,7 @@ import FloatingBtn from '../popups/floatingButtonPopup';
 import { getAdminCategories } from '../../store/categories';
 import { getAD } from '../../store/ad';
 import { getAdminBulletin } from '../../store/menuExtra';
+import { colorRed } from '../../assets/colors/color';
 
 const windowWidth = Dimensions.get('window').width;
 const CartView = () =>{
@@ -75,7 +76,6 @@ const CartView = () =>{
             })
         ]).start();
     }
-   
     const addToPos = async () => {
         const paymentResult = {"acquire-info": "0300신한카드사", "additional-device-name": "SIFM", "additional-device-serial": "S522121235", "approval-date": "231026", "approval-no": "37466524", "approval-time": "004108", "business-address": "서울 영등포구 선유로3길 10 하우스디 비즈 706호", "business-name": "주식회사 우리포스", "business-no": "2118806806", "business-owner-name": "김정엽", "business-phone-no": "02  15664551", "card-no": "94119400********", "cat-id": "7109912041", "deal": "approval", "device-auth-info": "####SMT-R231", "device-auth-ver": "1001", "device-name": "SMT-R231", "device-serial": "S522121235", "display-msg": "정상승인거래", "external-name": "SIFM", "external-serial": "S522121235", "issuer-info": "0300마이홈플러스신한", "merchant-no": "0105512446", "persional-id": "01040618432", "receipt-msg": "정상승인거래", "response-code": "00", "service": "payment", "service-result": "0000", "total-amount": 20, "type": "credit", "unique-no": "710610231843", "van-tran-seq": "231026004105"}
         //dispatch(postToPos({paymentResult}));
@@ -434,37 +434,37 @@ const CartView = () =>{
                     </PayWrapper>
                     <PayBtnWrapper>
 
-                        {!isPrepay&&
+                        {/*!isPrepay&&
                             <TouchableWithoutFeedback onPress={()=>{if(isPayProcess == false){setPayProcess(true); doPayment();}}} >
-                                <PayBtn isFull={true} >
+                                <PayBtn isFull={true} color={colorRed} >
                                     <PayTitle>{LANGUAGE[language]?.cartView.makeOrder}</PayTitle>
                                     <PayIcon source={require("../../assets/icons/order.png")} />
                                 </PayBtn>
                             </TouchableWithoutFeedback>
-                        }
-                        {isPrepay&&
+                        */}
+                        {/*isPrepay&&
                             <TouchableWithoutFeedback onPress={()=>{if(isPayProcess == false){setPayProcess(true); doPayment();}}} >
                                 <PayBtn isFull={true} >
                                     <PayTitle>{LANGUAGE[language]?.cartView.payOrder}</PayTitle>
                                     <PayIcon source={require("../../assets/icons/order.png")} />
                                 </PayBtn>
                             </TouchableWithoutFeedback>
-                        }
-                        {/*isPrepay&&
+                        */}
+                        {//isPrepay&&
                             <>
                             <TouchableWithoutFeedback onPress={()=>{doPayment();}} >
-                                <PayBtn isFull={false} isGap={true} >    
+                                <PayBtn isFull={false} isGap={true} color={colorRed} >    
                                     <PayTitle>{LANGUAGE[language]?.cartView.payOrder}</PayTitle>
                                     
                                 </PayBtn>
                             </TouchableWithoutFeedback>
-                            <TouchableWithoutFeedback onPress={()=>{openFullSizePopup(dispatch, {innerFullView:"OrderPay", isFullPopupVisible:true}); }} >
-                                <PayBtn isFull={false}  isGap={true} >
+                            <TouchableWithoutFeedback onPress={()=>{dispatch(setDutchOrderList()); openFullSizePopup(dispatch, {innerFullView:"OrderPay", isFullPopupVisible:true}); }} >
+                                <PayBtn isFull={false}  isGap={true} color={colorRed}  >
                                         <PayTitle>{LANGUAGE[language]?.cartView.payDutch}</PayTitle>
                                 </PayBtn>
                             </TouchableWithoutFeedback>
                             </>
-                        */}
+                        }
 
                     </PayBtnWrapper>
 

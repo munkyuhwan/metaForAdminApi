@@ -143,10 +143,11 @@ const OptItem = (props)=>{
                 }
                 }} >
                 <View>
+                            {/* <OptItemFastImage  source={{uri:(`${images.filter(el=>el.name==optionProdCD)[0]?.imgData}`),priority: FastImage.priority.high }}/>} */}
 
                     <OptItemWrapper>
                         {itemDetail[0]?.gimg_chg &&
-                            <OptItemFastImage  source={{uri:(`${images.filter(el=>el.name==optionProdCD)[0]?.imgData}`),priority: FastImage.priority.high }}/>}
+                            <OptItemFastImage  source={{uri:itemDetail[0]?.gimg_chg,priority: FastImage.priority.high }}/>}
                         {!itemDetail[0]?.gimg_chg &&
                             <OptItemFastImage resizeMode='contain'  source={require('../../assets/icons/logo.png')}/>
                         }

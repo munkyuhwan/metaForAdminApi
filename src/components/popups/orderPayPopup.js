@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Alert, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux'
-import { OrderListWrapper, OrderListPopupWrapper, OrderListTopSubtitle, OrderListTopTitle, OrdrListTopWrapper, OrderListTableWrapper, OrderListTableColumnNameWrapper, OrderListTableColumnName, OrderListTableList, OrderListTalbleGrandTotal, OrderListTalbleGrandTotalWrapper, OrderListTotalTitle, OrderListTotalAmount, OrderPayPopupWrapper, OrderPayTab, OrderPayTabTitle, OrderPayTabWrapper, OrderPayAmtWrapper, OrderPayTitle, OrderPayAmtRow, OrderPayAmtTitle, OrderPayBottomWrapper, OrderPayCardScollWrapper } from '../../styles/popup/orderListPopupStyle';
+import { OrderListWrapper, OrderListPopupWrapper, OrderListTopSubtitle, OrderListTopTitle, OrdrListTopWrapper, OrderListTableWrapper, OrderListTableColumnNameWrapper, OrderListTableColumnName, OrderListTableList, OrderListTalbleGrandTotal, OrderListTalbleGrandTotalWrapper, OrderListTotalTitle, OrderListTotalAmount, OrderPayPopupWrapper, OrderPayTab, OrderPayTabTitle, OrderPayTabWrapper, OrderPayAmtWrapper, OrderPayTitle, OrderPayAmtRow, OrderPayAmtTitle, OrderPayBottomWrapper, OrderPayCardScollWrapper, DutchPayHalfWrapper, DutchPayFullWrapper } from '../../styles/popup/orderListPopupStyle';
 import { PopupBottomButtonBlack, PopupBottomButtonText, PopupBottomButtonWrapper } from '../../styles/common/coreStyle';
 import { LANGUAGE } from '../../resources/strings';
 import { BottomButton, BottomButtonIcon, BottomButtonText, BottomButtonWrapper } from '../../styles/main/detailStyle';
-import { colorBlack, colorGrey, colorRed } from '../../assets/colors/color';
+import { colorBlack, colorBrown, colorGrey, colorRed } from '../../assets/colors/color';
 import { numberWithCommas, openFullSizePopup, openTransperentPopup } from '../../utils/common';
 import OrderListItem from '../orderListComponents/orderListItem';
-import { clearOrderStatus, getOrderStatus } from '../../store/order';
+import { clearOrderStatus, getOrderStatus, initDutchPayOrder, setDutchOrderList, setDutchOrderToPayList } from '../../store/order';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { checkTableOrder } from '../../utils/apis';
 import {isEmpty, isEqual} from 'lodash';
@@ -16,6 +16,11 @@ import OrderPayItem from '../orderListComponents/orderPayItem';
 import CheckBox from 'react-native-check-box';
 import { KocesAppPay } from '../../utils/payment/kocesPay';
 import PaidDataItem from '../orderListComponents/paidDataItem';
+import { CartFlatList, DutchPayBtn, PayBtn, PayTitle } from '../../styles/main/cartStyle';
+import CartListItem from '../cartComponents/cartListItem';
+import DutchPayListItem from '../cartComponents/dutchPayListItem';
+import { RADIUS_DOUBLE } from '../../styles/values';
+import DutchPaySelectedListItem from '../cartComponents/dutchPaySelectedListItem';
 
 const OrderPayPopup = () =>{
     const dispatch = useDispatch();
@@ -23,7 +28,10 @@ const OrderPayPopup = () =>{
     const [orderTotalAmt, setOrderTotalAmt] = useState(0);
     const {allItems} = useSelector((state)=>state.menu);
 
-    const {orderList} = useSelector((state)=>state.order);
+    const orderedListRef = useRef();
+    const selectedListRef = useRef();
+
+    const {orderList, dutchOrderList, dutchOrderToPayList, dutchSelectedTotalAmt} = useSelector((state)=>state.order);
     const [isDivided, setDivided] = useState(false);
     // 체크된 아이템 리스트
     const [checkedItemList, setCheckedItemList] = useState([]);
@@ -64,7 +72,10 @@ const OrderPayPopup = () =>{
             }
             setOrderTotalAmt(totalPrice);
         }
+        //주석해제 해야함
+        //dispatch(setDutchOrderList(orderList))
     },[orderList])
+
     useEffect(()=>{
         if(checkedItemList.length>0) {
             var selectedAmt = 0;
@@ -188,9 +199,8 @@ const OrderPayPopup = () =>{
             console.log("error: ",err)
             
         })
-        
-        
     }
+    
     const cancelOrderPayList = (index) =>{
         var tmpPaidList = Object.assign([],paidList);
         var canceledList = tmpPaidList.splice(index,1);
@@ -199,15 +209,23 @@ const OrderPayPopup = () =>{
         const taxAmt = Number(canceledList[0]?.paidData?.TaxAmt);
         setPaidAmt(paidAmt-(trdAmt+taxAmt));
     }
+
+    function scrollSelectedListToBottom() {
+        setTimeout(() => {
+            if(selectedListRef) {
+                if(selectedListRef.current) {
+                    selectedListRef.current.scrollToEnd({animated:true});
+                }
+            }    
+        }, 1000);   
+    }
+
     return(
         <>
             <OrderPayPopupWrapper>
                 
                 <OrdrListTopWrapper>
-                    <OrderListTopTitle>{LANGUAGE[language]?.orderListPopup.orderListTitle}</OrderListTopTitle>
-                    <TouchableWithoutFeedback onPress={()=>{dispatch(getOrderStatus({}));}} >
-                        <OrderListTopSubtitle>{LANGUAGE[language]?.orderListPopup.orderListSubtitle}</OrderListTopSubtitle>
-                    </TouchableWithoutFeedback>
+                    <OrderListTopTitle>{LANGUAGE[language]?.cartView.payDutch}</OrderListTopTitle>
                     <OrderPayTabWrapper>
                         <TouchableWithoutFeedback onPress={()=>{onTap(true)}} >
                             <OrderPayTab isOn={isDivided} >
@@ -221,8 +239,101 @@ const OrderPayPopup = () =>{
                         </TouchableWithoutFeedback>
                     </OrderPayTabWrapper>
                 </OrdrListTopWrapper>
-                <OrderListWrapper>
-                    <OrderListTableWrapper>
+                <DutchPayFullWrapper>
+                    <DutchPayHalfWrapper>
+                        <OrderPayTabTitle isOn={false} >주문내역</OrderPayTabTitle>
+                        <CartFlatList
+                            ref={orderedListRef}
+                            style={{borderRadius:RADIUS_DOUBLE}}
+                            showsVerticalScrollIndicator={false}
+                            data={dutchOrderList}
+                            renderItem={(item )=>{
+                                return(
+                                    <DutchPayListItem onPress={()=>{dispatch(setDutchOrderToPayList({orderIndex:item.index, isAdd:true}));scrollSelectedListToBottom(); /* dispatch(setDutchOrderToPayList({item:item.item, index:item.index})); */ }} {...item} />
+                                )
+                            }}
+                        />
+                    </DutchPayHalfWrapper>
+                    <DutchPayHalfWrapper isBorder={true}>
+                        <OrderPayTabTitle isOn={false} >선택내역</OrderPayTabTitle>
+                        <CartFlatList
+                            ref={selectedListRef}
+                            style={{borderBottomWidth:2, borderBottomColor:colorRed}}
+                            showsVerticalScrollIndicator={false}
+                            data={dutchOrderToPayList}
+                            renderItem={(item )=>{
+                                return(
+                                    <DutchPaySelectedListItem onPress={(type)=>{ dispatch(setDutchOrderToPayList({orderIndex:item.item.index,selectIndex:item.index, isAdd:type})); }} {...item} />
+                                )
+                            }}
+                        />
+                        <TouchableWithoutFeedback onPress={()=>{ }} >
+                            <DutchPayBtn isFull={true} isGap={true}  color={colorRed} >    
+                                <PayTitle>{`${numberWithCommas(dutchSelectedTotalAmt)}${LANGUAGE[language]?.orderPay?.payAmtUnit} `+LANGUAGE[language]?.cartView.payOrder}</PayTitle>
+                            </DutchPayBtn>
+                        </TouchableWithoutFeedback>
+                    </DutchPayHalfWrapper>
+                    <DutchPayHalfWrapper>
+                        <OrderPayTabTitle isOn={false} >결제</OrderPayTabTitle>
+                        <OrderPayAmtWrapper>
+                            <OrderPayAmtRow>
+                                <OrderPayTitle>{LANGUAGE[language]?.orderPay.payAmtToPay}</OrderPayTitle>
+                                <OrderPayAmtTitle>{`${numberWithCommas(checkOutAmt+checkOutVatAmt)}`+LANGUAGE[language]?.orderPay.payAmtUnit}</OrderPayAmtTitle>
+                            </OrderPayAmtRow>
+                            <OrderPayAmtRow>
+                                <OrderPayTitle>{LANGUAGE[language]?.orderPay.payAmtTitle}</OrderPayTitle>
+                                <OrderPayAmtTitle>{`${numberWithCommas(paidAmt)}`+LANGUAGE[language]?.orderPay.payAmtUnit}</OrderPayAmtTitle>
+                            </OrderPayAmtRow>
+                            <OrderPayAmtRow>
+                                <OrderPayTitle>{LANGUAGE[language]?.orderPay.payRestAmtTitle}</OrderPayTitle>
+                                <OrderPayAmtTitle>{`${numberWithCommas(orderTotalAmt-paidAmt)}`+LANGUAGE[language]?.orderPay.payAmtUnit}</OrderPayAmtTitle>
+                            </OrderPayAmtRow>
+                        </OrderPayAmtWrapper> 
+                        <OrderListTalbleGrandTotalWrapper>
+                            <OrderListTotalTitle>{LANGUAGE[language]?.orderListPopup.tableColGrandTotal}</OrderListTotalTitle>
+                            <OrderListTotalAmount>{numberWithCommas(orderTotalAmt)}{LANGUAGE[language]?.orderListPopup.totalAmtUnit}</OrderListTotalAmount>
+                        </OrderListTalbleGrandTotalWrapper>
+                        <BottomButtonWrapper>
+                            {/* 
+                            <TouchableWithoutFeedback onPress={()=>{ 
+                                if(paidAmt>0) {
+                                    if(orderTotalAmt-paidAmt>0){
+                                        Alert.alert(
+                                            "",
+                                            "결제 취소 후 주문을 취소 해 주세요.",
+                                            [{
+                                                text:'확인',
+                                            }]
+                                            );
+                                    }else {
+                                        openFullSizePopup(dispatch, {innerFullView:"", isPopupVisible:false});
+                                    } 
+                                }else {
+                                    openFullSizePopup(dispatch, {innerFullView:"", isPopupVisible:false});
+                                }
+                                }} >
+                                <BottomButton backgroundColor={colorBlack} >
+                                    <BottomButtonText>{LANGUAGE[language]?.orderListPopup.orderListCancel}</BottomButtonText>
+                                    <BottomButtonIcon source={require("../../assets/icons/cancel.png")} />
+                                </BottomButton>
+                            </TouchableWithoutFeedback>
+                            <TouchableWithoutFeedback onPress={()=>{doPay();}} >
+                                <BottomButton backgroundColor={colorRed} >
+                                    <BottomButtonText>{LANGUAGE[language]?.orderListPopup.orderListPay}</BottomButtonText>
+                                    <BottomButtonIcon source={require("../../assets/icons/order.png")} />
+                                </BottomButton>
+                            </TouchableWithoutFeedback> 
+                            */}
+                            <TouchableWithoutFeedback onPress={()=>{dispatch(initDutchPayOrder());  openFullSizePopup(dispatch, {innerFullView:"", isFullPopupVisible:false});  }} >
+                                 <PayBtn isFull={false} isGap={true}  color={ colorBlack}  >    
+                                    <PayTitle>{LANGUAGE[language]?.popup.cancelTitle}</PayTitle>
+                                </PayBtn>
+                            </TouchableWithoutFeedback>
+                            
+                        </BottomButtonWrapper>
+                    </DutchPayHalfWrapper>
+
+                    {/* <OrderListTableWrapper>
                         <OrderListTableColumnNameWrapper>
                             {!isDivided &&
                                 <OrderListTableColumnName flex={0.07} >
@@ -265,15 +376,17 @@ const OrderPayPopup = () =>{
                                 }}
                             />
                         
-                    </OrderListTableWrapper>
+                    </OrderListTableWrapper> */}
+                    {/*
                     <OrderListTalbleGrandTotalWrapper>
-                        <OrderListTotalTitle>{LANGUAGE[language]?.orderListPopup.tableColGrandTotal}</OrderListTotalTitle>
+                         <OrderListTotalTitle>{LANGUAGE[language]?.orderListPopup.tableColGrandTotal}</OrderListTotalTitle>
                         <OrderListTotalAmount>{numberWithCommas(orderTotalAmt)}{LANGUAGE[language]?.orderListPopup.totalAmtUnit}</OrderListTotalAmount>
-                    </OrderListTalbleGrandTotalWrapper>
-                </OrderListWrapper>
-
+                     </OrderListTalbleGrandTotalWrapper>
+                     */}
+                </DutchPayFullWrapper>
+                {/*
                 <OrderPayBottomWrapper>
-                    <OrderPayAmtWrapper horizontal={true} >
+                     <OrderPayAmtWrapper horizontal={true} >
                         <OrderPayCardScollWrapper>
                             {paidList.length> 0 &&
                                 paidList.map((el,index)=>{
@@ -300,9 +413,10 @@ const OrderPayPopup = () =>{
                             <OrderPayTitle>{LANGUAGE[language]?.orderPay.payRestAmtTitle}</OrderPayTitle>
                             <OrderPayAmtTitle>{`${numberWithCommas(orderTotalAmt-paidAmt)}`+LANGUAGE[language]?.orderPay.payAmtUnit}</OrderPayAmtTitle>
                         </OrderPayAmtRow>
-                    </OrderPayAmtWrapper>
+                    </OrderPayAmtWrapper> 
                 </OrderPayBottomWrapper>
-                
+                */}
+                {/* 
                 <BottomButtonWrapper>
                     <TouchableWithoutFeedback onPress={()=>{ 
                         if(paidAmt>0) {
@@ -333,6 +447,8 @@ const OrderPayPopup = () =>{
                         </BottomButton>
                     </TouchableWithoutFeedback>
                 </BottomButtonWrapper>
+
+                 */}
             </OrderPayPopupWrapper>
         </>
     )

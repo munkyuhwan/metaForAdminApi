@@ -107,12 +107,40 @@ const SettingPopup = () =>{
         dispatch(clearTableInfo());
     }
 
-    const setTableInfo = (itemValue, itemNM, floor) =>{
+    const setTableInfo = async (itemValue, itemNM, floor) =>{
+        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"테이블 설정 중 입니다."})
+
+        const prevTableCode = await AsyncStorage.getItem("TABLE_INFO");
+
         AsyncStorage.setItem("TABLE_INFO", itemValue);   
         AsyncStorage.setItem("TABLE_NM", itemNM);   
         AsyncStorage.setItem("TABLE_FLOOR",floor);
         dispatch(changeTableInfo({tableNo:itemValue}))
-        displayOnAlert("테이블이 설정되었습니다.",{});
+
+        const prevStoreID = await AsyncStorage.getItem("STORE_IDX").catch(()=>{return null;});
+        console.log("previous table topic: ",`${prevStoreID}_${prevTableCode}`)
+        if(prevTableCode){      
+            try{
+               await messaging().unsubscribeFromTopic(`${prevStoreID}_${prevTableCode}`);
+            }catch(err){
+                console.log("err:",err);
+                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
+                displayOnAlert(`${err}`,{});        
+                return;    
+            }
+        }
+        console.log("current table topic: ",`${prevStoreID}_${itemValue}`)
+        try {
+            await messaging().subscribeToTopic(`${prevStoreID}_${itemValue}`)
+            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
+            displayOnAlert("테이블이 설정되었습니다.",{});            
+            dispatch(regularUpdate());
+        }catch(err){
+            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
+            displayOnAlert(`${err}`,{});            
+            return;
+        }
+
     }
     const Dropdown = () => {
         return (

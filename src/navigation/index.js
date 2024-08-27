@@ -20,7 +20,7 @@ import {isEmpty} from 'lodash';
 import StatusScreen from '../screens/StatusScreen'
 import { initOrderList } from '../store/order'
 import {  DEFAULT_FIVE_MIN_STATUS_UPDATE_TIME, DEFAULT_TABLE_STATUS_UPDATE_TIME } from '../resources/defaults'
-import {  getDeviceInfo, openPopup } from '../utils/common'
+import {  getDeviceInfo, openFullSizePopup, openPopup } from '../utils/common'
 import { getAD } from '../store/ad'
 import ADScreenPopup from '../components/popups/adPopup'
 import MonthSelectPopup from '../components/popups/monthSelectPopup'
@@ -31,6 +31,7 @@ import { getAdminBulletin } from '../store/menuExtra'
 import messaging from '@react-native-firebase/messaging';
 import { displayErrorPopup } from '../utils/errorHandler/metaErrorHandler'
 import FloatingBtn from '../components/popups/floatingButtonPopup'
+import FastImage from 'react-native-fast-image'
 
 const Stack = createStackNavigator()
 var statusInterval;
@@ -182,6 +183,12 @@ export default function Navigation() {
     useEffect(()=>{
         if(allItems?.length > 0) {
             dispatch(setSelectedMainCategory(allCategories[0]?.cate_code1));
+            allItems.map(el=>{
+                FastImage.preload([{uri:el?.gimg_chg}]);
+
+            })
+            // 지워
+            //openFullSizePopup(dispatch, {innerFullView:"OrderPay", isFullPopupVisible:true});
         }
     },[allItems])
     // 테이블 상태

@@ -4,7 +4,7 @@ import {
     Text,
     TouchableWithoutFeedback
 } from 'react-native'
-import { CartItemAmtController, CartItemAmtControllerImage, CartItemAmtControllerText, CartItemAmtText, CartItemAmtWrapper, CartItemCancelBtn, CartItemCancelWrapper, CartItemFastImage, CartItemImage, CartItemImageTogoWrapper, CartItemOpts, CartItemPrice, CartItemTitle, CartItemTitlePriceWrapper, CartItemTogoBtn, CartItemTogoIcon, CartItemTogoText, CartItemTogoWrapper, CartItemWrapper, OperandorText } from '../../styles/main/cartStyle';
+import { CartItemAmtController, CartItemAmtControllerImage, CartItemAmtControllerText, CartItemAmtText, CartItemAmtWrapper, CartItemCancelBtn, CartItemCancelWrapper, CartItemFastImage, CartItemImage, CartItemImageTogoWrapper, CartItemOpts, CartItemPrice, CartItemTitle, CartItemTitlePriceWrapper, CartItemTogoBtn, CartItemTogoIcon, CartItemTogoText, CartItemTogoWrapper, CartItemWrapper, DutchItemCancelWrapper, DutchPayItemAmtText, DutchPayItemAmtTextCollored, OperandorText } from '../../styles/main/cartStyle';
 import { setPopupContent, setPopupVisibility } from '../../store/popup';
 import { useDispatch, useSelector } from 'react-redux';
 import { numberWithCommas, openPopup } from '../../utils/common';
@@ -13,8 +13,10 @@ import { LANGUAGE } from '../../resources/strings';
 import { addToOrderList, resetAmtOrderList, setOrderList } from '../../store/order';
 import FastImage from 'react-native-fast-image';
 import { META_SET_MENU_SEPARATE_CODE_LIST } from '../../resources/defaults';
+import { DutchPayItemAddWrapper } from '../../styles/popup/orderListPopupStyle';
+import { colorBlack, colorRed, colorWhite } from '../../assets/colors/color';
 
-const CartListItem = (props) => {
+const DutchPaySelectedListItem = (props) => {
     const dispatch = useDispatch();
     const {language} = useSelector(state=>state.languages);
     const {menuExtra} = useSelector(state=>state.menuExtra);
@@ -26,7 +28,7 @@ const CartListItem = (props) => {
     const index = props?.index;
     const order = props?.item;
     const additiveItemList = order?.set_item;
-    const itemDetail = allItems?.filter(el=>el.prod_cd == props?.item?.prod_cd);
+    const itemDetail = allItems?.filter(el=>el.prod_cd == order?.prod_cd);
     const prodGb = itemDetail[0]?.prod_gb; // 세트하부금액 구분용
 
     // 이미지 찾기
@@ -115,28 +117,31 @@ const CartListItem = (props) => {
                 <CartItemImageTogoWrapper>
                     {/* <CartItemImage source={ {uri:filteredImg[0]?.imgData,priority: FastImage.priority.high } } /> */}
                     <CartItemImage source={ {uri:itemDetail[0]?.gimg_chg, priority: FastImage.priority.high } } />
+                    {/* <TouchableWithoutFeedback onPress={()=>{console.log("on select"); props?.onPress(); }}>
+                        <DutchPayItemAmtTextCollored width={"100px"} bgColor={colorBlack} color={colorWhite} numberOfLines={1} ellipsizeMode="tail" >{`삭제`}</DutchPayItemAmtTextCollored>
+                    </TouchableWithoutFeedback> */}
                 </CartItemImageTogoWrapper>
                 
                 <CartItemTitlePriceWrapper>
                     <CartItemTitle numberOfLines={1} ellipsizeMode="tail" >{ItemTitle()||itemDetail[0]?.gname_kr}</CartItemTitle>
                     <CartItemOpts numberOfLines={2} ellipsizeMode="tail" >
-                        {
-                            additiveItemList.length>0 &&
-                            additiveItemList.map((el,index)=>{
+                        {additiveItemList&&
+                            additiveItemList?.length>0 &&
+                            additiveItemList?.map((el,index)=>{
                                 return `${ItemOptionTitle(el.optItem,index)}`+`${Number(el.qty)*Number(order?.qty)}개`+`${index<(additiveItemList.length-1)?", ":""}`;
                             })
                         }
                     </CartItemOpts>
                     <CartItemPrice>{numberWithCommas(itemTotalPrice())}원</CartItemPrice>
                     <CartItemAmtWrapper>
-                        <TouchableWithoutFeedback  onPress={()=>{ dispatch(addToOrderList({isAdd:false, isDelete: false, item:itemDetail[0],menuOptionSelected:order?.set_item})); }} >
+                        <TouchableWithoutFeedback  onPress={()=>{ props?.onPress(false); }} >
                             <CartItemAmtController>
                                {/*  <CartItemAmtControllerImage source={require("../../assets/icons/minusIcon.png")}  /> */}
                                <OperandorText>-</OperandorText>
                             </CartItemAmtController>
                         </TouchableWithoutFeedback>
                         <CartItemAmtText>{order?.qty}</CartItemAmtText>
-                        <TouchableWithoutFeedback  onPress={()=>{ dispatch(addToOrderList({isAdd:true, isDelete: false, item:itemDetail[0],menuOptionSelected:order?.set_item})); }} >
+                        <TouchableWithoutFeedback  onPress={()=>{props?.onPress(true); }} >
                             <CartItemAmtController>
                                 <OperandorText>+</OperandorText>
                                 {/* <CartItemAmtControllerImage  source={require("../../assets/icons/plusIcon.png")} /> */}
@@ -144,15 +149,15 @@ const CartListItem = (props) => {
                         </TouchableWithoutFeedback>
                     </CartItemAmtWrapper>
                 </CartItemTitlePriceWrapper>
-                <TouchableWithoutFeedback onPress={()=>{ dispatch(addToOrderList({isAdd:false, isDelete: true, item:itemDetail[0],menuOptionSelected:order?.set_item})); }}>
-                    <CartItemCancelWrapper>
+                {/* <TouchableWithoutFeedback onPress={()=>{props?.onPress("clear");  }}>
+                    <DutchItemCancelWrapper>
                         <CartItemCancelBtn source={require("../../assets/icons/close_grey.png")} />
-                    </CartItemCancelWrapper>
-                </TouchableWithoutFeedback>
+                    </DutchItemCancelWrapper>
+                </TouchableWithoutFeedback> */}
 
             </CartItemWrapper>
         </>
     )
 }
 
-export default CartListItem;
+export default DutchPaySelectedListItem;
