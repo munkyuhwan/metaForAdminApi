@@ -6,7 +6,7 @@ import { PopupBottomButtonBlack, PopupBottomButtonText, PopupBottomButtonWrapper
 import { LANGUAGE } from '../../resources/strings';
 import { BottomButton, BottomButtonIcon, BottomButtonText, BottomButtonWrapper } from '../../styles/main/detailStyle';
 import { colorBlack, colorBrown, colorGrey, colorRed } from '../../assets/colors/color';
-import { numberWithCommas, openFullSizePopup, openTransperentPopup } from '../../utils/common';
+import { isOrderAvailable, numberWithCommas, openFullSizePopup, openTransperentPopup } from '../../utils/common';
 import OrderListItem from '../orderListComponents/orderListItem';
 import { clearOrderStatus, getOrderStatus, initDutchPayOrder, setDutchOrderList, setDutchOrderToPayList } from '../../store/order';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -190,10 +190,7 @@ const OrderPayPopup = () =>{
             setCheckedItemList([]);
             setCheckAmt(0);
             setCheckVatAmt(0);
-            setPaidAmt(checkOutVatAmt+checkOutAmt+paidAmt);
-
-            
-            
+            setPaidAmt(checkOutVatAmt+checkOutAmt+paidAmt);   
         })
         .catch((err)=>{
             console.log("error: ",err)
@@ -218,6 +215,42 @@ const OrderPayPopup = () =>{
                 }
             }    
         }, 1000);   
+    }
+    useEffect(()=>{
+        console.log("dutch orderlist: ",dutchOrderList);
+        if(dutchOrderList?.length>0) {
+            isOrderAvailable(dispatch, dutchOrderList)
+            .then((result)=>{
+                console.log("Result: ",result)
+                const isPass = result?.result;
+                if(isPass) {
+                    // 결제 진행
+
+                }else {
+
+                }
+            })
+            .catch((err)=>{
+                console.log("err: ",err);
+            })
+        }
+    },[])
+
+    function goPay() {
+        if(dutchOrderList?.length>0) {
+            isOrderAvailable(dispatch, dutchOrderList)
+            .then((result)=>{
+                console.log("Result: ",result)
+                const isPass = result?.result;
+                if(isPass) {
+                    // 결제 진행
+
+                }
+            })
+            .catch((err)=>{
+                console.log("err: ",err);
+            })
+        }
     }
 
     return(
@@ -267,7 +300,9 @@ const OrderPayPopup = () =>{
                                 )
                             }}
                         />
-                        <TouchableWithoutFeedback onPress={()=>{ }} >
+                        {//계산하기 
+                        }
+                        <TouchableWithoutFeedback onPress={()=>{ console.log("start pay"); goPay(); }} >
                             <DutchPayBtn isFull={true} isGap={true}  color={colorRed} >    
                                 <PayTitle>{`${numberWithCommas(dutchSelectedTotalAmt)}${LANGUAGE[language]?.orderPay?.payAmtUnit} `+LANGUAGE[language]?.cartView.payOrder}</PayTitle>
                             </DutchPayBtn>

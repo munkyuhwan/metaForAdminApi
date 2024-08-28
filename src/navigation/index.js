@@ -188,7 +188,7 @@ export default function Navigation() {
 
             })
             // 지워
-            //openFullSizePopup(dispatch, {innerFullView:"OrderPay", isFullPopupVisible:true});
+            openFullSizePopup(dispatch, {innerFullView:"OrderPay", isFullPopupVisible:true});
         }
     },[allItems])
     // 테이블 상태

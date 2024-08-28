@@ -6,13 +6,21 @@ import {isEqual} from 'lodash';
 import RNFS from 'react-native-fs';
 import RNFetchBlob from 'rn-fetch-blob';
 import { addImageStorage } from '../store/imageStorage';
-import { setAdImgs } from '../store/ad';
+import { getAD, setAdImgs } from '../store/ad';
 import { fetch } from "@react-native-community/netinfo";
 // device info
 import DeviceInfo, { getUniqueId, getManufacturer } from 'react-native-device-info';
 import moment from 'moment';
-import { ADMIN_API_BASE_URL, ADMIN_API_MENU_CHECK } from '../resources/newApiResource';
+import { ADMIN_API_BASE_URL, ADMIN_API_MENU_CHECK, ADMIN_API_MENU_UPDATE } from '../resources/newApiResource';
 import { callApiWithExceptionHandling } from './api/apiRequest';
+import { EventRegister } from 'react-native-event-listeners';
+import { displayErrorNonClosePopup, displayErrorPopup } from './errorHandler/metaErrorHandler';
+import { getPosStoreInfo, getTableAvailability } from './api/metaApis';
+import { getAdminCategories } from '../store/categories';
+import { getAdminItems, regularUpdate } from '../store/menu';
+import { getAdminBulletin } from '../store/menuExtra';
+import { setMonthPopup } from '../store/monthPopup';
+import { PAY_SEPRATE_AMT_LIMIT } from '../resources/defaults';
 
 export const waitFor = (timeToDelay) => new Promise((resolve) => setTimeout(resolve, timeToDelay)) //이와 같이 선언 후
 
@@ -448,7 +456,6 @@ export function dutchPayItemCalculator(dutchOrderList,dutchOrderToPayList, dutch
     }else {
         if(returnDutchOrderToPayList?.length>0) {
             for(var i=0;i<returnDutchOrderToPayList.length;i++) {
-                console.log(returnDutchOrderToPayList[i].index,",",orderIndex);
                 if(returnDutchOrderToPayList[i].index == orderIndex) {
                     selectIndex = i;
                 }
@@ -504,8 +511,104 @@ export function dutchPayItemCalculator(dutchOrderList,dutchOrderToPayList, dutch
         dutchOrderToPayList:returnDutchOrderToPayList,
         dutchOrderPaidList:returnDutchOrderPaitList
     }
+}
 
+export async function isOrderAvailable (dispatch, orderList) {
+    EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"메뉴 확인 중 입니다."});
 
+    return await new Promise(async function(resolve, reject){
+        const isPostable = await isNetworkAvailable()
+        .catch(()=>{
+            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
+            resolve({result:true,msg:""})
+            //return false;
+        });
+        if(!isPostable) {
+            displayErrorNonClosePopup(dispatch, "XXXX", "인터넷에 연결할 수 없습니다.");
+            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
+            reject({result:false,msg:"인터넷에 연결할 수 없습니다."})
+        }
+        const storeInfo = await getPosStoreInfo()
+        .catch((err)=>{
+            displayErrorNonClosePopup(dispatch, "XXXX", "상점 정보를 가져올 수 없습니다.");
+            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); 
+            reject({result:false,msg:"상점 정보를 가져올 수 없습니다."})
+        })
+        // 개점정보 확인
+        if(!storeInfo?.SAL_YMD) {
+            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
+            displayErrorPopup(dispatch, "XXXX", "개점이 되지않아 주문을 할 수 없습니다.");
+            reject({result:false,msg:"개점이 되지않아 주문을 할 수 없습니다."})
+        }else {
+            //테이블 주문 가능한지 체크            
+            const tableAvail = await getTableAvailability(dispatch)
+            .catch(()=>{
+                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
+                return false;
+            });
+            if(!tableAvail) {
+                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
+                reject({result:false,msg:"주문을할 수 없습니다."})
+            }else {
+                const {STORE_IDX} = await getStoreID();
+                const lastUpdateDate = await AsyncStorage.getItem("lastUpdate").catch(err=>"");   
+                /// 카트메뉴 주문 가능 여부 체크
+                const isItemOrderble = await itemEnableCheck(STORE_IDX,orderList).catch(err=>{ return{isAvailable:false, result:null} } );
+                if(isItemOrderble?.isAvailable == false) {
+                    if(isItemOrderble?.result == null) {
+                        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
+                        displayErrorPopup(dispatch, "XXXX", "수량을 체크할 수 없어 주문을 할 수 없습니다.");
+                        reject({result:false,msg:"수량을 체크할 수 없어 주문을 할 수 없습니다."})
+                    }else {
+                        const itemsUnavailable = isItemOrderble?.result[0]?.unserviceable_items;
+                        var itemString = "";
+                        if(itemsUnavailable?.length>0) {
+                            for(var i=0;i<itemsUnavailable.length;i++) {
+                                var itemName = ItemOptionTitle(itemsUnavailable[i]);
+                                itemString = itemString+itemName+(i<itemsUnavailable.length-1?", ":"")
+                            }
+                            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
+                            displayErrorPopup(dispatch, "XXXX", itemString+"메뉴는 매진되어 주문을 할 수 없습니다.");
+                            reject({result:false,msg:itemString+"메뉴는 매진되어 주문을 할 수 없습니다."})
+                        }
+                    }
+                }             
+       
+                try {
+                    const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_MENU_UPDATE}`,{"STORE_ID":`${STORE_IDX}`,"currentDateTime":lastUpdateDate}, {});
+                    if(data) {
+                        if(data?.result==true) {
+                            if(data?.isUpdated == "true") {
+                                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
+                                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"메뉴 업데이트가 되었습니다.\n업데이트를 진행합니다."});
+                                //InitFunction();
+                                // 카테고리 받기
+                                await dispatch(getAdminCategories());
+                                // 메뉴 받아오기
+                                await dispatch(getAdminItems());
+                                // 광고 받기
+                                dispatch(getAD());
+                                dispatch(regularUpdate());
+                                dispatch(getAdminBulletin());
+                                reject({result:false,msg:"메뉴 업데이트가 되었습니다.\n업데이트를 진행합니다."})
+                            }else {
+                                resolve({result:true,msg:""})
+                            }
+                        }else {
+                            resolve({result:true,msg:""})
+                        }
+                    }else {
+                        resolve({result:true,msg:""})
+                    }
+                } catch (error) {
+                    // 예외 처리
+                    reject({result:false,msg:"주문을 할 수 없습니다."})    
+                }
+            }
+        }
+    })
 
+    
 
+    
 }

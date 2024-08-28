@@ -693,6 +693,7 @@ export const orderSlice = createSlice({
 
         // dutchpay
         dutchOrderList:[{"prod_cd": "900014", "qty": 3, "set_item": []}, {"prod_cd": "1016", "qty": 4, "set_item": []}, {"prod_cd": "900022", "qty": 1, "set_item": []}, {"prod_cd": "900032", "qty": 2, "set_item": []}],
+        //dutchOrderList:[],
         dutchOrderToPayList:[],
         dutchOrderPaidList:[],
         dutchOrderLeftList:[],
