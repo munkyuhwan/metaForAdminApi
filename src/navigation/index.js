@@ -32,6 +32,7 @@ import messaging from '@react-native-firebase/messaging';
 import { displayErrorPopup } from '../utils/errorHandler/metaErrorHandler'
 import FloatingBtn from '../components/popups/floatingButtonPopup'
 import FastImage from 'react-native-fast-image'
+import InstallMentPopup from '../components/popups/installmentPopup'
 
 const Stack = createStackNavigator()
 var statusInterval;
@@ -70,6 +71,7 @@ export default function Navigation() {
     const {selectedMainCategory, selectedSubCategory, allCategories} = useSelector(state=>state.categories);
     const {isShow} = useSelector(state=>state.ads);
     const {isMonthSelectShow} = useSelector(state=>state.monthSelect);
+    const {isShowPopup} = useSelector(state=>state.dispatchPopup);
 
     const navigate = useRef();
     const {images} = useSelector(state=>state.imageStorage);
@@ -286,6 +288,9 @@ export default function Navigation() {
             }
             {(spinnerText!="")&&
                 <PopupIndicator text={spinnerText} setText={setSpinnerText} />
+            }
+            {isShowPopup &&
+                <InstallMentPopup/>
             }
         </>
     )

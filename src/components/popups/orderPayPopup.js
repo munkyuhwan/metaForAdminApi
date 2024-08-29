@@ -6,9 +6,9 @@ import { PopupBottomButtonBlack, PopupBottomButtonText, PopupBottomButtonWrapper
 import { LANGUAGE } from '../../resources/strings';
 import { BottomButton, BottomButtonIcon, BottomButtonText, BottomButtonWrapper } from '../../styles/main/detailStyle';
 import { colorBlack, colorBrown, colorGrey, colorRed } from '../../assets/colors/color';
-import { isOrderAvailable, numberWithCommas, openFullSizePopup, openTransperentPopup } from '../../utils/common';
+import { isOrderAvailable, numberWithCommas, openFullSizePopup, openInstallmentPopup, openTransperentPopup } from '../../utils/common';
 import OrderListItem from '../orderListComponents/orderListItem';
-import { clearOrderStatus, getOrderStatus, initDutchPayOrder, setDutchOrderList, setDutchOrderToPayList } from '../../store/order';
+import { clearOrderStatus, getOrderStatus, initDutchPayOrder, setDutchOrderList, setDutchOrderToPayList, setOrderProcess, startDutchPayment } from '../../store/order';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { checkTableOrder } from '../../utils/apis';
 import {isEmpty, isEqual} from 'lodash';
@@ -31,7 +31,7 @@ const OrderPayPopup = () =>{
     const orderedListRef = useRef();
     const selectedListRef = useRef();
 
-    const {orderList, dutchOrderList, dutchOrderToPayList, dutchSelectedTotalAmt} = useSelector((state)=>state.order);
+    const {orderList, dutchOrderList, dutchOrderToPayList, dutchSelectedTotalAmt, dutchOrderPaidList, dutchOrderPayResultList} = useSelector((state)=>state.order);
     const [isDivided, setDivided] = useState(false);
     // 체크된 아이템 리스트
     const [checkedItemList, setCheckedItemList] = useState([]);
@@ -219,13 +219,14 @@ const OrderPayPopup = () =>{
     useEffect(()=>{
         console.log("dutch orderlist: ",dutchOrderList);
         if(dutchOrderList?.length>0) {
-            isOrderAvailable(dispatch, dutchOrderList)
+            // 주문할 수 있는 상태인지 확인
+            isOrderAvailable(dispatch)
             .then((result)=>{
                 console.log("Result: ",result)
                 const isPass = result?.result;
                 if(isPass) {
                     // 결제 진행
-
+                    
                 }else {
 
                 }
@@ -236,19 +237,27 @@ const OrderPayPopup = () =>{
         }
     },[])
 
+    useEffect(()=>{
+        console.log("dutchOrderPaidList: ",dutchOrderPaidList)
+        console.log("dutchOrderPayResultList: ",dutchOrderPayResultList)
+    },[dutchOrderPaidList, dutchOrderPayResultList])
+
     function goPay() {
         if(dutchOrderList?.length>0) {
-            isOrderAvailable(dispatch, dutchOrderList)
+            dispatch(setOrderProcess(true));
+            isOrderAvailable(dispatch)
             .then((result)=>{
                 console.log("Result: ",result)
                 const isPass = result?.result;
                 if(isPass) {
                     // 결제 진행
-
+                    dispatch(startDutchPayment());
                 }
+                dispatch(setOrderProcess(false));
             })
             .catch((err)=>{
                 console.log("err: ",err);
+                dispatch(setOrderProcess(false));
             })
         }
     }

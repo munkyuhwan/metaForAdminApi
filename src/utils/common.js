@@ -21,6 +21,7 @@ import { getAdminItems, regularUpdate } from '../store/menu';
 import { getAdminBulletin } from '../store/menuExtra';
 import { setMonthPopup } from '../store/monthPopup';
 import { PAY_SEPRATE_AMT_LIMIT } from '../resources/defaults';
+import { initDispatchPopup, setDispatchPopup } from '../store/dispatchPopup';
 
 export const waitFor = (timeToDelay) => new Promise((resolve) => setTimeout(resolve, timeToDelay)) //이와 같이 선언 후
 
@@ -513,15 +514,13 @@ export function dutchPayItemCalculator(dutchOrderList,dutchOrderToPayList, dutch
     }
 }
 
-export async function isOrderAvailable (dispatch, orderList) {
+export async function isOrderAvailable (dispatch) {
     EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"메뉴 확인 중 입니다."});
-
     return await new Promise(async function(resolve, reject){
         const isPostable = await isNetworkAvailable()
         .catch(()=>{
             EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
-            resolve({result:true,msg:""})
-            //return false;
+            reject({result:false,msg:"네트워크에 연결할 수 없습니다."})
         });
         if(!isPostable) {
             displayErrorNonClosePopup(dispatch, "XXXX", "인터넷에 연결할 수 없습니다.");
@@ -544,71 +543,43 @@ export async function isOrderAvailable (dispatch, orderList) {
             const tableAvail = await getTableAvailability(dispatch)
             .catch(()=>{
                 EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
-                return false;
+                reject({result:false,msg:"주문을할 수 없습니다."})
             });
             if(!tableAvail) {
                 EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
-                reject({result:false,msg:"주문을할 수 없습니다."})
+                reject({result:false,msg:"테이블 상태를 확인 해 주세요."})
             }else {
-                const {STORE_IDX} = await getStoreID();
-                const lastUpdateDate = await AsyncStorage.getItem("lastUpdate").catch(err=>"");   
-                /// 카트메뉴 주문 가능 여부 체크
-                const isItemOrderble = await itemEnableCheck(STORE_IDX,orderList).catch(err=>{ return{isAvailable:false, result:null} } );
-                if(isItemOrderble?.isAvailable == false) {
-                    if(isItemOrderble?.result == null) {
-                        EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
-                        displayErrorPopup(dispatch, "XXXX", "수량을 체크할 수 없어 주문을 할 수 없습니다.");
-                        reject({result:false,msg:"수량을 체크할 수 없어 주문을 할 수 없습니다."})
-                    }else {
-                        const itemsUnavailable = isItemOrderble?.result[0]?.unserviceable_items;
-                        var itemString = "";
-                        if(itemsUnavailable?.length>0) {
-                            for(var i=0;i<itemsUnavailable.length;i++) {
-                                var itemName = ItemOptionTitle(itemsUnavailable[i]);
-                                itemString = itemString+itemName+(i<itemsUnavailable.length-1?", ":"")
-                            }
-                            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
-                            displayErrorPopup(dispatch, "XXXX", itemString+"메뉴는 매진되어 주문을 할 수 없습니다.");
-                            reject({result:false,msg:itemString+"메뉴는 매진되어 주문을 할 수 없습니다."})
-                        }
-                    }
-                }             
-       
-                try {
-                    const data = await callApiWithExceptionHandling(`${ADMIN_API_BASE_URL}${ADMIN_API_MENU_UPDATE}`,{"STORE_ID":`${STORE_IDX}`,"currentDateTime":lastUpdateDate}, {});
-                    if(data) {
-                        if(data?.result==true) {
-                            if(data?.isUpdated == "true") {
-                                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
-                                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:true, msg:"메뉴 업데이트가 되었습니다.\n업데이트를 진행합니다."});
-                                //InitFunction();
-                                // 카테고리 받기
-                                await dispatch(getAdminCategories());
-                                // 메뉴 받아오기
-                                await dispatch(getAdminItems());
-                                // 광고 받기
-                                dispatch(getAD());
-                                dispatch(regularUpdate());
-                                dispatch(getAdminBulletin());
-                                reject({result:false,msg:"메뉴 업데이트가 되었습니다.\n업데이트를 진행합니다."})
-                            }else {
-                                resolve({result:true,msg:""})
-                            }
-                        }else {
-                            resolve({result:true,msg:""})
-                        }
-                    }else {
-                        resolve({result:true,msg:""})
-                    }
-                } catch (error) {
-                    // 예외 처리
-                    reject({result:false,msg:"주문을 할 수 없습니다."})    
-                }
+                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""}); 
+                // 주문할 수 있음
+                resolve({result:true,msg:""})
             }
         }
     })
+}
 
-    
 
-    
+// 할부 팝업
+export async function openInstallmentPopup(dispatch,getState,title, okTitle, cancelTitle, isCancelUse) {
+    dispatch(setDispatchPopup({isShowPopup:true,title:title,okTitle:okTitle,cancelTitle:cancelTitle,isCancelUse:isCancelUse}));
+    return new Promise((resolve, reject)=>{
+        var timeInterval;
+        try{
+            timeInterval = setInterval(()=>{
+                const {popupType,isShowPopup,isOkClicked,isCancelClicked, isCloseClicked, returnData } = getState().dispatchPopup;
+                if(isCancelClicked || isOkClicked || isCloseClicked) {
+                    clearInterval(timeInterval);
+                    dispatch(initDispatchPopup());
+                    //dispatch(setPopup({isOkClicked:false,isCancelClicked:false,title:"",isShowPopup:false}));
+                    var msg = "";
+                    if(isCancelClicked){msg="cancel"}
+                    if(isOkClicked){msg="ok"}
+                    if(isCloseClicked){msg="close"}
+                    resolve({code:"0000",response:msg,data:returnData});
+                }
+            },500)
+        }
+        catch(err) {
+            reject({code:"XXXX",response:"error",data:{}});
+        }
+    })
 }

@@ -20,6 +20,7 @@ import { memberInfoSlice } from './member'
 import { menuExtraSlice } from './menuExtra'
 import { imageStorageSlice } from './imageStorage'
 import { monthSelectSlice } from './monthPopup'
+import { dispatchPopupSlice } from './dispatchPopup'
 
 const store = configureStore({
     reducer:{
@@ -37,6 +38,7 @@ const store = configureStore({
         menuExtra:menuExtraSlice.reducer,
         imageStorage:imageStorageSlice.reducer,
         monthSelect:monthSelectSlice.reducer,
+        dispatchPopup:dispatchPopupSlice.reducer,
         
         error:errorSlice.reducer,
     },
