@@ -976,15 +976,18 @@ export const orderSlice = createSlice({
         builder.addCase(startDutchPayment.fulfilled,(state, action)=>{
             const pyaResult = action.payload;
             var currentPayResultList = state.dutchOrderPayResultList;
-            const currentOrderPaidList = state.dutchOrderPaidList;
+            var currentOrderPaidList = Object.assign([],state.dutchOrderPaidList);
             // 결제된 메뉴추가
-            console.log("currentPayResultList:",currentPayResultList);
-            var paidList = [...currentOrderPaidList,...state.dutchOrderToPayList];
+            //var paidList = [...currentOrderPaidList,...state.dutchOrderToPayList];
+            var paidList = {paidIdx:currentPayResultList.length,data:state.dutchOrderToPayList};
+            currentOrderPaidList.push(paidList);
             currentPayResultList.push(action.payload);
 
-            state.dutchOrderPaidList = paidList;
+            state.dutchOrderPaidList = currentOrderPaidList;
             state.dutchOrderPayResultList = currentPayResultList;
             state.dutchOrderToPayList = [];
+            state.dutchSelectedTotalAmt = 0;
+
         })
         // 더치페이
         builder.addCase(startDutchPayment.rejected,(state, action)=>{

@@ -60,6 +60,11 @@ export const CartItemImage = styled(FastImage)`
     height:106px;
     borderRadius:${RADIUS};
 `
+export const PaidItemImage = styled(FastImage)`
+    width:60px;
+    height:60px;
+    borderRadius:${RADIUS};
+`
 export const CartItemFastImage = styled(FastImage)`
     width:100px;
     height:62px;
