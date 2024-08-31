@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.2.14";
+export const CURRENT_VERSION = "2.2.15";
 export const releaseNote = {
+    "2.2.15": //2024.08.30
+    `
+        - 음식 픽업 메시지 추가
+    `,
     "2.2.14": //2024.08.08
     `
         - 주류 팝업 수정

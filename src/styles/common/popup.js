@@ -133,3 +133,9 @@ export const TransperentQuickOrderTopSubTitle = styled.Text`
     lineHeight:31px;
     fontSize:24px;
 `
+export const OrderReadyTitle = styled.Text`
+    color:${colorWhite};
+    fontSize:150px;
+    margin:auto;
+    
+`

@@ -434,23 +434,23 @@ const CartView = () =>{
                     </PayWrapper>
                     <PayBtnWrapper>
 
-                        {/*!isPrepay&&
+                        {!isPrepay&&
                             <TouchableWithoutFeedback onPress={()=>{if(isPayProcess == false){setPayProcess(true); doPayment();}}} >
                                 <PayBtn isFull={true} color={colorRed} >
                                     <PayTitle>{LANGUAGE[language]?.cartView.makeOrder}</PayTitle>
                                     <PayIcon source={require("../../assets/icons/order.png")} />
                                 </PayBtn>
                             </TouchableWithoutFeedback>
-                        */}
-                        {/*isPrepay&&
+                        }
+                        {isPrepay&&
                             <TouchableWithoutFeedback onPress={()=>{if(isPayProcess == false){setPayProcess(true); doPayment();}}} >
                                 <PayBtn isFull={true} >
                                     <PayTitle>{LANGUAGE[language]?.cartView.payOrder}</PayTitle>
                                     <PayIcon source={require("../../assets/icons/order.png")} />
                                 </PayBtn>
                             </TouchableWithoutFeedback>
-                        */}
-                        {//isPrepay&&
+                        }
+                        {/*isPrepay&&
                             <>
                             <TouchableWithoutFeedback onPress={()=>{doPayment();}} >
                                 <PayBtn isFull={false} isGap={true} color={colorRed} >    
@@ -464,7 +464,7 @@ const CartView = () =>{
                                 </PayBtn>
                             </TouchableWithoutFeedback>
                             </>
-                        }
+                        */}
 
                     </PayBtnWrapper>
 

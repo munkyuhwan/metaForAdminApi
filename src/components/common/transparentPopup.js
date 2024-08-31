@@ -16,6 +16,7 @@ import OrderCompletePopup from './orderCompletePopup';
 import OrderFailListPopup from '../popups/orderFailList';
 import CameraView from './cameraViewPopup';
 import OrderPayPopup from '../popups/orderPayPopup';
+import OrderReadyPopup from './orderReadyPopup';
 
 const TransparentPopUp = (props) =>{
     
@@ -104,6 +105,9 @@ const TransparentPopUp = (props) =>{
                     }
                     {innerTransView=="CameraView"&&
                         <CameraView/>
+                    }
+                    {(innerTransView=="OrderReady") &&
+                        <OrderReadyPopup param={param}/>
                     }
             </Animated.View>
         </>

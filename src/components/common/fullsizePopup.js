@@ -13,6 +13,7 @@ import CallServerPopup from '../popups/callServerPopup';
 import OrderListPopup from '../popups/orderListPopup';
 import SettingPopup from '../popups/settingPopup';
 import OrderPayPopup from '../popups/orderPayPopup';
+import OrderReadyPopup from './orderReadyPopup';
 
 const FullSizePopup = (props) =>{
     

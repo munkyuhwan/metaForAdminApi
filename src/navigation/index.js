@@ -20,7 +20,7 @@ import {isEmpty} from 'lodash';
 import StatusScreen from '../screens/StatusScreen'
 import { initOrderList } from '../store/order'
 import {  DEFAULT_FIVE_MIN_STATUS_UPDATE_TIME, DEFAULT_TABLE_STATUS_UPDATE_TIME } from '../resources/defaults'
-import {  getDeviceInfo, openFullSizePopup, openPopup } from '../utils/common'
+import {  getDeviceInfo, openFullSizePopup, openPopup, openTransperentPopup } from '../utils/common'
 import { getAD } from '../store/ad'
 import ADScreenPopup from '../components/popups/adPopup'
 import MonthSelectPopup from '../components/popups/monthSelectPopup'
@@ -29,7 +29,7 @@ import { setErrorData } from '../store/error'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { getAdminBulletin } from '../store/menuExtra'
 import messaging from '@react-native-firebase/messaging';
-import { displayErrorPopup } from '../utils/errorHandler/metaErrorHandler'
+import { displayErrorNonClosePopup, displayErrorPopup } from '../utils/errorHandler/metaErrorHandler'
 import FloatingBtn from '../components/popups/floatingButtonPopup'
 import FastImage from 'react-native-fast-image'
 import InstallMentPopup from '../components/popups/installmentPopup'
@@ -145,7 +145,17 @@ export default function Navigation() {
             dispatch(getAdminBulletin());
             messaging().onMessage((result)=>{
                 console.log("on message: ",result);
-                dispatch(regularUpdate());
+                if(result) {
+                    const topics = result?.from;
+                    if(topics.includes("_")) {
+                        console.log("body: ",result?.notification?.body);
+                        const body = result?.notification?.body;
+                        openTransperentPopup(dispatch, {innerView:"OrderReady", isPopupVisible:true,param:{msg:body}});
+                        //displayErrorNonClosePopup(dispatch, "XXXX", `${body}`);
+                    }else {
+                        dispatch(regularUpdate());
+                    }
+                }
             })
             //}
     },[])
@@ -190,7 +200,7 @@ export default function Navigation() {
 
             })
             // 지워
-            openFullSizePopup(dispatch, {innerFullView:"OrderPay", isFullPopupVisible:true});
+            //openFullSizePopup(dispatch, {innerFullView:"OrderPay", isFullPopupVisible:true});
         }
     },[allItems])
     // 테이블 상태
