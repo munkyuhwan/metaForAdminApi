@@ -4,7 +4,7 @@ import {
     Text,
     TouchableWithoutFeedback
 } from 'react-native'
-import { CartItemAmtController, CartItemAmtControllerImage, CartItemAmtControllerText, CartItemAmtText, CartItemAmtWrapper, CartItemCancelBtn, CartItemCancelWrapper, CartItemFastImage, CartItemImage, CartItemImageTogoWrapper, CartItemOpts, CartItemPrice, CartItemTitle, CartItemTitlePriceWrapper, CartItemTogoBtn, CartItemTogoIcon, CartItemTogoText, CartItemTogoWrapper, CartItemWrapper, DutchItemCancelWrapper, DutchPayItemAmtText, DutchPayItemAmtTextCollored, OperandorText, PaidItemImage } from '../../styles/main/cartStyle';
+import { CartItemAmtController, CartItemAmtControllerImage, CartItemAmtControllerText, CartItemAmtText, CartItemAmtWrapper, CartItemCancelBtn, CartItemCancelWrapper, CartItemFastImage, CartItemImage, CartItemImageTogoWrapper, CartItemOpts, CartItemPrice, CartItemTitle, CartItemTitlePriceWrapper, CartItemTogoBtn, CartItemTogoIcon, CartItemTogoText, CartItemTogoWrapper, CartItemWrapper, DutchCompleteItemTitlePriceWrapper, DutchItemAmtText, DutchItemCancelWrapper, DutchItemImageTogoWrapper, DutchItemOpts, DutchItemTitle, DutchItemTitleWrapper, DutchItemWrapper, DutchPayItemAmtText, DutchPayItemAmtTextCollored, OperandorText, PaidItemImage } from '../../styles/main/cartStyle';
 import { setPopupContent, setPopupVisibility } from '../../store/popup';
 import { useDispatch, useSelector } from 'react-redux';
 import { numberWithCommas, openPopup } from '../../utils/common';
@@ -113,28 +113,28 @@ const DutchPayPaidListItem = (props) => {
 
     return(
         <>
-            <CartItemWrapper>
-                <CartItemImageTogoWrapper>
+            <DutchItemWrapper>
+                <DutchItemImageTogoWrapper>
                     <PaidItemImage source={ {uri:itemDetail[0]?.gimg_chg, priority: FastImage.priority.high } } />
-                </CartItemImageTogoWrapper>
-                
-                <CartItemTitlePriceWrapper>
-                    <CartItemTitle numberOfLines={1} ellipsizeMode="tail" >{ItemTitle()||itemDetail[0]?.gname_kr}</CartItemTitle>
-                    <CartItemOpts numberOfLines={2} ellipsizeMode="tail" >
-                        {additiveItemList&&
-                            additiveItemList?.length>0 &&
-                            additiveItemList?.map((el,index)=>{
-                                return `${ItemOptionTitle(el.optItem,index)}`+`${Number(el.qty)*Number(order?.qty)}개`+`${index<(additiveItemList.length-1)?", ":""}`;
-                            })
-                        }
-                    </CartItemOpts>
-                    <CartItemPrice>{numberWithCommas(itemTotalPrice())}원</CartItemPrice>
-                    <CartItemAmtWrapper>
-                        <CartItemAmtText>{order?.qty}</CartItemAmtText>
-                    </CartItemAmtWrapper>
-                </CartItemTitlePriceWrapper>
+                    <DutchItemTitleWrapper>
+                        <DutchItemTitle numberOfLines={1} ellipsizeMode="tail" >{ItemTitle()||itemDetail[0]?.gname_kr}</DutchItemTitle>
+                        <DutchItemOpts numberOfLines={2} ellipsizeMode="tail" >
+                            {additiveItemList&&
+                                additiveItemList?.length>0 &&
+                                additiveItemList?.map((el,index)=>{
+                                    return `${ItemOptionTitle(el.optItem,index)}`+`${Number(el.qty)*Number(order?.qty)}개`+`${index<(additiveItemList.length-1)?", ":""}`;
+                                })
+                            }
+                        </DutchItemOpts>
+                    </DutchItemTitleWrapper>
 
-            </CartItemWrapper>
+                </DutchItemImageTogoWrapper>
+                
+                <DutchCompleteItemTitlePriceWrapper>
+                    <DutchItemAmtText> {order?.qty}개 {numberWithCommas(itemTotalPrice())}원</DutchItemAmtText>
+                </DutchCompleteItemTitlePriceWrapper>
+
+            </DutchItemWrapper>
         </>
     )
 }

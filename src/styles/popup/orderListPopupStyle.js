@@ -99,6 +99,25 @@ export const DutchPayHalfWrapper = styled.View`
     paddingTop:10px;
     paddingBottom:10px;
 `
+export const DutchPayPaidListScrollWrapper = styled.ScrollView`
+
+`
+export const DutchPayPaidListWrapper = styled.View`
+
+`
+export const DutchPayCartInfoText = styled.Text`
+    color:${colorBlack};
+    fontSize:18px;
+    fontWeight:bold;
+    width:100%;
+    textAlign:left;
+    paddingLeft:10px;
+    paddingTop:4px;
+    borderTopWidth:1px;
+`
+export const DutchPayInfoWrapper = styled.View`
+    
+`
 
 // 더치페이 아이템 추가 버튼
 export const DutchPayItemAddWrapper = styled.View`

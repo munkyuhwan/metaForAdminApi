@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { MENU_DATA } from '../resources/menuData';
 //import { SERVICE_ID, STORE_ID } from '../resources/apiResources';
 import { addOrderToPos, getOrderByTable } from '../utils/apis';
-import { dutchPayItemCalculator, getIP, getStoreID, getTableInfo, grandTotalCalculate, numberPad, openInstallmentPopup, openPopup, openTransperentPopup, orderListDuplicateCheck, setOrderData } from '../utils/common';
+import { dutchPayItemCalculator, getIP, getStoreID, getTableInfo, grandTotalCalculate, numberPad, openFullSizePopup, openInstallmentPopup, openPopup, openTransperentPopup, orderListDuplicateCheck, setOrderData } from '../utils/common';
 import { isEqual, isEmpty } from 'lodash'
 import { posErrorHandler } from '../utils/errorHandler/ErrorHandler';
 import { setCartView, setQickOrder, setQuickOrder } from './cart';
@@ -19,6 +19,8 @@ import { callApiWithExceptionHandling } from '../utils/api/apiRequest';
 import { displayErrorPopup } from '../utils/errorHandler/metaErrorHandler';
 import { regularUpdate } from './menu';
 import { setLastOrderItem } from './tableInfo';
+import { KocesAppPay } from '../utils/payment/kocesPay';
+import { metaPostPayFormat } from '../utils/payment/metaPosDataFormat';
 
 export const initOrderList = createAsyncThunk("order/initOrderList", async() =>{
     return  {
@@ -148,7 +150,6 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
     if(itemList.length > 0) {
         itemList?.map(el=>{
             const itemDetail = allItems.filter(item => item.prod_cd == el.ITEM_CD );
-            console.log("itemDetail: ",itemDetail) 
             if(itemDetail?.length>0) {
                 const isPopup = itemDetail[0]?.is_popup;
                 console.log("is popup: ",isPopup);
@@ -202,11 +203,10 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
 
 // 포스로 데이터 전송
 export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{dispatch, rejectWithValue, getState}) =>{
-    console.log("postOrderToPos ========================================================");
     //const {metaOrderData} = getState().order;
     //var orderList = Object.assign({},metaOrderData);
     const { tableStatus } = getState().tableInfo;
-    const {payData,orderData,isQuick} = _;
+    const {payData,orderData,isQuick, isMultiPay} = _;
     var postOrderData = Object.assign({},orderData);
     const {STORE_IDX} = await getStoreID()
     dispatch(setQuickOrder(false));
@@ -220,34 +220,78 @@ export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{
     // 결제시 추가 결제 결과 데이터
     let addOrderData = {};
     if(!isEmpty(payData)) {
-        var cardNo = payData?.CardNo;
-        cardNo = cardNo.replace(/\*/gi,"");
-        cardNo = cardNo.replace(/-/gi,"");
-        addOrderData = {
-            TOTAL_AMT:Number(payData?.TrdAmt)+Number(payData?.TaxAmt),
-            TOTAL_VAT:Number(payData?.TaxAmt),
-            TOTAL_DC:Number(payData?.SvcAmt),
-            ORDER_STATUS:"3",
-            CANCEL_YN:"N",
-            PREPAYMENT_YN:"N",
-            CUST_CARD_NO:`${payData?.CardNo}`,
-            CUST_NM:``,
-            PAYMENT_CNT:1,
-            PAYMENT_INFO:[{
-                PAY_SEQ:1,
-                PAY_KIND:"2",
-                PAY_AMT:Number(payData?.TrdAmt)+Number(payData?.TaxAmt),
-                PAY_VAT:Number(payData?.TaxAmt),
-                PAY_APV_NO:`${payData?.AuNo}`,
-                PAY_APV_DATE:`20${payData?.TrdDate?.substr(0,6)}`,
-                PAY_CARD_NO:`${cardNo}********`,
-                PAY_UPD_DT:`20${payData?.TrdDate}`,
-                PAY_CANCEL_YN:"N",
-                PAY_CARD_TYPE:`${payData?.InpNm}`,
-                PAY_CARD_MONTH:`${payData?.Month}`
-            }]
-        };
+
+        if(isMultiPay == false){
+            var cardNo = payData?.CardNo;
+            cardNo = cardNo.replace(/\*/gi,"");
+            cardNo = cardNo.replace(/-/gi,"");
+            addOrderData = {
+                TOTAL_AMT:Number(payData?.TrdAmt)+Number(payData?.TaxAmt),
+                TOTAL_VAT:Number(payData?.TaxAmt),
+                TOTAL_DC:Number(payData?.SvcAmt),
+                ORDER_STATUS:"3",
+                CANCEL_YN:"N",
+                PREPAYMENT_YN:"N",
+                CUST_CARD_NO:`${payData?.CardNo}`,
+                CUST_NM:``,
+                PAYMENT_CNT:1,
+                PAYMENT_INFO:[{
+                    PAY_SEQ:1,
+                    PAY_KIND:"2",
+                    PAY_AMT:Number(payData?.TrdAmt)+Number(payData?.TaxAmt),
+                    PAY_VAT:Number(payData?.TaxAmt),
+                    PAY_APV_NO:`${payData?.AuNo}`,
+                    PAY_APV_DATE:`20${payData?.TrdDate?.substr(0,6)}`,
+                    PAY_CARD_NO:`${cardNo}********`,
+                    PAY_UPD_DT:`20${payData?.TrdDate}`,
+                    PAY_CANCEL_YN:"N",
+                    PAY_CARD_TYPE:`${payData?.InpNm}`,
+                    PAY_CARD_MONTH:`${payData?.Month}`
+                }]
+            };
+        }else {
+            console.log("payData: ",payData);
+            var totalAmt = 0;
+            var totalVat = 0;
+            var totalDc = 0;
+            var paymentInfo = [];
+            for(var i=0;i<payData.length;i++){
+                totalAmt += Number(payData[i]?.TrdAmt)+Number(payData[i]?.TaxAmt);
+                totalVat += Number(payData[i]?.TaxAmt);
+                var cardNo = payData[i]?.CardNo;
+                cardNo = cardNo.replace(/\*/gi,"");
+                cardNo = cardNo.replace(/-/gi,"");
+                const payOneData = {
+                    PAY_SEQ:1,
+                    PAY_KIND:"2",
+                    PAY_AMT:Number(payData[i]?.TrdAmt)+Number(payData[i]?.TaxAmt),
+                    PAY_VAT:Number(payData[i]?.TaxAmt),
+                    PAY_APV_NO:`${payData[i]?.AuNo}`,
+                    PAY_APV_DATE:`20${payData[i]?.TrdDate?.substr(0,6)}`,
+                    PAY_CARD_NO:`${cardNo}********`,
+                    PAY_UPD_DT:`20${payData[i]?.TrdDate}`,
+                    PAY_CANCEL_YN:"N",
+                    PAY_CARD_TYPE:`${payData[i]?.InpNm}`,
+                    PAY_CARD_MONTH:`${payData[i]?.Month}`
+                }
+                paymentInfo.push(payOneData);
+            }
+
+            addOrderData = {
+                TOTAL_AMT:Number(totalAmt),
+                TOTAL_VAT:Number(totalVat),
+                TOTAL_DC:Number(totalDc),
+                ORDER_STATUS:"3",
+                CANCEL_YN:"N",
+                PREPAYMENT_YN:"N",
+                CUST_CARD_NO:``,
+                CUST_NM:``,
+                PAYMENT_CNT:paymentInfo.length,
+                PAYMENT_INFO:paymentInfo
+            }
+        }
         postOrderData = {...postOrderData,...addOrderData};
+
     }  
     //console.log("orderData: ",orderList);
     // 포스로 전달
@@ -264,6 +308,8 @@ export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{
                     dispatch(setCartView(false));
                     dispatch(initOrderList());
                     dispatch(regularUpdate());
+                    dispatch(initDutchPayOrder());  
+                    openFullSizePopup(dispatch, {innerFullView:"", isFullPopupVisible:false}); 
                 }
                 if( tableStatus?.now_later == "선불") {
                     openTransperentPopup(dispatch, {innerView:"OrderComplete", isPopupVisible:true,param:{msg:"주문을 완료했습니다."}});
@@ -643,10 +689,10 @@ export const setDutchOrderToPayList = createAsyncThunk("order/setDutchOrderToPay
                 const setItem = resultDutchOrderToPay[i]?.set_item;
                 if(setItem.length>0) {
                     var setItemPrice = 0;
-                    for(var i=0;i<setItem.length;i++) {
-                        const setItemData = allItems?.filter(el=>el.prod_cd == setItem[i].optItem);
+                    for(var j=0;j<setItem.length;j++) {
+                        const setItemData = allItems?.filter(el=>el.prod_cd == setItem[j].optItem);
                         if(setItemData.length>0) {
-                            setItemPrice = Number(setItemPrice)+(Number(setItemData[0]?.account)*Number(setItem[i]?.qty));
+                            setItemPrice = Number(setItemPrice)+(Number(setItemData[0]?.account)*Number(setItem[j]?.qty));
                         }
                     }
                     itemTotal = (Number(itemTotal)+Number(setItemPrice))*Number(resultDutchOrderToPay[i]?.qty);
@@ -670,15 +716,16 @@ export const initDutchPayOrder = createAsyncThunk("order/initDutchPayOrder",  as
     return;
 })
 
-export const startDutchPayment = createAsyncThunk("order/startDutchPayment",  async(data,{dispatch, getState,extra}) =>{
+export const startDutchPayment = createAsyncThunk("order/startDutchPayment",  async(data,{dispatch, getState,extra, rejectWithValue}) =>{
     const { dutchOrderList, dutchOrderToPayList, dutchOrderPaidList, dutchOrderLeftList, dutchSelectedTotalAmt } = getState().order;
-    var installmentMonths = "00";
+    const { allItems } = getState().menu;
+    var monthSelected = "00";
     if(Number(dutchSelectedTotalAmt)>50000){
         const installmentResult = await openInstallmentPopup(dispatch, getState,"할부","완료","취소",true).catch(err=>err);
         if(installmentResult.code == "0000") {
             if(installmentResult?.response=="ok") {
                 const data = installmentResult?.data;
-                installmentMonths = data.installment;
+                monthSelected = data.installment;
             }else {
                 return;
             }
@@ -686,6 +733,7 @@ export const startDutchPayment = createAsyncThunk("order/startDutchPayment",  as
             return;
         }
     }
+    /* 
     const payResultData = 
     {
         "PcPoint":"null",
@@ -726,8 +774,8 @@ export const startDutchPayment = createAsyncThunk("order/startDutchPayment",  as
     }
 
     return payResultData;
+     */
     
-    /*
     const bsnNo = await AsyncStorage.getItem("BSN_NO");
     const tidNo = await AsyncStorage.getItem("TID_NO");
     const serialNo = await AsyncStorage.getItem("SERIAL_NO");
@@ -735,8 +783,8 @@ export const startDutchPayment = createAsyncThunk("order/startDutchPayment",  as
         displayErrorPopup(dispatch, "XXXX", "결제정보 입력 후 이용 해 주세요.");
         return;
     }
-    const orderData = await metaPostPayFormat(orderList,{}, allItems);
-    if(orderData) {
+    var orderData = await metaPostPayFormat(dutchOrderToPayList,{}, allItems).catch(err=>"err");
+    if(!isEmpty(orderData)) {
         var payAmt = 0;
         var vatAmt = 0;
         for(var i=0;i<orderData.ITEM_INFO.length;i++) {
@@ -749,32 +797,39 @@ export const startDutchPayment = createAsyncThunk("order/startDutchPayment",  as
             }                        
         }
         const amtData = {amt:payAmt, taxAmt:vatAmt, months:monthSelected, bsnNo:bsnNo,termID:tidNo }
-        //console.log("amtData: ",amtData);
+        console.log("amtData: ",amtData);
+        /* 
         var kocessAppPay = new KocesAppPay();
-        kocessAppPay.requestKocesPayment(amtData)
-        .then(async (result)=>{ 
-            
-            // 결제 진행끝이다.
-            setPayProcess(false);
-            console.log("result: ",result);
-            const orderData = await metaPostPayFormat(orderList,result, allItems);
-            dispatch(postLog({payData:result,orderData:orderData}))
-            dispatch(postOrderToPos({isQuick:false, payData:result,orderData:orderData}));
-            dispatch(adminDataPost({payData:result,orderData:orderData}));
-        })
-        .catch((err)=>{
-            // 결제 진행끝이다.
-            setPayProcess(false);
+        const result = await kocessAppPay.requestKocesPayment(amtData).catch((err)=>{
             EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
             dispatch(postLog({payData:err,orderData:null}))
-            displayErrorPopup(dispatch, "XXXX", err?.Message)
-        })
-    }
-    */
+            displayErrorPopup(dispatch, "XXXX", err?.Message);
+            return ""
+        });
+        console.log("pay result: ",result); 
+        if(result == "") {
+            return rejectWithValue();
+        }
+        */
+        // 테스트
+        const result = {"AnsCode": "0000", "AnswerTrdNo": "null", "AuNo": "28872915", "AuthType": "null", "BillNo": "", "CardKind": "1", "CardNo": "9411-9400-****-****", "ChargeAmt": "null", "DDCYn": "1", "DisAmt": "null", "EDCYn": "0", "GiftAmt": "", "InpCd": "1107", "InpNm": "신한카드", "Keydate": "", "MchData": "wooriorder", "MchNo": "22101257", "Message": "마이신한P잔여 : 109                     ", "Month": "00", "OrdCd": "1107", "OrdNm": "개인신용", "PcCard": "null", "PcCoupon": "null", "PcKind": "null", "PcPoint": "null", "QrKind": "null", "RefundAmt": "null", "SvcAmt": "0", "TaxAmt": `${vatAmt}`, "TaxFreeAmt": "0", "TermID": "0710000900", "TradeNo": "000004689679", "TrdAmt": `${payAmt}`, "TrdDate": "240902182728", "TrdType": "A15"}
 
+        // 결제 진행끝이다.
+       
+        return result;
+    }
+})
+export const completeDutchPayment = createAsyncThunk("order/completeDutchPayment",  async(data,{dispatch, getState,extra}) =>{
+    const { orderList, dutchOrderList, dutchOrderToPayList,dutchOrderPayResultList, dutchOrderPaidList, dutchOrderLeftList, dutchSelectedTotalAmt } = getState().order;
+    const { allItems } = getState().menu;
+    
+    const orderResultData = await metaPostPayFormat(orderList,dutchOrderPaidList, allItems);
+    //console.log("orderResultData: ",orderResultData);
+    dispatch(postLog({payData:dutchOrderPayResultList,orderData:orderResultData}))
+    dispatch(postOrderToPos({isQuick:false, payData:dutchOrderPayResultList,orderData:orderResultData, isMultiPay:true}));
+    dispatch(adminDataPost({payData:dutchOrderPayResultList,orderData:orderResultData}));
     return;
 })
-
 
 
 // Slice
@@ -796,8 +851,8 @@ export const orderSlice = createSlice({
         isQuickShow:false,
 
         // dutchpay
-        dutchOrderList:[{"prod_cd": "900014", "qty": 3, "set_item": []}, {"prod_cd": "1016", "qty": 4, "set_item": []}, {"prod_cd": "900022", "qty": 1, "set_item": []}, {"prod_cd": "900032", "qty": 2, "set_item": []}],
-        //dutchOrderList:[],
+        //dutchOrderList:[{"prod_cd": "900014", "qty": 3, "set_item": []}, {"prod_cd": "1016", "qty": 4, "set_item": []}, {"prod_cd": "900022", "qty": 1, "set_item": []}, {"prod_cd": "900032", "qty": 2, "set_item": []}],
+        dutchOrderList:[],
         dutchOrderToPayList:[],
         dutchOrderPaidList:[],
         dutchOrderLeftList:[],
@@ -994,6 +1049,16 @@ export const orderSlice = createSlice({
         })
         // 더치페이
         builder.addCase(startDutchPayment.pending,(state, action)=>{
+
+        })
+        // 더치페이 끝
+        builder.addCase(completeDutchPayment.fulfilled,(state, action)=>{
+
+        })
+        builder.addCase(completeDutchPayment.pending,(state, action)=>{
+
+        })
+        builder.addCase(completeDutchPayment.rejected,(state, action)=>{
 
         })
         

@@ -145,7 +145,7 @@ const CartView = () =>{
                         console.log("result: ",result);
                         const orderData = await metaPostPayFormat(orderList,result, allItems);
                         dispatch(postLog({payData:result,orderData:orderData}))
-                        dispatch(postOrderToPos({isQuick:false, payData:result,orderData:orderData}));
+                        dispatch(postOrderToPos({isQuick:false, payData:result,orderData:orderData, isMultiPay:false}));
                         dispatch(adminDataPost({payData:result,orderData:orderData}));
                     })
                     .catch((err)=>{
@@ -160,7 +160,7 @@ const CartView = () =>{
                 EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
                 const orderData = await metaPostPayFormat(orderList,{}, allItems);
                 dispatch(adminDataPost({payData:null,orderData:orderData}));
-                dispatch(postOrderToPos({isQuick:false, payData:null,orderData:orderData}));
+                dispatch(postOrderToPos({isQuick:false, payData:null,orderData:orderData, isMultiPay:false}));
                 setPayProcess(false);
             }
     }
@@ -434,7 +434,7 @@ const CartView = () =>{
                     </PayWrapper>
                     <PayBtnWrapper>
 
-                        {!isPrepay&&
+                        {/*!isPrepay&&
                             <TouchableWithoutFeedback onPress={()=>{if(isPayProcess == false){setPayProcess(true); doPayment();}}} >
                                 <PayBtn isFull={true} color={colorRed} >
                                     <PayTitle>{LANGUAGE[language]?.cartView.makeOrder}</PayTitle>
@@ -449,8 +449,8 @@ const CartView = () =>{
                                     <PayIcon source={require("../../assets/icons/order.png")} />
                                 </PayBtn>
                             </TouchableWithoutFeedback>
-                        }
-                        {/*isPrepay&&
+                        */}
+                        {//isPrepay&&
                             <>
                             <TouchableWithoutFeedback onPress={()=>{doPayment();}} >
                                 <PayBtn isFull={false} isGap={true} color={colorRed} >    
@@ -464,7 +464,7 @@ const CartView = () =>{
                                 </PayBtn>
                             </TouchableWithoutFeedback>
                             </>
-                        */}
+                        }
 
                     </PayBtnWrapper>
 

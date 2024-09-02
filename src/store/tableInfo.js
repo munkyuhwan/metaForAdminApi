@@ -123,7 +123,6 @@ export const tableInfoSlice = createSlice({
             //if(action.payload) {
                 //const toPut = Object.assign([],state.lastOrderItem,action.payload);
                 if(action.payload!="") {
-                    console.log("action.payload: ",action.payload);
                     var listTest = state.lastOrderItem.filter(el=>el.prod_cd != action.payload.prod_cd);
                     //var lorder = state.lastOrderItem;
                     listTest.push(action.payload);

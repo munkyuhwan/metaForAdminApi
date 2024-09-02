@@ -51,9 +51,34 @@ export const CartItemWrapper = styled.View`
     borderColor:${colorGrey};
     flexDirection:row;
 `
+export const DutchItemWrapper = styled.View`
+    width:220px;
+    height:120px;
+    paddingBottom:17px;
+    paddingTop:17px; 
+    paddingLeft:13px;
+    paddingRight:13px;
+    borderColor:${colorGrey};
+    flexDirection:column;
+    backgroundColor:${colorGrey};
+    marginRight:5px;
+    marginLeft:5px;
+    borderRadius:${RADIUS_SMALL};
+    borderColor:${colorBlack};
+    borderWidth:1px;
+
+`
 // cart 이미지 포장하기 
 export const CartItemImageTogoWrapper = styled.View`
     flexDirection:column;
+`
+export const DutchItemImageTogoWrapper = styled.View`
+    flexDirection:row;
+    flex:1;
+`
+export const DutchItemTitleWrapper = styled.View`
+    height:70px;
+    paddingLeft:4px;
 `
 export const CartItemImage = styled(FastImage)`
     width:120px;
@@ -114,6 +139,14 @@ export const CartItemTitlePriceWrapper = styled.View`
     paddingTop:2px;
     flexDirection:column;
 `
+export const DutchCompleteItemTitlePriceWrapper = styled.View`
+    width:100%;
+    paddingLeft:8px;
+    paddingRight:2px;
+    flexDirection:column;
+    flex:1;
+    marginTop:25px;
+`
 export const CartItemTitle = styled.Text`
     fontSize:16px;
     fontWeight:bold;
@@ -121,7 +154,20 @@ export const CartItemTitle = styled.Text`
     flex:1;
     maxWidth:110px;
 `
+export const DutchItemTitle = styled.Text`
+    fontSize:24px;
+    fontWeight:bold;
+    color:${mainTheme};
+    flex:1;
+    maxWidth:110px;
+`
 export const CartItemOpts = styled.Text`
+    fontSize:12px;
+    color:${mainTheme};
+    flex:1;
+    height:20px;
+`
+export const DutchItemOpts = styled.Text`
     fontSize:12px;
     color:${mainTheme};
     flex:1;
@@ -168,6 +214,13 @@ export const CartItemAmtText = styled.Text`
     flex:1;
     textAlign:center;
     lineHeight:58px;
+    color:${colorBlack};
+`
+export const DutchItemAmtText = styled.Text`
+    fontSize:30px;
+    fontWeight:bold;
+    flex:1;
+    textAlign:center;
     color:${colorBlack};
 `
 // 더치페이
