@@ -83,6 +83,7 @@ export const DutchPayFullWrapper = styled.View`
     gap:10px;
     padding:10px;
     borderTopLeftRadius:${RADIUS_SMALL};
+    ${props => props?.isDivided?`borderTopRightRadius:${RADIUS_SMALL};`:"" }
     borderBottomLeftRadius:${RADIUS_SMALL};
     borderBottomRightRadius:${RADIUS_SMALL};
     borderWidth:3px;
@@ -123,7 +124,7 @@ export const DutchPayInfoWrapper = styled.View`
 export const DutchPayItemAddWrapper = styled.View`
     width:130%;
     height: 60px;
-    backgroundColor:${colorGrey};
+    backgroundColor:${props => props.color};
     borderRadius:${RADIUS};
     flexDirection:row;
     padding:3px;

@@ -14,9 +14,9 @@ import { addToOrderList, resetAmtOrderList, setOrderList } from '../../store/ord
 import FastImage from 'react-native-fast-image';
 import { META_SET_MENU_SEPARATE_CODE_LIST } from '../../resources/defaults';
 import { DutchPayItemAddWrapper } from '../../styles/popup/orderListPopupStyle';
-import { colorGrey } from '../../assets/colors/color';
+import { colorWhite } from '../../assets/colors/color';
 
-const DutchPayListItem = (props) => {
+const DutchPayNPayListItem = (props) => {
     const dispatch = useDispatch();
     const {language} = useSelector(state=>state.languages);
     const {menuExtra} = useSelector(state=>state.menuExtra);
@@ -116,7 +116,7 @@ const DutchPayListItem = (props) => {
             <CartItemWrapper>
                 <CartItemImageTogoWrapper>
                     <CartItemImage source={ {uri:itemDetail[0]?.gimg_chg, priority: FastImage.priority.high } } />
-                    <DutchPayItemAmtText numberOfLines={1} ellipsizeMode="tail" >{`남은 수량 ${order?.qty}`}</DutchPayItemAmtText>
+                    <DutchPayItemAmtText numberOfLines={1} ellipsizeMode="tail" >{`수량 ${order?.qty}개`}</DutchPayItemAmtText>
                 </CartItemImageTogoWrapper>
                 
                 <CartItemTitlePriceWrapper>
@@ -131,11 +131,10 @@ const DutchPayListItem = (props) => {
                     </CartItemOpts>
                     <CartItemPrice>{numberWithCommas(itemTotalPrice())}원</CartItemPrice>
 
-                    <TouchableWithoutFeedback onPress={()=>{console.log("on select"); props?.onPress(); }}>
-                        <DutchPayItemAddWrapper  color={colorGrey} >
-                            <CartItemAmtText>선택</CartItemAmtText>
-                        </DutchPayItemAddWrapper>
-                    </TouchableWithoutFeedback>
+                    <DutchPayItemAddWrapper color={colorWhite} >
+                        <CartItemAmtText> </CartItemAmtText>
+                    </DutchPayItemAddWrapper>
+                    
                 </CartItemTitlePriceWrapper>
                 {/* 
                 <TouchableWithoutFeedback onPress={()=>{ dispatch(addToOrderList({isAdd:false, isDelete: true, item:itemDetail[0],menuOptionSelected:order?.set_item})); }}>
@@ -149,4 +148,4 @@ const DutchPayListItem = (props) => {
     )
 }
 
-export default DutchPayListItem;
+export default DutchPayNPayListItem;

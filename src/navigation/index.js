@@ -33,6 +33,7 @@ import { displayErrorNonClosePopup, displayErrorPopup } from '../utils/errorHand
 import FloatingBtn from '../components/popups/floatingButtonPopup'
 import FastImage from 'react-native-fast-image'
 import InstallMentPopup from '../components/popups/installmentPopup'
+import EventPopup from '../components/popups/eventPopup'
 
 const Stack = createStackNavigator()
 var statusInterval;
@@ -65,6 +66,8 @@ export default function Navigation() {
 
     const [spinnerText, setSpinnerText] = React.useState("")
     const [spinnerTextNonCancel, setSpinnerTextNonCancel] = React.useState("")
+    //임시 팝업
+    const [tmpPopup, setTmpPopup] = useState(false);
 
     const {tableStatus,cardDeviceInfo,orderHistory,posIP} = useSelector(state=>state.tableInfo);
     const {allItems,isMenuLoading, menuError} = useSelector(state=>state.menu);
@@ -75,19 +78,22 @@ export default function Navigation() {
 
     const navigate = useRef();
     const {images} = useSelector(state=>state.imageStorage);
-    /* useEffect(()=>{
-        if(images.length < allItems.length) {
-            EventRegister.emit("showSpinner",{isSpinnerShow:true, msg:"이미지 다운로드 중입니다."})
-        }else {
-            EventRegister.emit("showSpinner",{isSpinnerShow:false, msg:""})
-        }
-    },[images]) */
+    
+    useEffect(()=>{
+        console.log("tmpPopup: ",tmpPopup)
+    },[tmpPopup])
     const handleEventListener = () => {
         //리스너 중복방지를 위해 한번 삭제
         DeviceEventEmitter.removeAllListeners("onPending");
         DeviceEventEmitter.removeAllListeners("onComplete");
         EventRegister.removeAllListeners("showSpinner");
         EventRegister.removeAllListeners("showSpinnerNonCancel");
+
+        // 임시
+        EventRegister.removeAllListeners("openEventPopup");
+        EventRegister.addEventListener("openEventPopup",(data)=>{            
+            setTmpPopup(data.isOpen);
+        })
 
         // 결제진행중 팝업
         DeviceEventEmitter.addListener("onPending",(ev)=>{
@@ -301,6 +307,9 @@ export default function Navigation() {
             }
             {isShowPopup &&
                 <InstallMentPopup/>
+            }
+            {tmpPopup &&
+                <EventPopup/>
             }
         </>
     )

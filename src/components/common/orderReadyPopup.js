@@ -9,7 +9,6 @@ import { TouchableWithoutFeedback } from "react-native";
 const OrderReadyPopup = (props) => {
     const dispatch = useDispatch();
     const [body, setBody] = useState("");
-    console.log("msg:",props?.param?.msg)
     return(
         <>
             {props?.param?.msg&&
