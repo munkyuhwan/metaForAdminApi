@@ -177,6 +177,23 @@ export default function Navigation() {
         // 광고 받기
         dispatch(getAD()); 
         requestUserPermission();
+
+        const prevStoreID = await AsyncStorage.getItem("STORE_IDX").catch(()=>{return null;});
+        const prevTableCode = await AsyncStorage.getItem("TABLE_INFO");
+        // 테이블 푸시 섭스크라입
+        if(prevTableCode){      
+            try{
+               await messaging().unsubscribeFromTopic(`${prevStoreID}_${prevTableCode}`);
+            }catch(err){
+                
+            }
+            try {
+                await messaging().subscribeToTopic(`${prevStoreID}_${prevTableCode}`)
+            }catch(err){
+            }
+        }
+       
+
     }
 
     useEffect(()=>{

@@ -55,6 +55,17 @@ export const CategorySelected = styled.View`
     borderTopLeftRadius:${RADIUS_DOUBLE}px;
     borderTopRightRadius:${RADIUS_DOUBLE}px;
 `
+export const FloatingCategorySelected = styled.View`
+    backgroundColor: ${ props => props?.isSelected?colorRed:colorBrown };
+    width:100%;
+    height:90%;
+    marginRight:7px;
+    textAlign:center;
+    marginTop:24px;
+    borderTopLeftRadius:${RADIUS_DOUBLE}px;
+    borderTopRightRadius:${RADIUS_DOUBLE}px;
+    
+`
 /// 탑 메뉴 텍스트스타일
 export const TopMenuText = styled.Text`
     flex:1;
@@ -65,6 +76,17 @@ export const TopMenuText = styled.Text`
     fontSize:24px;
     fontWeight:bold;
     paddingTop:10%;
+    color: ${textColorWhite};
+`;
+export const FloatingTopMenuText = styled.Text`
+    flex:1;
+    textAlign:center;
+    justifyContent:center;
+    display:flex;
+    alignItems:center;
+    fontSize:24px;
+    fontWeight:bold;
+    paddingTop:1%;
     color: ${textColorWhite};
 `;
 

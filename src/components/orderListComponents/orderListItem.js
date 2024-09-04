@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { OrderListOptionTitle, OrderListOptionWrapper, OrderListTableItemAmt, OrderListTableItemImage, OrderListTableItemImageNameWrapper, OrderListTableItemName, OrderListTableItemOperander, OrderListTableItemPrice, OrderListTableItemTotal, OrderListTableItemWrapper } from '../../styles/popup/orderListPopupStyle';
 import { numberWithCommas } from '../../utils/common';
+import FastImage from 'react-native-fast-image';
 
 const OrderListItem = (props) => {
     const item = props?.order.item;
@@ -12,7 +13,6 @@ const OrderListItem = (props) => {
     const itemExtra = allItems.filter(el=>el.prod_cd == item.ITEM_CD);
     //const {images} = useSelector(state=>state.imageStorage);
     //const filteredImg = images.filter(el=>el.name==item.ITEM_CD);
-
    // const imgUrl = filteredImg[0]?.imgData
     const ItemTitle = () => {
         let selTitleLanguage = "";
@@ -62,7 +62,7 @@ const OrderListItem = (props) => {
             <OrderListTableItemWrapper>
                 <OrderListTableItemImageNameWrapper flex={0.85}>
                     {/* <OrderListTableItemImage source={{uri:imgUrl}} /> */}
-                    <OrderListTableItemImage source={{uri:itemExtra[0]?.gimg_chg}} />
+                    <FastImage style={{width:94, height:65}} resizeMode={FastImage.resizeMode.contain} source={{uri:itemExtra[0]?.gimg_chg}} />
                     <OrderListOptionWrapper>
                         <OrderListTableItemName>{ItemTitle()||item.ITEM_NM}</OrderListTableItemName>
                         <OrderListOptionTitle>

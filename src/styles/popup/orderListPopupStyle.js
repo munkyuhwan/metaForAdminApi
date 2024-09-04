@@ -252,7 +252,7 @@ export const OrderPayDimWrapper = styled.View`
 export const OrderPayTabWrapper = styled.View`
     flexDirection:row;
     position:absolute;
-    right:-1px;
+    right:-0px;
     bottom:-22;
 `
 export const OrderPayTab = styled.View`

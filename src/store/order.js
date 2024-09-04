@@ -22,6 +22,13 @@ import { setLastOrderItem } from './tableInfo';
 import { KocesAppPay } from '../utils/payment/kocesPay';
 import { metaPostPayFormat } from '../utils/payment/metaPosDataFormat';
 
+export const setOrder = createAsyncThunk("order/setOrder", async(data,{}) =>{
+    return data;
+})
+export const initOrder = createAsyncThunk("order/initOrder", async(data,{}) =>{
+    return;
+})
+
 export const initOrderList = createAsyncThunk("order/initOrderList", async() =>{
     return  {
         vatTotal:0,
@@ -320,12 +327,8 @@ export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{
                         if(isQuick==false) {
                             dispatch(setQuickShow(true));
                         }
-                        /* // 임시
-                        setTimeout(() => {
-                            EventRegister.emit("openEventPopup",{isOpen:true});
-
-                        }, 12000); */
-                    }, 3000);
+                        
+                    }, 4000);
                 }
             }else {
                 const ERROR_CD = data?.ERROR_CD;
@@ -904,16 +907,23 @@ export const completeDutchPayment = createAsyncThunk("order/completeDutchPayment
     if(!isEmpty(dutchOrderPayResultList)) {
         const orderResultData = await metaPostPayFormat(orderList,dutchOrderPaidList, allItems);
         dispatch(postLog({payData:dutchOrderPayResultList,orderData:orderResultData}))
-        dispatch(postOrderToPos({isQuick:false, payData:dutchOrderPayResultList,orderData:orderResultData, isMultiPay:true}));
-        dispatch(adminDataPost({payData:dutchOrderPayResultList,orderData:orderResultData}));
+        await dispatch(postOrderToPos({isQuick:false, payData:dutchOrderPayResultList,orderData:orderResultData, isMultiPay:true}));
+        await dispatch(adminDataPost({payData:dutchOrderPayResultList,orderData:orderResultData}));
     }
     else if(!isEmpty(dutchOrderDividePaidList)) {
         const orderResultData = await metaPostPayFormat(orderList,orderList, allItems);
         dispatch(postLog({payData:dutchOrderDividePaidList,orderData:orderResultData}))
-        dispatch(postOrderToPos({isQuick:false, payData:dutchOrderDividePaidList,orderData:orderResultData, isMultiPay:true}));
-        dispatch(adminDataPost({payData:dutchOrderDividePaidList,orderData:orderResultData}));
+        await dispatch(postOrderToPos({isQuick:false, payData:dutchOrderDividePaidList,orderData:orderResultData, isMultiPay:true}));
+        await dispatch(adminDataPost({payData:dutchOrderDividePaidList,orderData:orderResultData}));
     }
-
+    dispatch(setCartView(false));
+    dispatch(initOrderList());
+    dispatch(regularUpdate());
+    dispatch(initDutchPayOrder());  
+    setTimeout(() => {
+        openTransperentPopup(dispatch, {innerView:"OrderComplete", isPopupVisible:true,param:{msg:"주문을 완료했습니다."}});
+    }, 3000);
+    openFullSizePopup(dispatch, {innerFullView:"", isFullPopupVisible:false}); 
     return;
 })
 
@@ -948,8 +958,51 @@ export const orderSlice = createSlice({
 
     },
     extraReducers:(builder)=>{
+        builder.addCase(setOrder.fulfilled,(state,action)=>{
+            var currentState = Object.assign({},state);
+            var payload = action.payload;
+            var newState = {...currentState,...payload};
+            console.log("newState: ",newState);
+            state.vatTotal = newState.vatTotal;
+            state.grandTotal = newState.grandTotal;
+            state.totalItemCnt = newState.totalItemCnt;
+            state.orderList = newState.orderList;
+            state.orderPayData = newState.orderPayData;
+            state.orderStatus = newState.orderStatus;
+            state.orgOrderNo = newState.orgOrderNo;
+            state.orderNo = newState.orderNo;
+            state.metaOrderData = newState.metaOrderData;
+            state.onProcess = newState.onProcess;
+            state.quickOrderList = newState.quickOrderList;
+            state.isQuickShow = newState.isQuickShow;  
+            state.dutchOrderList = newState.dutchOrderList;
+            state.dutchOrderToPayList = newState.dutchOrderToPayList;
+            state.dutchOrderPaidList = newState.dutchOrderPaidList;
+            state.dutchOrderPayResultList = newState.dutchOrderPayResultList;
+            state.dutchSelectedTotalAmt = newState.dutchSelectedTotalAmt;
+            state.dutchOrderDividePaidList = newState.dutchOrderDividePaidList;
+        })
+        builder.addCase(initOrder.fulfilled,(state,action)=>{
+            state.vatTotal = 0
+            state.grandTotal = 0
+            state.totalItemCnt = 0
+            state.orderList = []
+            state.orderPayData = {}
+            state.orderStatus = []
+            state.orgOrderNo = ""
+            state.orderNo = ""
+            state.metaOrderData = null
+            state.onProcess = false
+            state.quickOrderList = []
+            state.isQuickShow = false  
+            state.dutchOrderList = []
+            state.dutchOrderToPayList = []
+            state.dutchOrderPaidList = []
+            state.dutchOrderPayResultList = []
+            state.dutchSelectedTotalAmt = 0
+            state.dutchOrderDividePaidList = []
+        })
         // dutchpay
-        initDutchPayOrder
         builder.addCase(initDutchPayOrder.fulfilled, (state,action)=>{
             state.dutchOrderList = [];
             state.dutchOrderToPayList = [];

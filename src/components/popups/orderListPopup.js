@@ -12,6 +12,7 @@ import { clearOrderStatus, getOrderStatus } from '../../store/order';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { checkTableOrder } from '../../utils/apis';
 import {isEmpty} from 'lodash';
+import { EventRegister } from 'react-native-event-listeners';
 let to = null;
 const OrderListPopup = () =>{
     const dispatch = useDispatch();
@@ -32,6 +33,7 @@ const OrderListPopup = () =>{
                 clearInterval(to);
                 to=null;
                 openTransperentPopup(dispatch,{innerView:"", isPopupVisible:false});
+                //EventRegister.emit("openEventPopup",{isOpen:true}); 
             }, 10000);
         }
     },[param])
@@ -112,7 +114,7 @@ const OrderListPopup = () =>{
                             <BottomButtonIcon source={require("../../assets/icons/card.png")} />
                         </BottomButton>
                     */}
-                    <TouchableWithoutFeedback onPress={()=>{clearInterval(to);to=null; /* dispatch(clearOrderStatus()); */ openTransperentPopup(dispatch, {innerView:"", isPopupVisible:false}); }} >
+                    <TouchableWithoutFeedback onPress={()=>{clearInterval(to);to=null; openTransperentPopup(dispatch, {innerView:"", isPopupVisible:false}); /* if(param?.timeOut){ EventRegister.emit("openEventPopup",{isOpen:true});}*/ }} >
                         <BottomButton backgroundColor={colorBlack} >
                             <BottomButtonText>{LANGUAGE[language]?.orderListPopup.orderListOK}</BottomButtonText>
                             <BottomButtonIcon source={require("../../assets/icons/cancel.png")} />

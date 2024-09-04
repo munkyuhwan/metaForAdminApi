@@ -53,4 +53,5 @@ export const QuickTopMenuWrapper = styled.View`
     zIndex:99;
     position:absolute;
     bottom:50%;
+    width:100%;
 `

@@ -6,9 +6,9 @@ import { PopupBottomButtonBlack, PopupBottomButtonText, PopupBottomButtonWrapper
 import { LANGUAGE } from '../../resources/strings';
 import { BottomButton, BottomButtonIcon, BottomButtonText, BottomButtonWrapper } from '../../styles/main/detailStyle';
 import { colorBlack, colorBrown, colorGrey, colorRed } from '../../assets/colors/color';
-import { isOrderAvailable, numberWithCommas, openFullSizePopup, openInstallmentPopup, openTransperentPopup } from '../../utils/common';
+import { isOrderAvailable, numberWithCommas, openFullSizePopup, openInstallmentPopup, openPopup, openTransperentPopup } from '../../utils/common';
 import OrderListItem from '../orderListComponents/orderListItem';
-import { clearOrderStatus, completeDutchPayment, getOrderStatus, initDutchPayOrder, setDutchOrderList, setDutchOrderToPayList, setOrderProcess, startDutchPayment, startDutchSeparatePayment } from '../../store/order';
+import { clearOrderStatus, completeDutchPayment, getOrderStatus, initDutchPayOrder, setDutchOrderList, setDutchOrderToPayList, setOrder, setOrderProcess, startDutchPayment, startDutchSeparatePayment } from '../../store/order';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { checkTableOrder } from '../../utils/apis';
 import {isEmpty, isEqual} from 'lodash';
@@ -16,7 +16,7 @@ import OrderPayItem from '../orderListComponents/orderPayItem';
 import CheckBox from 'react-native-check-box';
 import { KocesAppPay } from '../../utils/payment/kocesPay';
 import PaidDataItem from '../orderListComponents/paidDataItem';
-import { CartFlatList, CartItemAmtController, CartItemAmtText, CartItemAmtWrapper, CartItemTitlePriceWrapper, DutchItemTitle, DutchPayBtn, DutchPayItemAmtText, OperandorText, PayBtn, PayTitle } from '../../styles/main/cartStyle';
+import { CartFlatList, CartItemAmtController, CartItemAmtText, CartItemAmtWrapper, CartItemPrice, CartItemTitlePriceWrapper, DutchItemTitle, DutchPayBtn, DutchPayItemAmtText, OperandorText, PayBtn, PayTitle } from '../../styles/main/cartStyle';
 import CartListItem from '../cartComponents/cartListItem';
 import DutchPayListItem from '../cartComponents/dutchPayListItem';
 import { RADIUS_DOUBLE } from '../../styles/values';
@@ -51,7 +51,7 @@ const OrderPayPopup = () =>{
     // 총 금액
     const [totalAmt, setTotalAmt] = useState(0);
     // 인원 체크
-    const [numPpl, setNumPpl] = useState(1);
+    const [numPpl, setNumPpl] = useState(2);
 
 
     if(isEmpty(orderList)) {
@@ -132,89 +132,6 @@ const OrderPayPopup = () =>{
         setDivided(setType);
         setCheckedItemList([]);
     }
-    const onItemCheck = async (prodCD,idx) => {
-        //const itemCheck = checkedItemList.indexOf({index:idx, prod_cd:prodCD});
-        const itemCheck = checkedItemList.filter(el=>isEqual(el,{index:idx, prod_cd:prodCD}))
-        var itemListToChange = Object.assign([],checkedItemList);
-        if(itemCheck.length>0) {
-            itemListToChange = itemListToChange.filter(el=>!isEqual(el,{index:idx, prod_cd:prodCD}));
-        }else {
-            itemListToChange.push({index:idx, prod_cd:prodCD});
-        }
-        //console.log("checked list: ",itemListToChange);
-        setCheckedItemList(itemListToChange);
-    }
-    const checkAll = () => {
-        if(checkedItemList.length<orderList.length) {
-            var checkItemList = [];
-            orderList.map((el, index)=>{
-                checkItemList.push({index:index, prod_cd:el.prod_cd});
-            })
-            setCheckedItemList(checkItemList);
-        }else {
-            setCheckedItemList([]);
-        }
-    }
-    const doPay = async () =>{
-        if(checkedItemList?.length <= 0) {
-            Alert.alert(
-                "",
-                "결제하실 메뉴를 선택 해 주세요.",
-                [{
-                    text:'확인',
-                }]
-                );
-            return;
-        }
-
-        const bsnNo = await AsyncStorage.getItem("BSN_NO");
-        const tidNo = await AsyncStorage.getItem("TID_NO");
-        const serialNo = await AsyncStorage.getItem("SERIAL_NO");
-        if( isEmpty(bsnNo) || isEmpty(tidNo) || isEmpty(serialNo) ) {
-            displayErrorPopup(dispatch, "XXXX", "결제정보 입력 후 이용 해 주세요.");
-            return;
-        }
-        /* 
-        const result = {"AnsCode": "0000", "AnswerTrdNo": "null", "AuNo": "24265610", "AuthType": "null", "BillNo": "", "CardKind": "1", "CardNo": "94119400", "ChargeAmt": "null", "DDCYn": "1", "DisAmt": "null", "EDCYn": "0", "GiftAmt": "", "InpCd": "1107", "InpNm": "신한카드", "Keydate": "", "MchData": "wooriorder", "MchNo": "22101257", "Message": "마이신한P잔여 : 0                       ", "Month": "00", "OrdCd": "1107", "OrdNm": "개인신용", "PcCard": "null", "PcCoupon": "null", "PcKind": "null", "PcPoint": "null", "QrKind": "null", "RefundAmt": "null", "SvcAmt": "0", "TaxAmt": checkOutVatAmt, "TaxFreeAmt": "0", "TermID": "0710000900", "TradeNo": "000003714185", "TrdAmt": checkOutAmt, "TrdDate": "240424165028", "TrdType": "A15"} 
-        var tmpPayList = Object.assign([],paidList);
-        const paidData = {paidItem:checkedItemList,paidData:result};
-        tmpPayList.push(paidData);
-        setPaidList(tmpPayList);
-        setCheckedItemList([]);
-        setCheckAmt(0);
-        setCheckVatAmt(0);
-        setPaidAmt(checkOutVatAmt+checkOutAmt+paidAmt);
-          */
-        
-        const amtData = {amt:checkOutAmt, taxAmt:checkOutVatAmt, months:"00", bsnNo:bsnNo,termID:tidNo }
-        var kocessAppPay = new KocesAppPay();
-        kocessAppPay.requestKocesPayment(amtData)
-        .then(async (result)=>{ 
-            
-            console.log("result: ",result);
-            var tmpPayList = Object.assign([],paidList);
-            const paidData = {paidItem:checkedItemList,paidData:result};
-            tmpPayList.push(paidData);
-            setPaidList(tmpPayList);
-            setCheckedItemList([]);
-            setCheckAmt(0);
-            setCheckVatAmt(0);
-            setPaidAmt(checkOutVatAmt+checkOutAmt+paidAmt);   
-        })
-        .catch((err)=>{
-            console.log("error: ",err)
-            
-        })
-    }
-    
-    const cancelOrderPayList = (index) =>{
-        var tmpPaidList = Object.assign([],paidList);
-        var canceledList = tmpPaidList.splice(index,1);
-        setPaidList(tmpPaidList);
-        const trdAmt = Number(canceledList[0]?.paidData?.TrdAmt);
-        const taxAmt = Number(canceledList[0]?.paidData?.TaxAmt);
-        setPaidAmt(paidAmt-(trdAmt+taxAmt));
-    }
 
     function scrollSelectedListToBottom() {
         setTimeout(() => {
@@ -228,7 +145,7 @@ const OrderPayPopup = () =>{
     useEffect(()=>{
         if(dutchOrderList?.length>0) {
             // 주문할 수 있는 상태인지 확인
-            isOrderAvailable(dispatch)
+            /* isOrderAvailable(dispatch)
             .then((result)=>{
                 const isPass = result?.result;
                 if(isPass) {
@@ -240,26 +157,26 @@ const OrderPayPopup = () =>{
             })
             .catch((err)=>{
                 console.log("err: ",err);
-            })
+            }) */
         }
     },[])
 
     function goPay() {
         if(dutchOrderList?.length>0) {
-            dispatch(setOrderProcess(true));
+            /* dispatch(setOrderProcess(true));
             isOrderAvailable(dispatch)
             .then((result)=>{
                 const isPass = result?.result;
-                if(isPass) {
+                if(isPass) { */
                     // 결제 진행
                     dispatch(startDutchPayment());
-                }
+               /*  }
                 dispatch(setOrderProcess(false));
             })
             .catch((err)=>{
                 console.log("err: ",err);
                 dispatch(setOrderProcess(false));
-            })
+            }) */
         }
     }
     function goSeparatePay(){
@@ -270,7 +187,6 @@ const OrderPayPopup = () =>{
     }
 
     useEffect(()=>{
-        console.log("dutchOrderDividePaidList: ",dutchOrderDividePaidList)
         if(dutchOrderDividePaidList.length>0) {
             var rest = Number(totalAmt%numPpl);
             var loopCnt = Number(numPpl)+(rest>0?1:0);
@@ -343,11 +259,39 @@ const OrderPayPopup = () =>{
     },[dutchOrderList])
 
     function changeNumPpl (opr) {
+
         if(opr=="add") {
-            if(dutchOrderDividePaidList.length>0){dispatch(setErrorData({errorCode:"XXXX",errorMsg:"결제중에 인원을 수정할 수 없습니다."}));}else{ setNumPpl((numPpl+1)); }
+            if(totalAmt/(numPpl+1)<100) {
+                dispatch(setErrorData({errorCode:"XXXX",errorMsg:"100원 이하로 분할할 수 없습니다."}));
+                openPopup(dispatch,{innerView:"Error", isPopupVisible:true});
+            }else {
+                if(dutchOrderDividePaidList.length>0){
+                    dispatch(setErrorData({errorCode:"XXXX",errorMsg:"결제중에 인원을 수정할 수 없습니다."}));
+                    openPopup(dispatch,{innerView:"Error", isPopupVisible:true});
+                }else{ 
+                    setNumPpl((numPpl+1)); 
+                }
+            }
         }else {
-            if(dutchOrderDividePaidList.length>0){dispatch(setErrorData({errorCode:"XXXX",errorMsg:"결제중에 인원을 수정할 수 없습니다."})); }else{  if(numPpl<=1){setNumPpl(1);}else { setNumPpl((numPpl-1)); } }
+            if(dutchOrderDividePaidList.length>0){
+                dispatch(setErrorData({errorCode:"XXXX",errorMsg:"결제중에 인원을 수정할 수 없습니다."})); 
+                openPopup(dispatch,{innerView:"Error", isPopupVisible:true});
+            }else{  
+                if(numPpl<=2){
+                    setNumPpl(2);
+                }else { 
+                    setNumPpl((numPpl-1)); 
+                } 
+            }
         }
+    }
+
+    const remainedAmt = () =>{
+        var remained = 0;
+        for(var i=0;i<dutchOrderDividePaidList.length;i++) {
+            remained = remained + Number(dutchOrderDividePaidList[i].TrdAmt)+Number(dutchOrderDividePaidList[i].TaxAmt)
+        }
+        return totalAmt-remained;
     }
 
     return(
@@ -387,7 +331,7 @@ const OrderPayPopup = () =>{
                                     )
                                 }}
                             />
-                            <OrderPayTabTitle numberOfLines={1} ellipsizeMode="tail" >{`총 ${numberWithCommas(totalAmt)}원`}</OrderPayTabTitle>
+                            <OrderListTopTitle style={{marginTop:4}} numberOfLines={1} ellipsizeMode="tail" >{`총 ${numberWithCommas(totalAmt)}원`}</OrderListTopTitle>
                         </DutchPayHalfWrapper>
                         <DutchPayHalfWrapper>
                             <CartItemTitlePriceWrapper>
@@ -406,11 +350,15 @@ const OrderPayPopup = () =>{
                                     </TouchableWithoutFeedback>
                                 </CartItemAmtWrapper>
                             </CartItemTitlePriceWrapper>
+                            {/* 결제 진행 내역 */}
                             <OrderPayTabTitle numberOfLines={1} ellipsizeMode="tail" >{`1인 금액`}</OrderPayTabTitle>
                             <OrderListTopTitle>{`${numberWithCommas( Math.floor(totalAmt/numPpl))}원`}</OrderListTopTitle>
                             <OrderListTopTitle>{` `}</OrderListTopTitle>
                             <OrderPayTabTitle numberOfLines={1} ellipsizeMode="tail" >{`나머지 금액`}</OrderPayTabTitle>
                             <OrderListTopTitle>{`${numberWithCommas( (totalAmt%numPpl))}원`}</OrderListTopTitle>
+                            <OrderPayTabTitle numberOfLines={1} ellipsizeMode="tail" >{`남은 결제 금액`}</OrderPayTabTitle>
+                            <OrderListTopTitle>{`${numberWithCommas( remainedAmt() )}원`}</OrderListTopTitle>
+
                             <OrderListTopTitle>{` `}</OrderListTopTitle>
                             <TouchableWithoutFeedback onPress={()=>{ goSeparatePay() }} >
                                 <DutchPayBtn isFull={true} isGap={true}  color={colorRed} >    
@@ -447,20 +395,28 @@ const OrderPayPopup = () =>{
                 }
                 {!isDivided &&
                     <DutchPayFullWrapper isDivided={isDivided} >
+                        {/* 결제 할 내역*/}
                         <DutchPayHalfWrapper>
                             <OrderPayTabTitle isOn={false} >주문내역</OrderPayTabTitle>
-                            <CartFlatList
-                                ref={orderedListRef}
-                                style={{borderRadius:RADIUS_DOUBLE}}
-                                showsVerticalScrollIndicator={false}
-                                data={dutchOrderList}
-                                renderItem={(item )=>{
-                                    return(
-                                        <DutchPayListItem onPress={()=>{dispatch(setDutchOrderToPayList({orderIndex:item.index, isAdd:true}));scrollSelectedListToBottom(); /* dispatch(setDutchOrderToPayList({item:item.item, index:item.index})); */ }} {...item} />
-                                    )
-                                }}
-                            />
+                            {dutchOrderList.length > 0 &&
+                                <CartFlatList
+                                    ref={orderedListRef}
+                                    style={{borderRadius:RADIUS_DOUBLE}}
+                                    showsVerticalScrollIndicator={false}
+                                    data={dutchOrderList}
+                                    renderItem={(item )=>{
+                                        if(item.item.qty<=0) {
+                                            return(<></>)
+                                        }else {
+                                            return(
+                                                <DutchPayListItem onPress={()=>{dispatch(setDutchOrderToPayList({orderIndex:item.index, isAdd:true}));scrollSelectedListToBottom(); /* dispatch(setDutchOrderToPayList({item:item.item, index:item.index})); */ }} {...item} />
+                                            )
+                                        }
+                                    }}
+                                />
+                            }
                         </DutchPayHalfWrapper>
+                        {/* 결제 선택 내역*/}
                         <DutchPayHalfWrapper isBorder={true}>
                             <OrderPayTabTitle isOn={false} >선택내역</OrderPayTabTitle>
                             <CartFlatList
@@ -474,14 +430,14 @@ const OrderPayPopup = () =>{
                                     )
                                 }}
                             />
-                            {//계산하기 
-                            }
+                            {/*계산하기*/}
                             <TouchableWithoutFeedback onPress={()=>{ goPay(); }} >
                                 <DutchPayBtn isFull={true} isGap={true}  color={colorRed} >    
                                     <PayTitle>{`${numberWithCommas(dutchSelectedTotalAmt)}${LANGUAGE[language]?.orderPay?.payAmtUnit} `+LANGUAGE[language]?.cartView.payOrder}</PayTitle>
                                 </DutchPayBtn>
                             </TouchableWithoutFeedback>
                         </DutchPayHalfWrapper>
+                        {/* 결제완료 내역*/}
                         <DutchPayHalfWrapper>
                             <OrderPayTabTitle isOn={false} >결제완료내역</OrderPayTabTitle>
                             <DutchPayPaidListScrollWrapper>

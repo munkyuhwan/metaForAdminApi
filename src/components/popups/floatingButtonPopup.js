@@ -19,7 +19,7 @@ import { getDeviceInfo, getStoreID, isAvailable, isNetworkAvailable, itemEnableC
 import { BottomButton, BottomButtonIcon, BottomButtonText, BottomButtonWrapper } from "../../styles/main/detailStyle";
 import { LANGUAGE } from '../../resources/strings';
 import { colorRed } from "../../assets/colors/color";
-import { CategorySelected, TopMenuText, TopMenuWrapper } from "../../styles/main/topMenuStyle";
+import { CategorySelected, FloatingCategorySelected, FloatingTopMenuText, TopMenuText, TopMenuWrapper } from "../../styles/main/topMenuStyle";
 import { displayErrorNonClosePopup, displayErrorPopup } from "../../utils/errorHandler/metaErrorHandler";
 import { getPosStoreInfo, getTableAvailability } from "../../utils/api/metaApis";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -309,11 +309,10 @@ const FloatingBtn = (props) => {
             <>
                 <QuickMenuItemWrapper>
                     <MenuItemTopWrapper>
-
                         {imgUrl &&
                         <TouchableWithoutFeedback onPress={()=>{ makeLastOrder(item); }} >
                             {/* <FastImage style={{ width:170,height:height*0.2, borderRadius:RADIUS_DOUBLE}} source={{uri:quickItem[0]?.imgData}} resizeMode={FastImage.resizeMode.cover} /> */}
-                            <FastImage style={{ width:'100%',height:height*0.28, borderRadius:RADIUS_DOUBLE}} source={{uri:item?.gimg_chg}} resizeMode={FastImage.resizeMode.cover} />
+                            <FastImage style={{ width:'100%',height:height*0.23, borderRadius:RADIUS_DOUBLE}} source={{uri:item?.gimg_chg}} resizeMode={FastImage.resizeMode.cover} />
                         </TouchableWithoutFeedback>
                         }
                         {!imgUrl &&
@@ -419,9 +418,9 @@ const FloatingBtn = (props) => {
         <View style={{width:'100%',height:'100%',position:'absolute'}}>
             <View style={{position:'absolute',width:'100%',height:'100%',backgroundColor:'rgba(0,0,0,0.3)'}} ></View>
             <QuickTopMenuWrapper>
-                <CategorySelected isSelected={true} >
-                    <TopMenuText key={"subcatText_"} >{"논스톱 주문"}</TopMenuText>
-                </CategorySelected>
+                <FloatingCategorySelected isSelected={true} >
+                    <FloatingTopMenuText key={"subcatText_"} >{"논스톱 주문"}</FloatingTopMenuText>
+                </FloatingCategorySelected>
             </QuickTopMenuWrapper>
             <QuickOrderWrapper>
                 <TransparentQuickOrderTopWrapper>
