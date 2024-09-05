@@ -131,6 +131,16 @@ const OrderPayPopup = () =>{
     const onTap = (setType) =>{
         setDivided(setType);
         setCheckedItemList([]);
+        dispatch(setOrder({
+            dutchOrderList:orderList,
+            dutchOrderToPayList:[],
+            dutchOrderPaidList:[],
+            dutchOrderPayResultList:[],
+            dutchSelectedTotalAmt:0,
+            // 1/n결제
+            dutchOrderDividePaidList:[],
+        }));
+
     }
 
     function scrollSelectedListToBottom() {
@@ -145,7 +155,7 @@ const OrderPayPopup = () =>{
     useEffect(()=>{
         if(dutchOrderList?.length>0) {
             // 주문할 수 있는 상태인지 확인
-            /* isOrderAvailable(dispatch)
+            isOrderAvailable(dispatch)
             .then((result)=>{
                 const isPass = result?.result;
                 if(isPass) {
@@ -157,26 +167,26 @@ const OrderPayPopup = () =>{
             })
             .catch((err)=>{
                 console.log("err: ",err);
-            }) */
+            })
         }
     },[])
 
     function goPay() {
         if(dutchOrderList?.length>0) {
-            /* dispatch(setOrderProcess(true));
+            dispatch(setOrderProcess(true));
             isOrderAvailable(dispatch)
             .then((result)=>{
                 const isPass = result?.result;
-                if(isPass) { */
+                if(isPass) {
                     // 결제 진행
                     dispatch(startDutchPayment());
-               /*  }
+                }
                 dispatch(setOrderProcess(false));
             })
             .catch((err)=>{
                 console.log("err: ",err);
                 dispatch(setOrderProcess(false));
-            }) */
+            })
         }
     }
     function goSeparatePay(){
@@ -472,7 +482,7 @@ const OrderPayPopup = () =>{
                                         </PayBtn>
                                     </TouchableWithoutFeedback>
                                 }
-                                { !isPosPostSuccess &&
+                                { (dutchOrderPaidList.length > 0 && !isPosPostSuccess) &&
                                     <TouchableWithoutFeedback onPress={()=>{dispatch(completeDutchPayment()) }} >
                                         <PayBtn isFull={false} isGap={true}  color={ colorBlack}  >    
                                             <PayTitle>{LANGUAGE[language]?.etc.postAgain}</PayTitle>

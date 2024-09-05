@@ -106,7 +106,7 @@ export const presetOrderData = createAsyncThunk("order/presetOrderData", async(_
 /// 어드민에 주문 데이터 보내기 
 export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{dispatch, rejectWithValue, getState})=>{
     const { tableStatus } = getState().tableInfo;
-    const {payData, orderData} = _;
+    const {payData, orderData, isMultiPay} = _;
     const {allItems} = getState().menu;
     var postOrderData = Object.assign({}, orderData);
     const date = new Date();
@@ -121,31 +121,75 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
     
     let addOrderData = {};
     if(!isEmpty(payData)) {
-        addOrderData = {
-            TOTAL_AMT:Number(payData?.TrdAmt)+Number(payData?.TaxAmt),
-            TOTAL_VAT:Number(payData?.TaxAmt),
-            TOTAL_DC:Number(payData?.SvcAmt),
-            ORDER_STATUS:"3",
-            CANCEL_YN:"N",
-            PREPAYMENT_YN:"N",
-            CUST_CARD_NO:`${payData?.CardNo}`,
-            CUST_NM:``,
-            PAYMENT_CNT:1,
-            PAYMENT_INFO:[{
-                PAY_SEQ:1,
-                PAY_KIND:"2",
-                PAY_AMT:Number(payData?.TrdAmt)+Number(payData?.TaxAmt),
-                PAY_VAT:Number(payData?.TaxAmt),
-                PAY_APV_NO:`${payData?.AuNo}`,
-                PAY_APV_DATE:`20${payData?.TrdDate?.substr(0,6)}`,
-                PAY_CARD_NO:`${payData?.CardNo}********`,
-                PAY_UPD_DT:`20${payData?.TrdDate}`,
-                PAY_CANCEL_YN:"N",
-                PAY_CARD_TYPE:`${payData?.InpNm}`,
-                PAY_CARD_MONTH:`${payData?.Month}`
-            }]
-        };
-        postOrderData = {...orderData,...addOrderData};
+        if(isMultiPay==false) {
+            addOrderData = {
+                TOTAL_AMT:Number(payData?.TrdAmt)+Number(payData?.TaxAmt),
+                TOTAL_VAT:Number(payData?.TaxAmt),
+                TOTAL_DC:Number(payData?.SvcAmt),
+                ORDER_STATUS:"3",
+                CANCEL_YN:"N",
+                PREPAYMENT_YN:"N",
+                CUST_CARD_NO:`${payData?.CardNo}`,
+                CUST_NM:``,
+                PAYMENT_CNT:1,
+                PAYMENT_INFO:[{
+                    PAY_SEQ:1,
+                    PAY_KIND:"2",
+                    PAY_AMT:Number(payData?.TrdAmt)+Number(payData?.TaxAmt),
+                    PAY_VAT:Number(payData?.TaxAmt),
+                    PAY_APV_NO:`${payData?.AuNo}`,
+                    PAY_APV_DATE:`20${payData?.TrdDate?.substr(0,6)}`,
+                    PAY_CARD_NO:`${payData?.CardNo}********`,
+                    PAY_UPD_DT:`20${payData?.TrdDate}`,
+                    PAY_CANCEL_YN:"N",
+                    PAY_CARD_TYPE:`${payData?.InpNm}`,
+                    PAY_CARD_MONTH:`${payData?.Month}`
+                }]
+            };
+            postOrderData = {...orderData,...addOrderData};
+        }else {
+            var totalAmt = 0;
+            var totalVat = 0;
+            var totalDc = 0;
+            var paymentInfo = [];
+            console.log("payData: ",payData)
+            for(var i=0;i<payData.length;i++){
+                var currentPayData = (payData[i])
+                totalAmt += Number(currentPayData?.TrdAmt)+Number(currentPayData?.TaxAmt);
+                totalVat += Number(currentPayData?.TaxAmt);
+                var cardNo = currentPayData?.CardNo;
+                cardNo = cardNo.replace(/\*/gi,"");
+                cardNo = cardNo.replace(/-/gi,"");
+                const payOneData = {
+                    PAY_SEQ:1,
+                    PAY_KIND:"2",
+                    PAY_AMT:Number(currentPayData?.TrdAmt)+Number(currentPayData?.TaxAmt),
+                    PAY_VAT:Number(currentPayData?.TaxAmt),
+                    PAY_APV_NO:`${currentPayData?.AuNo}`,
+                    PAY_APV_DATE:`20${currentPayData?.TrdDate?.substr(0,6)}`,
+                    PAY_CARD_NO:`${cardNo}********`,
+                    PAY_UPD_DT:`20${currentPayData?.TrdDate}`,
+                    PAY_CANCEL_YN:"N",
+                    PAY_CARD_TYPE:`${currentPayData?.InpNm}`,
+                    PAY_CARD_MONTH:`${currentPayData?.Month}`
+                }
+                paymentInfo.push(payOneData);
+            }
+
+            addOrderData = {
+                TOTAL_AMT:Number(totalAmt),
+                TOTAL_VAT:Number(totalVat),
+                TOTAL_DC:Number(totalDc),
+                ORDER_STATUS:"3",
+                CANCEL_YN:"N",
+                PREPAYMENT_YN:"N",
+                CUST_CARD_NO:``,
+                CUST_NM:``,
+                PAYMENT_CNT:paymentInfo.length,
+                PAYMENT_INFO:paymentInfo
+            }
+        }
+        postOrderData = {...postOrderData,...addOrderData};
     }
     
     let addData = {
@@ -169,8 +213,8 @@ export const adminDataPost = createAsyncThunk("order/adminDataPost", async(_,{di
 
         })
     }
-    //console.log("postOrderDatatoadmin========================================================")
-    //console.log(JSON.stringify(postOrderData))
+    console.log("postOrderDatatoadmin========================================================")
+    console.log(JSON.stringify(postOrderData))
 
     /* 
         if(itemDetail?.length>0) {
@@ -264,23 +308,24 @@ export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{
             var totalDc = 0;
             var paymentInfo = [];
             for(var i=0;i<payData.length;i++){
-                totalAmt += Number(payData[i]?.TrdAmt)+Number(payData[i]?.TaxAmt);
-                totalVat += Number(payData[i]?.TaxAmt);
-                var cardNo = payData[i]?.CardNo;
+                var currentPayData = (payData[i])
+                totalAmt += Number(currentPayData?.TrdAmt)+Number(currentPayData?.TaxAmt);
+                totalVat += Number(currentPayData?.TaxAmt);
+                var cardNo = currentPayData?.CardNo;
                 cardNo = cardNo.replace(/\*/gi,"");
                 cardNo = cardNo.replace(/-/gi,"");
                 const payOneData = {
                     PAY_SEQ:1,
                     PAY_KIND:"2",
-                    PAY_AMT:Number(payData[i]?.TrdAmt)+Number(payData[i]?.TaxAmt),
-                    PAY_VAT:Number(payData[i]?.TaxAmt),
-                    PAY_APV_NO:`${payData[i]?.AuNo}`,
-                    PAY_APV_DATE:`20${payData[i]?.TrdDate?.substr(0,6)}`,
+                    PAY_AMT:Number(currentPayData?.TrdAmt)+Number(currentPayData?.TaxAmt),
+                    PAY_VAT:Number(currentPayData?.TaxAmt),
+                    PAY_APV_NO:`${currentPayData?.AuNo}`,
+                    PAY_APV_DATE:`20${currentPayData?.TrdDate?.substr(0,6)}`,
                     PAY_CARD_NO:`${cardNo}********`,
-                    PAY_UPD_DT:`20${payData[i]?.TrdDate}`,
+                    PAY_UPD_DT:`20${currentPayData?.TrdDate}`,
                     PAY_CANCEL_YN:"N",
-                    PAY_CARD_TYPE:`${payData[i]?.InpNm}`,
-                    PAY_CARD_MONTH:`${payData[i]?.Month}`
+                    PAY_CARD_TYPE:`${currentPayData?.InpNm}`,
+                    PAY_CARD_MONTH:`${currentPayData?.Month}`
                 }
                 paymentInfo.push(payOneData);
             }
@@ -317,7 +362,6 @@ export const postOrderToPos = createAsyncThunk("order/postOrderToPos", async(_,{
                     dispatch(setCartView(false));
                     dispatch(initOrderList());
                     dispatch(regularUpdate());
-                    dispatch(initDutchPayOrder()); 
                     openFullSizePopup(dispatch, {innerFullView:"", isFullPopupVisible:false}); 
                 }
                 if( tableStatus?.now_later == "선불") {
@@ -738,15 +782,51 @@ export const startDutchSeparatePayment = createAsyncThunk("order/startDutchSepar
     var numPpl = data?.numPpl;
     var rest = data?.rest;
     var payAmt = data?.payAmt;
-    var netAmt = Math.round(payAmt/10);
-    var vatAmt = payAmt-netAmt;
+    var vatAmt = Math.round(payAmt/10);
+    var netAmt = payAmt-vatAmt;
 
     var loopCnt = Number(numPpl)+(rest>0?1:0);
+    var kocessAppPay = new KocesAppPay();
 
     if(dutchOrderDividePaidList.length >=loopCnt ) {
         console.log("결제 끝");
         return(rejectWithValue());
     }else {
+
+        const { allItems } = getState().menu;
+        var monthSelected = "00";
+        if(Number(payAmt)<=0) {
+            dispatch(setErrorData({errorCode:"XXXX",errorMsg:"메뉴선택 후 결제 해 주세요."})); 
+            openPopup(dispatch,{innerView:"Error", isPopupVisible:true});
+            return rejectWithValue();
+        }
+        if(Number(payAmt)>50000){
+            const installmentResult = await openInstallmentPopup(dispatch, getState,"할부","완료","취소",true).catch(err=>err);
+            if(installmentResult.code == "0000") {
+                if(installmentResult?.response=="ok") {
+                    const data = installmentResult?.data;
+                    monthSelected = data.installment;
+                }else {
+                    return rejectWithValue();
+                }
+            }else {
+                return rejectWithValue();
+            }
+        }
+    
+        const bsnNo = await AsyncStorage.getItem("BSN_NO");
+        const tidNo = await AsyncStorage.getItem("TID_NO");
+        const serialNo = await AsyncStorage.getItem("SERIAL_NO");
+        if( isEmpty(bsnNo) || isEmpty(tidNo) || isEmpty(serialNo) ) {
+            displayErrorPopup(dispatch, "XXXX", "결제정보 입력 후 이용 해 주세요.");
+            return rejectWithValue();
+        }
+        var orderData = await metaPostPayFormat(dutchOrderDividePaidList,{}, allItems).catch(err=>"err");
+        console.log("order data: ",orderData);
+
+        const amtData = {amt:netAmt, taxAmt:vatAmt, months:monthSelected, bsnNo:bsnNo,termID:tidNo }
+        console.log("amtData: ",amtData);
+
         if(loopCnt > numPpl) {
             // 나머지가 있는경우
             if(dutchOrderDividePaidList.length >= numPpl) {
@@ -758,16 +838,47 @@ export const startDutchSeparatePayment = createAsyncThunk("order/startDutchSepar
                     var netRest = rest;
                     var vatRest = 0;
                 }
-                const result = {"AnsCode": "0000", "AnswerTrdNo": "null", "AuNo": "28872915", "AuthType": "null", "BillNo": "", "CardKind": "1", "CardNo": "9411-9400-****-****", "ChargeAmt": "null", "DDCYn": "1", "DisAmt": "null", "EDCYn": "0", "GiftAmt": "", "InpCd": "1107", "InpNm": "신한카드", "Keydate": "", "MchData": "wooriorder", "MchNo": "22101257", "Message": "마이신한P잔여 : 109                     ", "Month": "00", "OrdCd": "1107", "OrdNm": "개인신용", "PcCard": "null", "PcCoupon": "null", "PcKind": "null", "PcPoint": "null", "QrKind": "null", "RefundAmt": "null", "SvcAmt": "0", "TaxAmt": `${vatRest}`, "TaxFreeAmt": "0", "TermID": "0710000900", "TradeNo": "000004689679", "TrdAmt": `${netRest}`, "TrdDate": "240902182728", "TrdType": "A15"}
+                const result = await kocessAppPay.requestKocesPayment(amtData).catch((err)=>{
+                    EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
+                    dispatch(postLog({payData:err,orderData:null}))
+                    displayErrorPopup(dispatch, "XXXX", err?.Message);
+                    return ""
+                });
+                console.log("pay result: ",result); 
+                if(result == "") {
+                    return rejectWithValue();
+                }
+                //const result = {"AnsCode": "0000", "AnswerTrdNo": "null", "AuNo": "28872915", "AuthType": "null", "BillNo": "", "CardKind": "1", "CardNo": "9411-9400-****-****", "ChargeAmt": "null", "DDCYn": "1", "DisAmt": "null", "EDCYn": "0", "GiftAmt": "", "InpCd": "1107", "InpNm": "신한카드", "Keydate": "", "MchData": "wooriorder", "MchNo": "22101257", "Message": "마이신한P잔여 : 109                     ", "Month": "00", "OrdCd": "1107", "OrdNm": "개인신용", "PcCard": "null", "PcCoupon": "null", "PcKind": "null", "PcPoint": "null", "QrKind": "null", "RefundAmt": "null", "SvcAmt": "0", "TaxAmt": `${vatRest}`, "TaxFreeAmt": "0", "TermID": "0710000900", "TradeNo": "000004689679", "TrdAmt": `${netRest}`, "TrdDate": "240902182728", "TrdType": "A15"}
                 return result; 
             }else {
                 // 다른경우 그냥 결제
-                const result = {"AnsCode": "0000", "AnswerTrdNo": "null", "AuNo": "28872915", "AuthType": "null", "BillNo": "", "CardKind": "1", "CardNo": "9411-9400-****-****", "ChargeAmt": "null", "DDCYn": "1", "DisAmt": "null", "EDCYn": "0", "GiftAmt": "", "InpCd": "1107", "InpNm": "신한카드", "Keydate": "", "MchData": "wooriorder", "MchNo": "22101257", "Message": "마이신한P잔여 : 109                     ", "Month": "00", "OrdCd": "1107", "OrdNm": "개인신용", "PcCard": "null", "PcCoupon": "null", "PcKind": "null", "PcPoint": "null", "QrKind": "null", "RefundAmt": "null", "SvcAmt": "0", "TaxAmt": `${vatAmt}`, "TaxFreeAmt": "0", "TermID": "0710000900", "TradeNo": "000004689679", "TrdAmt": `${netAmt}`, "TrdDate": "240902182728", "TrdType": "A15"}
+                //const result = {"AnsCode": "0000", "AnswerTrdNo": "null", "AuNo": "28872915", "AuthType": "null", "BillNo": "", "CardKind": "1", "CardNo": "9411-9400-****-****", "ChargeAmt": "null", "DDCYn": "1", "DisAmt": "null", "EDCYn": "0", "GiftAmt": "", "InpCd": "1107", "InpNm": "신한카드", "Keydate": "", "MchData": "wooriorder", "MchNo": "22101257", "Message": "마이신한P잔여 : 109                     ", "Month": "00", "OrdCd": "1107", "OrdNm": "개인신용", "PcCard": "null", "PcCoupon": "null", "PcKind": "null", "PcPoint": "null", "QrKind": "null", "RefundAmt": "null", "SvcAmt": "0", "TaxAmt": `${vatAmt}`, "TaxFreeAmt": "0", "TermID": "0710000900", "TradeNo": "000004689679", "TrdAmt": `${netAmt}`, "TrdDate": "240902182728", "TrdType": "A15"}
+                const result = await kocessAppPay.requestKocesPayment(amtData).catch((err)=>{
+                    EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
+                    dispatch(postLog({payData:err,orderData:null}))
+                    displayErrorPopup(dispatch, "XXXX", err?.Message);
+                    return ""
+                });
+                console.log("pay result: ",result); 
+                if(result == "") {
+                    return rejectWithValue();
+                }
                 return result; 
             }
         }else {
             // 나머지가 없는 경우
-            const result = {"AnsCode": "0000", "AnswerTrdNo": "null", "AuNo": "28872915", "AuthType": "null", "BillNo": "", "CardKind": "1", "CardNo": "9411-9400-****-****", "ChargeAmt": "null", "DDCYn": "1", "DisAmt": "null", "EDCYn": "0", "GiftAmt": "", "InpCd": "1107", "InpNm": "신한카드", "Keydate": "", "MchData": "wooriorder", "MchNo": "22101257", "Message": "마이신한P잔여 : 109                     ", "Month": "00", "OrdCd": "1107", "OrdNm": "개인신용", "PcCard": "null", "PcCoupon": "null", "PcKind": "null", "PcPoint": "null", "QrKind": "null", "RefundAmt": "null", "SvcAmt": "0", "TaxAmt": `${vatAmt}`, "TaxFreeAmt": "0", "TermID": "0710000900", "TradeNo": "000004689679", "TrdAmt": `${netAmt}`, "TrdDate": "240902182728", "TrdType": "A15"}
+            //const result = {"AnsCode": "0000", "AnswerTrdNo": "null", "AuNo": "28872915", "AuthType": "null", "BillNo": "", "CardKind": "1", "CardNo": "9411-9400-****-****", "ChargeAmt": "null", "DDCYn": "1", "DisAmt": "null", "EDCYn": "0", "GiftAmt": "", "InpCd": "1107", "InpNm": "신한카드", "Keydate": "", "MchData": "wooriorder", "MchNo": "22101257", "Message": "마이신한P잔여 : 109                     ", "Month": "00", "OrdCd": "1107", "OrdNm": "개인신용", "PcCard": "null", "PcCoupon": "null", "PcKind": "null", "PcPoint": "null", "QrKind": "null", "RefundAmt": "null", "SvcAmt": "0", "TaxAmt": `${vatAmt}`, "TaxFreeAmt": "0", "TermID": "0710000900", "TradeNo": "000004689679", "TrdAmt": `${netAmt}`, "TrdDate": "240902182728", "TrdType": "A15"}
+            console.log(" 결제하기기기기기기기기기기 ")
+            const result = await kocessAppPay.requestKocesPayment(amtData).catch((err)=>{
+                EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
+                dispatch(postLog({payData:err,orderData:null}))
+                displayErrorPopup(dispatch, "XXXX", err?.Message);
+                return ""
+            });
+            console.log("pay result: ",result); 
+            if(result == "") {
+                return rejectWithValue();
+            }
             return result; 
         }
         /* 
@@ -891,7 +1002,7 @@ export const startDutchPayment = createAsyncThunk("order/startDutchPayment",  as
         }
         const amtData = {amt:payAmt, taxAmt:vatAmt, months:monthSelected, bsnNo:bsnNo,termID:tidNo }
         console.log("amtData: ",amtData);
-        /* 
+         
         var kocessAppPay = new KocesAppPay();
         const result = await kocessAppPay.requestKocesPayment(amtData).catch((err)=>{
             EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
@@ -903,9 +1014,9 @@ export const startDutchPayment = createAsyncThunk("order/startDutchPayment",  as
         if(result == "") {
             return rejectWithValue();
         }
-        */
+        
         // 테스트
-        const result = {"AnsCode": "0000", "AnswerTrdNo": "null", "AuNo": "28872915", "AuthType": "null", "BillNo": "", "CardKind": "1", "CardNo": "9411-9400-****-****", "ChargeAmt": "null", "DDCYn": "1", "DisAmt": "null", "EDCYn": "0", "GiftAmt": "", "InpCd": "1107", "InpNm": "신한카드", "Keydate": "", "MchData": "wooriorder", "MchNo": "22101257", "Message": "마이신한P잔여 : 109                     ", "Month": "00", "OrdCd": "1107", "OrdNm": "개인신용", "PcCard": "null", "PcCoupon": "null", "PcKind": "null", "PcPoint": "null", "QrKind": "null", "RefundAmt": "null", "SvcAmt": "0", "TaxAmt": `${vatAmt}`, "TaxFreeAmt": "0", "TermID": "0710000900", "TradeNo": "000004689679", "TrdAmt": `${payAmt}`, "TrdDate": "240902182728", "TrdType": "A15"}
+        //const result = {"AnsCode": "0000", "AnswerTrdNo": "null", "AuNo": "28872915", "AuthType": "null", "BillNo": "", "CardKind": "1", "CardNo": "9411-9400-****-****", "ChargeAmt": "null", "DDCYn": "1", "DisAmt": "null", "EDCYn": "0", "GiftAmt": "", "InpCd": "1107", "InpNm": "신한카드", "Keydate": "", "MchData": "wooriorder", "MchNo": "22101257", "Message": "마이신한P잔여 : 109                     ", "Month": "00", "OrdCd": "1107", "OrdNm": "개인신용", "PcCard": "null", "PcCoupon": "null", "PcKind": "null", "PcPoint": "null", "QrKind": "null", "RefundAmt": "null", "SvcAmt": "0", "TaxAmt": `${vatAmt}`, "TaxFreeAmt": "0", "TermID": "0710000900", "TradeNo": "000004689679", "TrdAmt": `${payAmt}`, "TrdDate": "240902182728", "TrdType": "A15"}
 
         // 결제 진행끝이다.
        
@@ -921,22 +1032,24 @@ export const completeDutchPayment = createAsyncThunk("order/completeDutchPayment
         const orderResultData = await metaPostPayFormat(orderList,dutchOrderPaidList, allItems);
         dispatch(postLog({payData:dutchOrderPayResultList,orderData:orderResultData}))
         await dispatch(postOrderToPos({isQuick:false, payData:dutchOrderPayResultList,orderData:orderResultData, isMultiPay:true}));
-        await dispatch(adminDataPost({payData:dutchOrderPayResultList,orderData:orderResultData}));
+        await dispatch(adminDataPost({payData:dutchOrderPayResultList,orderData:orderResultData, isMultiPay:true}));
     }
     else if(!isEmpty(dutchOrderDividePaidList)) {
         const orderResultData = await metaPostPayFormat(orderList,orderList, allItems);
         dispatch(postLog({payData:dutchOrderDividePaidList,orderData:orderResultData}))
         await dispatch(postOrderToPos({isQuick:false, payData:dutchOrderDividePaidList,orderData:orderResultData, isMultiPay:true}));
-        await dispatch(adminDataPost({payData:dutchOrderDividePaidList,orderData:orderResultData}));
+        await dispatch(adminDataPost({payData:dutchOrderDividePaidList,orderData:orderResultData, isMultiPay:true}));
     }
     console.log("isPosPostSuccess: ",isPosPostSuccess);
  
     if(isPosPostSuccess) {
-        //dispatch(initDutchPayOrder());  
+        dispatch(initDutchPayOrder());  
+        dispatch(initOrder());
         //openTransperentPopup(dispatch, {innerView:"OrderComplete", isPopupVisible:true,param:{msg:"주문을 완료했습니다."}});
         //openFullSizePopup(dispatch, {innerFullView:"", isFullPopupVisible:false}); 
-        //dispatch(initOrder());
     }else {
+        //dispatch(initDutchPayOrder()); 
+        //dispatch(initOrder());
         //dispatch(setErrorData({errorCode:"XXXX",errorMsg:"주문을 전송할 수 없습니다. 재주문 해 주세요."})); 
         //openPopup(dispatch,{innerView:"Error", isPopupVisible:true});
     }

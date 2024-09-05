@@ -146,7 +146,7 @@ const CartView = () =>{
                         const orderData = await metaPostPayFormat(orderList,result, allItems);
                         dispatch(postLog({payData:result,orderData:orderData}))
                         dispatch(postOrderToPos({isQuick:false, payData:result,orderData:orderData, isMultiPay:false}));
-                        dispatch(adminDataPost({payData:result,orderData:orderData}));
+                        dispatch(adminDataPost({payData:result,orderData:orderData, isMultiPay:false}));
                     })
                     .catch((err)=>{
                         // 결제 진행끝이다.
@@ -159,7 +159,7 @@ const CartView = () =>{
             }else {
                 EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
                 const orderData = await metaPostPayFormat(orderList,{}, allItems);
-                dispatch(adminDataPost({payData:null,orderData:orderData}));
+                dispatch(adminDataPost({payData:null,orderData:orderData, isMultiPay:false}));
                 dispatch(postOrderToPos({isQuick:false, payData:null,orderData:orderData, isMultiPay:false}));
                 setPayProcess(false);
             }
