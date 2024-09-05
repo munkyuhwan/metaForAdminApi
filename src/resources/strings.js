@@ -74,7 +74,8 @@ export const LANGUAGE = {
             payAmCancel:'결제취소',
         },
         etc:{
-            quickOrder:"논스톱으로 장바구니에 담기지 않고 바로 주문(주문시 유의)"
+            quickOrder:"논스톱으로 장바구니에 담기지 않고 바로 주문(주문시 유의)",
+            postAgain:"재주문",
         }
     },
 
@@ -148,8 +149,9 @@ export const LANGUAGE = {
             letsOrder:"注文する",
        },
        etc:{
-           quickOrder:"ノンストップでカートに入れずにすぐに注文（注文時の注意)"
-       }
+           quickOrder:"ノンストップでカートに入れずにすぐに注文（注文時の注意)",
+           postAgain:"재주문",
+        }
     },
 
 
@@ -217,7 +219,8 @@ export const LANGUAGE = {
             letOrder:"下订单",
         },
         etc:{
-            quickOrder:"无需加入购物车即可立即下单（下单需谨慎）"
+            quickOrder:"无需加入购物车即可立即下单（下单需谨慎）",
+            postAgain:"재주문",
         }
 
     },
@@ -285,7 +288,8 @@ export const LANGUAGE = {
             letsOrder:"Place an order",
        },
        etc:{
-           quickOrder:"Order directly without adding to cart nonstop (Note when ordering)"
+           quickOrder:"Order directly without adding to cart nonstop (Note when ordering)",
+           postAgain:"재주문",
        }
     }
 

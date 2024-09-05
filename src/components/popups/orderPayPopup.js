@@ -36,7 +36,7 @@ const OrderPayPopup = () =>{
     const selectedListRef = useRef();
     const paidListRef = useRef();
 
-    const {orderList, dutchOrderList, dutchOrderToPayList, dutchSelectedTotalAmt, dutchOrderPaidList, dutchOrderPayResultList, dutchOrderDividePaidList} = useSelector((state)=>state.order);
+    const {orderList, dutchOrderList, dutchOrderToPayList, dutchSelectedTotalAmt, dutchOrderPaidList, dutchOrderPayResultList, dutchOrderDividePaidList, isPosPostSuccess} = useSelector((state)=>state.order);
     const [isDivided, setDivided] = useState(false);
     // 체크된 아이템 리스트
     const [checkedItemList, setCheckedItemList] = useState([]);
@@ -469,6 +469,13 @@ const OrderPayPopup = () =>{
                                     <TouchableWithoutFeedback onPress={()=>{dispatch(initDutchPayOrder());  openFullSizePopup(dispatch, {innerFullView:"", isFullPopupVisible:false});  }} >
                                         <PayBtn isFull={false} isGap={true}  color={ colorBlack}  >    
                                             <PayTitle>{LANGUAGE[language]?.popup.cancelTitle}</PayTitle>
+                                        </PayBtn>
+                                    </TouchableWithoutFeedback>
+                                }
+                                { !isPosPostSuccess &&
+                                    <TouchableWithoutFeedback onPress={()=>{dispatch(completeDutchPayment()) }} >
+                                        <PayBtn isFull={false} isGap={true}  color={ colorBlack}  >    
+                                            <PayTitle>{LANGUAGE[language]?.etc.postAgain}</PayTitle>
                                         </PayBtn>
                                     </TouchableWithoutFeedback>
                                 }
