@@ -116,6 +116,7 @@ export const tableInfoSlice = createSlice({
         tableCode:"0001",
         posIP:"",
         lastOrderItem:[],
+        isSplit:"N",
     },
     extraReducers:(builder)=>{
         // setLastOrderItem
@@ -202,6 +203,7 @@ export const tableInfoSlice = createSlice({
                 state.posIP = payload.ip;
                 //state.posIP = "192.168.35.95";
                 state.tableList = payload.table_list;
+                state.isSplit = payload.is_split;
             }
         })
         

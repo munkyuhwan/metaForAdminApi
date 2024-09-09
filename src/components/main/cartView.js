@@ -47,8 +47,9 @@ const CartView = () =>{
     const {orderList,vatTotal} = useSelector((state)=>state.order);
     const {orderStatus} = useSelector(state=>state.order);    
     const {allItems} = useSelector(state=>state.menu);
-    const { tableInfo, tableStatus } = useSelector(state=>state.tableInfo);
+    const { tableInfo, tableStatus,isSplit } = useSelector(state=>state.tableInfo);
     const {isMonthSelectShow, monthSelected} = useSelector(state=>state.monthSelect)
+    
     //console.log("orderList: ",orderList);
     const [totalAmt, setTotalAmt] = useState();
     const [totalCnt, setTotalCnt] = useState(0);
@@ -65,6 +66,7 @@ const CartView = () =>{
     const boxStyle = {
         transform: [{translateX:slideInterpolate},],
     };
+    console.log("tableStatus: ",tableStatus);
     const isPrepay = tableStatus?.now_later=="선불"?true:false;
 
     const drawerController = (isOpen) =>{
@@ -434,7 +436,7 @@ const CartView = () =>{
                     </PayWrapper>
                     <PayBtnWrapper>
 
-                        {/*!isPrepay&&
+                        {(isSplit=="N"&&!isPrepay)&&
                             <TouchableWithoutFeedback onPress={()=>{if(isPayProcess == false){setPayProcess(true); doPayment();}}} >
                                 <PayBtn isFull={true} color={colorRed} >
                                     <PayTitle>{LANGUAGE[language]?.cartView.makeOrder}</PayTitle>
@@ -442,15 +444,15 @@ const CartView = () =>{
                                 </PayBtn>
                             </TouchableWithoutFeedback>
                         }
-                        {isPrepay&&
+                        {(isSplit=="N"&&isPrepay)&&
                             <TouchableWithoutFeedback onPress={()=>{if(isPayProcess == false){setPayProcess(true); doPayment();}}} >
                                 <PayBtn isFull={true} color={colorRed} >
                                     <PayTitle>{LANGUAGE[language]?.cartView.payOrder}</PayTitle>
                                     <PayIcon source={require("../../assets/icons/order.png")} />
                                 </PayBtn>
                             </TouchableWithoutFeedback>
-                        */}
-                        {//isPrepay&&
+                        }
+                        {(isSplit=="Y"&&isPrepay)&&
                             <>
                             <TouchableWithoutFeedback onPress={()=>{doPayment();}} >
                                 <PayBtn isFull={false} isGap={true} color={colorRed} >    

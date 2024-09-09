@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.2.15";
+export const CURRENT_VERSION = "2.3.1";
 export const releaseNote = {
+    "2.3.1": //2024.09.06
+    `
+        - 더치페이 적용
+    `,
     "2.2.15": //2024.08.30
     `
         - 음식 픽업 메시지 추가

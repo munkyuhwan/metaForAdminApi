@@ -881,39 +881,8 @@ export const startDutchSeparatePayment = createAsyncThunk("order/startDutchSepar
             }
             return result; 
         }
-        /* 
-        var kocessAppPay = new KocesAppPay();
-        const result = await kocessAppPay.requestKocesPayment(amtData).catch((err)=>{
-            EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
-            dispatch(postLog({payData:err,orderData:null}))
-            displayErrorPopup(dispatch, "XXXX", err?.Message);
-            return ""
-        });
-        console.log("pay result: ",result); 
-        if(result == "") {
-            return rejectWithValue();
-        }
-        */
-        // 테스트
-        
     }
 
-   
-    //console.log("numPpl: ",numPpl);
-    //console.log("rest: ",rest);
-    //console.log("payAmt: ",payAmt);
-    //console.log("loopCnt: ",loopCnt);
-    /* 
-    for(var i=0;i<loopCnt;i++) {
-        const netAmt = Math.round(payAmt/10);
-        const vatAmt = payAmt-netAmt;
-        console.log("netAmt: ",netAmt);
-        console.log("vatAmt: ",vatAmt);
-        console.log("total: ",Number(vatAmt)+Number(netAmt));
-       
-    }
-    */
-    return;
 })
 export const startDutchPayment = createAsyncThunk("order/startDutchPayment",  async(data,{dispatch, getState,extra, rejectWithValue}) =>{
     const { dutchOrderList, dutchOrderToPayList, dutchOrderPaidList, dutchSelectedTotalAmt } = getState().order;
