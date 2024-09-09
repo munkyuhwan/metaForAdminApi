@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.3.1";
+export const CURRENT_VERSION = "2.3.2";
 export const releaseNote = {
+    "2.3.2": //2024.09.09
+    `
+        - 더치페이 버그수정
+    `,
     "2.3.1": //2024.09.06
     `
         - 더치페이 적용
