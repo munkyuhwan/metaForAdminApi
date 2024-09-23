@@ -192,14 +192,20 @@ const OrderPayPopup = () =>{
     function goSeparatePay(){
         const payAmt = Number(Math.floor(totalAmt/numPpl));
         const rest = Number(totalAmt%numPpl);
-        dispatch(startDutchSeparatePayment({payAmt:payAmt, rest:rest, numPpl:numPpl}));
-        
+        dispatch(startDutchSeparatePayment({payAmt:payAmt, rest:rest, numPpl:numPpl}));        
+    }
+
+    const payingAmt = () => {
+        var payAmt = Number(Math.floor(totalAmt/numPpl));
+        var rest = Number(totalAmt%numPpl);
+
+        payAmt = Number(payAmt)+(dutchOrderDividePaidList.length>0?0:Number(rest));
+        return payAmt;
     }
 
     useEffect(()=>{
         if(dutchOrderDividePaidList.length>0) {
-            var rest = Number(totalAmt%numPpl);
-            var loopCnt = Number(numPpl)+(rest>0?1:0);
+            var loopCnt = Number(numPpl);
             if(dutchOrderDividePaidList.length >=loopCnt ) {
                 console.log("결제 끝");
                 dispatch(completeDutchPayment());
@@ -372,7 +378,7 @@ const OrderPayPopup = () =>{
                             <OrderListTopTitle>{` `}</OrderListTopTitle>
                             <TouchableWithoutFeedback onPress={()=>{ goSeparatePay() }} >
                                 <DutchPayBtn isFull={true} isGap={true}  color={colorRed} >    
-                                    <PayTitle>{LANGUAGE[language]?.cartView.payOrder}</PayTitle>
+                                    <PayTitle>{numberWithCommas(payingAmt())}원 {LANGUAGE[language]?.cartView.payOrder}</PayTitle>
                                 </DutchPayBtn>
                             </TouchableWithoutFeedback>
                         </DutchPayHalfWrapper>

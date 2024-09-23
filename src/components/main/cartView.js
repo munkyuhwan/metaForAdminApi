@@ -66,7 +66,6 @@ const CartView = () =>{
     const boxStyle = {
         transform: [{translateX:slideInterpolate},],
     };
-    console.log("tableStatus: ",tableStatus);
     const isPrepay = tableStatus?.now_later=="선불"?true:false;
 
     const drawerController = (isOpen) =>{

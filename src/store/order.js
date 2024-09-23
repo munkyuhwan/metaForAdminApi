@@ -781,11 +781,12 @@ export const startDutchSeparatePayment = createAsyncThunk("order/startDutchSepar
     
     var numPpl = data?.numPpl;
     var rest = data?.rest;
-    var payAmt = data?.payAmt;
+    var payAmt = Number(data?.payAmt)+(dutchOrderDividePaidList.length>0?0:Number(rest));
     var vatAmt = Math.round(payAmt/10);
     var netAmt = payAmt-vatAmt;
 
-    var loopCnt = Number(numPpl)+(rest>0?1:0);
+
+    var loopCnt = Number(numPpl);
     var kocessAppPay = new KocesAppPay();
 
     if(dutchOrderDividePaidList.length >=loopCnt ) {
@@ -822,12 +823,12 @@ export const startDutchSeparatePayment = createAsyncThunk("order/startDutchSepar
             return rejectWithValue();
         }
         var orderData = await metaPostPayFormat(dutchOrderDividePaidList,{}, allItems).catch(err=>"err");
-        console.log("order data: ",orderData);
+        //console.log("order data: ",orderData);
 
         var amtData = {amt:netAmt, taxAmt:vatAmt, months:monthSelected, bsnNo:bsnNo,termID:tidNo }
-        console.log("amtData: ",amtData);
+        //console.log("amtData: ",amtData);
 
-        if(loopCnt > numPpl) {
+        /* if(loopCnt > numPpl) {
             // 나머지가 있는경우
             if(dutchOrderDividePaidList.length >= numPpl) {
                 console.log("나머지 금액결제");
@@ -868,13 +869,13 @@ export const startDutchSeparatePayment = createAsyncThunk("order/startDutchSepar
                 }
                 return result; 
             }
-        }else {
+        }else { */
             // 나머지가 없는 경우
             console.log(" 결제하기기기기기기기기기기 ")
             //const result = {"AnsCode": "0000", "AnswerTrdNo": "null", "AuNo": "28872915", "AuthType": "null", "BillNo": "", "CardKind": "1", "CardNo": "9411-9400-****-****", "ChargeAmt": "null", "DDCYn": "1", "DisAmt": "null", "EDCYn": "0", "GiftAmt": "", "InpCd": "1107", "InpNm": "신한카드", "Keydate": "", "MchData": "wooriorder", "MchNo": "22101257", "Message": "마이신한P잔여 : 109                     ", "Month": "00", "OrdCd": "1107", "OrdNm": "개인신용", "PcCard": "null", "PcCoupon": "null", "PcKind": "null", "PcPoint": "null", "QrKind": "null", "RefundAmt": "null", "SvcAmt": "0", "TaxAmt": `${vatAmt}`, "TaxFreeAmt": "0", "TermID": "0710000900", "TradeNo": "000004689679", "TrdAmt": `${netAmt}`, "TrdDate": "240902182728", "TrdType": "A15"}
             const result = await kocessAppPay.requestKocesPayment(amtData).catch((err)=>{
                 EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""});
-                dispatch(postLog({payData:err,orderData:null}))
+                dispatch(postLog({payData:err,orderData:orderData}))
                 displayErrorPopup(dispatch, "XXXX", err?.Message);
                 return ""
             });
@@ -884,7 +885,7 @@ export const startDutchSeparatePayment = createAsyncThunk("order/startDutchSepar
             }
             
             return result; 
-        }
+        //}
     }
 
 })
@@ -1068,7 +1069,6 @@ export const orderSlice = createSlice({
             var currentState = Object.assign({},state);
             var payload = action.payload;
             var newState = {...currentState,...payload};
-            console.log("newState: ",newState);
             state.vatTotal = newState.vatTotal;
             state.grandTotal = newState.grandTotal;
             state.totalItemCnt = newState.totalItemCnt;
