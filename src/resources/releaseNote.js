@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.3.2";
+export const CURRENT_VERSION = "2.3.3";
 export const releaseNote = {
+    "2.3.3": //2024.09.24
+    `
+        - 더치페이 1/n 나머지 금액 첫 결제에 적용.
+    `,
     "2.3.2": //2024.09.09
     `
         - 더치페이 버그수정

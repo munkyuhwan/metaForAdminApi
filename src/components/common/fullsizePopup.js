@@ -80,7 +80,7 @@ const FullSizePopup = (props) =>{
     return(
         <>
             <Animated.View  style={[{...PopStyle.animatedPop,...boxWidthStyle,...{zIndex:popupZIndex, width:size, height:size}} ]} >   
-                <TouchableWithoutFeedback onPress={()=>{openFullSizePopup(dispatch, {innerView:"", isFullPopupVisible:false});} }>
+                <TouchableWithoutFeedback onPress={()=>{if(innerFullView!="OrderPay"){ openFullSizePopup(dispatch, {innerView:"", isFullPopupVisible:false});} }}>
                 <FullsizePopupWrapper/>
                 </TouchableWithoutFeedback>
                     {innerFullView=="CallServer"&&
