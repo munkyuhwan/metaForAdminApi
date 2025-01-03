@@ -1,6 +1,11 @@
 
-export const CURRENT_VERSION = "2.3.3";
+export const CURRENT_VERSION = "2.3.4";
 export const releaseNote = {
+    "2.3.4": //2025.01.01
+    `
+        - 더치페이
+        - 주류 바로주문
+    `,
     "2.3.3": //2024.09.24
     `
         - 더치페이 1/n 나머지 금액 첫 결제에 적용.
