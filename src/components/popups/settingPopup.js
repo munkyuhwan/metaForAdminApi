@@ -121,7 +121,7 @@ const SettingPopup = () =>{
         console.log("previous table topic: ",`${prevStoreID}_${prevTableCode}`)
         if(prevTableCode){      
             try{
-               await messaging().unsubscribeFromTopic(`${prevStoreID}_${prevTableCode}`);
+               await messaging().unsubscribeFromTopic(`${prevStoreID}_${prevTableCode}_clear`);
             }catch(err){
                 console.log("err:",err);
                 EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
@@ -132,6 +132,7 @@ const SettingPopup = () =>{
         console.log("current table topic: ",`${prevStoreID}_${itemValue}`)
         try {
             await messaging().subscribeToTopic(`${prevStoreID}_${itemValue}`)
+            await messaging().subscribeToTopic(`${prevStoreID}_${itemValue}_clear`)
             EventRegister.emit("showSpinnerNonCancel",{isSpinnerShowNonCancel:false, msg:""})
             displayOnAlert("테이블이 설정되었습니다.",{});            
             dispatch(regularUpdate());

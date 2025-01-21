@@ -1,6 +1,10 @@
 
-export const CURRENT_VERSION = "2.3.4";
+export const CURRENT_VERSION = "2.3.5";
 export const releaseNote = {
+    "2.3.5": //2025.01.03
+    `
+        - 주류 바로주문 어드민 노출여부 수정시 반영
+    `,
     "2.3.4": //2025.01.01
     `
         - 더치페이

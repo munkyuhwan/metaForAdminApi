@@ -199,7 +199,8 @@ const OrderPayPopup = () =>{
         var payAmt = Number(Math.floor(totalAmt/numPpl));
         var rest = Number(totalAmt%numPpl);
 
-        payAmt = Number(payAmt)+(dutchOrderDividePaidList.length>0?0:Number(rest));
+        //payAmt = Number(payAmt)+(dutchOrderDividePaidList.length>0?0:Number(rest));
+        payAmt = Number(payAmt)+(dutchOrderDividePaidList.length<(numPpl-1)?0:Number(rest));
         return payAmt;
     }
 

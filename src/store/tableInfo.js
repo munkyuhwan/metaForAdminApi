@@ -71,9 +71,30 @@ export const setCctv = createAsyncThunk("tableInfo/setCctv", async(data, {dispat
    return data[0];   
 })
 
-export const setLastOrderItem = createAsyncThunk("tableInfo/setLastOrderItem", async(data, {dispatch,rejectWithValue})=>{
+export const setLastOrderItem = createAsyncThunk("tableInfo/setLastOrderItem", async(data, {dispatch, getState, rejectWithValue})=>{    
     return data;   
  })
+
+export const updateQuickOrder = createAsyncThunk("tableInfo/updateQuickOrder", async(data,{dispatch,getState,rejectWithValue}) =>{
+    //console.log("setTableStatus: ",data);
+    const {allItems} = getState().menu;
+    const {lastOrderItem} = getState().tableInfo;
+
+    var newList = [];
+    for(var loi of lastOrderItem) {
+        const prodCd = loi.prod_cd;
+        const filteredItem = allItems.filter(el=>el.prod_cd == prodCd);
+        if(filteredItem.length>0) {
+            // 팝업 사용유무 체크;
+            if(filteredItem[0].is_popup=="Y") {
+                newList.push(filteredItem[0]);
+            }
+        }
+    }
+
+    return newList;            
+})
+
 /**이하 삭제 */
 
 export const initTableInfo =  createAsyncThunk("tableInfo/initTableInfo", async() =>{
@@ -124,9 +145,13 @@ export const tableInfoSlice = createSlice({
             //if(action.payload) {
                 //const toPut = Object.assign([],state.lastOrderItem,action.payload);
                 if(action.payload!="") {
+                    const itemData = action.payload;
+                    const isPopup = itemData.is_popup;
                     var listTest = state.lastOrderItem.filter(el=>el.prod_cd != action.payload.prod_cd);
                     //var lorder = state.lastOrderItem;
-                    listTest.push(action.payload);
+                    if(isPopup) {
+                        listTest.push(action.payload);
+                    }
                     state.lastOrderItem = listTest;
                 }
             //}
@@ -207,6 +232,14 @@ export const tableInfoSlice = createSlice({
             }
         })
         
+        builder.addCase(updateQuickOrder.fulfilled,(state, action)=>{
+            state.lastOrderItem = action.payload;
+        })
+        builder.addCase(updateQuickOrder.pending,(state, action)=>{
+        })
+        builder.addCase(updateQuickOrder.rejected,(state, action)=>{
+        })
+
     }
 });
 

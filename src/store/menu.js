@@ -13,7 +13,7 @@ import { getItems } from '../utils/api/newApi';
 import {isEmpty} from 'lodash';
 import { callApiWithExceptionHandling } from '../utils/api/apiRequest';
 import { ADMIN_API_BASE_URL, ADMIN_API_GOODS, ADMIN_API_MENU_UPDATE, ADMIN_API_REGULAR_UPDATE, TMP_STORE_DATA } from '../resources/newApiResource';
-import { setCctv, setStoreInfo, setTableInfo, setTableStatus } from './tableInfo';
+import { setCctv, setStoreInfo, setTableInfo, setTableStatus, updateQuickOrder } from './tableInfo';
 import { initImageStorage } from './imageStorage';
 import { setErrorData } from './error';
 import FastImage from 'react-native-fast-image';
@@ -47,6 +47,7 @@ export const regularUpdate = createAsyncThunk("menu/regularUpdate", async(_,{dis
             await dispatch(setCctv(cctvs));
             await dispatch(setTableStatus(storeTable[0]));
             await dispatch(setMenuUpdateCheck(goodsUpdate[0]));
+            dispatch(updateQuickOrder());
             return [];
         }else {
             return rejectWithValue()

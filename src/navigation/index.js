@@ -184,11 +184,13 @@ export default function Navigation() {
         if(prevTableCode){      
             try{
                await messaging().unsubscribeFromTopic(`${prevStoreID}_${prevTableCode}`);
+               await messaging().unsubscribeFromTopic(`${prevStoreID}_${prevTableCode}_clear`);
             }catch(err){
                 
             }
             try {
                 await messaging().subscribeToTopic(`${prevStoreID}_${prevTableCode}`)
+                await messaging().subscribeToTopic(`${prevStoreID}_${prevTableCode}_clear`)
             }catch(err){
             }
         }
