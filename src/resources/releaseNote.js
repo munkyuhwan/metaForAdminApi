@@ -1,6 +1,10 @@
 
 export const CURRENT_VERSION = "2.3.5";
 export const releaseNote = {
+    "2.3.6": //2025.01.23
+    `
+        - 주류 바로주문 테이블 계산시 초기화
+    `,
     "2.3.5": //2025.01.03
     `
         - 주류 바로주문 어드민 노출여부 수정시 반영

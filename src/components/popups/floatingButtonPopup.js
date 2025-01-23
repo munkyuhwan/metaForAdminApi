@@ -43,13 +43,14 @@ const FloatingBtn = (props) => {
     const dispatch = useDispatch();
 
     const {language} =  useSelector(state=>state.languages);
-    const {lastOrderItem} = useSelector(state => state.tableInfo);
+    const {lastOrderItem, tableStatus, cardDeviceInfo,orderHistory,posIP}  = useSelector(state => state.tableInfo);
     const {allItems} = useSelector(state=>state.menu);
     const {images} = useSelector(state=>state.imageStorage);
     const {quickOrderList, isQuickShow} = useSelector(state=>state.order);
     const {isMonthSelectShow, monthSelected} = useSelector(state=>state.monthSelect)
     const [totalAmt, setTotalAmt] = useState();
-    const { tableStatus } = useSelector(state=>state.tableInfo);
+
+    console.log("tablestatus: ",tableStatus);
 
     useEffect(()=>{
         if(quickOrderList.length>0) {
@@ -304,6 +305,11 @@ const FloatingBtn = (props) => {
         }
         const imgUrl = item?.gimg_chg;
         const itemPrice= Number(item.sal_tot_amt);
+
+
+        if(tableStatus?.now_later == "선불") {
+            return(<></>);
+        }
 
         return(
             <>

@@ -18,7 +18,7 @@ import {  getStoreInfo, getTableStatus } from '../store/tableInfo'
 import { EventRegister } from 'react-native-event-listeners'
 import {isEmpty} from 'lodash';
 import StatusScreen from '../screens/StatusScreen'
-import { initOrderList } from '../store/order'
+import { initOrderList, setOrder } from '../store/order'
 import {  DEFAULT_FIVE_MIN_STATUS_UPDATE_TIME, DEFAULT_TABLE_STATUS_UPDATE_TIME } from '../resources/defaults'
 import {  getDeviceInfo, openFullSizePopup, openPopup, openTransperentPopup } from '../utils/common'
 import { getAD } from '../store/ad'
@@ -154,12 +154,15 @@ export default function Navigation() {
                 if(result) {
                     const topics = result?.from;
                     if(topics.includes("_")) {
-                        console.log("body: ",result?.notification?.body);
-                        const body = result?.notification?.body;
-                        openTransperentPopup(dispatch, {innerView:"OrderReady", isPopupVisible:true,param:{msg:body}});
-                        //displayErrorNonClosePopup(dispatch, "XXXX", `${body}`);
+                        if(topics.includes("_clear")) {
+                            dispatch(setOrder({quickOrderList:[]}));
+                        }else {
+                            console.log("body: ",result?.notification?.body);
+                            const body = result?.notification?.body;
+                            openTransperentPopup(dispatch, {innerView:"OrderReady", isPopupVisible:true,param:{msg:body}});
+                        }//displayErrorNonClosePopup(dispatch, "XXXX", `${body}`);
                     }else {
-                        dispatch(regularUpdate());
+                        dispatch(regularUpdate());    
                     }
                 }
             })
