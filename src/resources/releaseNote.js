@@ -1,6 +1,10 @@
 
 export const CURRENT_VERSION = "2.3.5";
 export const releaseNote = {
+    "2.4.1": //2025.02.26
+    `
+        - 더치페이 릴리즈
+    `,
     "2.3.6": //2025.01.23
     `
         - 주류 바로주문 테이블 계산시 초기화
